@@ -13,7 +13,7 @@ public struct AsymmetricPublicKey: Key {
 
     let publicBytes: Int = Sign.PublicKeyBytes
 
-    var encode: String { return material.base64UrlNpEncoded }
+    var encode: String { return material.base64UrlNoPad }
 
     init (material: Data, version: Version = .v2) throws {
         switch version {
@@ -30,7 +30,7 @@ public struct AsymmetricPublicKey: Key {
     }
 
     init (base64: String, version: Version = .v2) throws {
-        guard let decoded = Data(base64UrlNpEncoded: base64) else {
+        guard let decoded = Data(base64UrlNoPad: base64) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         try self.init(material: decoded, version: version)

@@ -10,34 +10,38 @@ import Foundation
 public struct Header {
     public let version: Version
     public let purpose: Purpose
-    
+
     var asString: String {
         return [version.rawValue, purpose.rawValue].joined(separator: ".") + "."
     }
-    
+
     var asData: Data { return Data(self.asString.utf8) }
-    
+
     init (version: Version, purpose: Purpose) {
         self.version = version
         self.purpose = purpose
     }
-    
-    init? (serialised string: String) {
-        let parts = string.split(
-            separator: ".", omittingEmptySubsequences: false
-        ).map(String.init)
-        
-        guard parts.count == 3 else {
-            return nil
-        }
-        
-        guard let version = Version(rawValue: parts[0]),
-              let purpose = Purpose(rawValue: parts[1]), parts[2] == ""
+
+    init? (version v: String, purpose p: String) {
+        guard let version = Version(rawValue: v),
+              let purpose = Purpose(rawValue: p)
         else {
-            return nil
+                return nil
         }
-        
+
         self.init(version: version, purpose: purpose)
+    }
+
+    init? (serialised string: String) {
+        let parts = Blob.split(string)
+
+        guard parts.count == 3 else { return nil }
+
+        guard let header = Header(version: parts[0], purpose: parts[1]),
+              parts[2] == ""
+        else { return nil }
+
+        self = header
     }
 }
 

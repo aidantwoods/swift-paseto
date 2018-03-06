@@ -11,46 +11,40 @@ public struct Blob {
     public let header: Header
     public let payload: Data
     public let footer: Data
-    
+
     var asString: String {
-        let main = header.asString + payload.base64UrlNpEncoded
+        let main = header.asString + payload.base64UrlNoPad
         guard !footer.isEmpty else { return main }
-        return main + "." + footer.base64UrlNpEncoded
+        return main + "." + footer.base64UrlNoPad
     }
     var asData: Data { return Data(self.asString.utf8) }
-    
+
     init (header: Header, payload: Data, footer: Data = Data()) {
         self.header  = header
         self.payload = payload
         self.footer  = footer
     }
-    
+
     init? (serialised string: String) {
-        let parts = string.split(
+        let parts = Blob.split(string)
+
+        guard [3, 4].contains(parts.count) else { return nil }
+
+        guard let header  = Header(version: parts[0], purpose: parts[1]),
+              let payload = Data(base64UrlNoPad: parts[2])
+        else { return nil }
+
+        let footer: Data
+
+        if parts.count > 3 { footer = Data(base64UrlNoPad: parts[3]) ?? Data() }
+        else { footer = Data() }
+
+        self.init(header: header, payload: payload, footer: footer)
+    }
+
+    static func split(_ string: String) -> [String] {
+        return string.split(
             separator: ".", omittingEmptySubsequences: false
         ).map(String.init)
-        
-        guard parts.count == 3 || parts.count == 4 else {
-            return nil
-        }
-        
-        guard
-            let header = Header(
-                serialised: parts[0...1].joined(separator: ".") + "."
-            ),
-            let payload = Data(base64UrlNpEncoded: parts[2]) else {
-            return nil
-        }
-        
-        guard parts.count > 3 else {
-            self.init(header: header, payload: payload)
-            return
-        }
-        
-        guard let footer = Data(base64UrlNpEncoded: parts[3]) else {
-            return nil
-        }
-        
-        self.init(header: header, payload: payload, footer: footer)
     }
 }
