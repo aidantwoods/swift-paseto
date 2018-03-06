@@ -15,10 +15,10 @@ public enum Util {
     static func le64 (_ n: Int) -> Data { return le64(UInt64(n)) }
     
     static func le64 (_ n: UInt64) -> Data {
-        let int64ToStr: (UInt64) -> String
+        let codeToStr: (UInt64) -> String
             = String.init • UnicodeScalar.init • UInt8.init
 
-        let str = (0..<8).reduce("") { $0 + int64ToStr((n >> (8 * $1)) & 255) }
+        let str = (0..<8).reduce("") { $0 + codeToStr((n >> (8 * $1)) & 255) }
         
         return Data(str.utf8)
     }
