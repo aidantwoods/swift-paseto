@@ -5,6 +5,7 @@
 //  Created by Aidan Woods on 04/03/2018.
 //
 
+import Sodium
 import Foundation
 
 public struct SymmetricKey: Key {
