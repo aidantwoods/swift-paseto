@@ -5,18 +5,17 @@
 //  Created by Aidan Woods on 04/03/2018.
 //
 
-import Sodium
 import Foundation
 
 public struct Version2: Implementation {
-    static let signBytes: Int = Sodium().sign.Bytes
+    static let signBytes: Int = Sign.Bytes
     public static var version: Version { return .v2 }
     public static func sign(
         _ data: Data, with key: AsymmetricSecretKey, footer: Data
     ) -> Blob {
         let header = Header(version: version, purpose: .Public)
 
-        let signature = Sodium().sign.signature(
+        let signature = Sign.signature(
             message: Util.pae([header.asData, data, footer]),
             secretKey: key.material
         )!
@@ -39,7 +38,7 @@ public struct Version2: Implementation {
         let message   = payload[..<(payload.count - signBytes)]
         let signature = payload[(payload.count - signBytes)...]
         
-        let isValid = Sodium().sign.verify(
+        let isValid = Sign.verify(
             message: Util.pae([header.asData, message, footer]),
             publicKey: key.material,
             signature: signature

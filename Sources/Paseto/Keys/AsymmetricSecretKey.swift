@@ -5,22 +5,20 @@
 //  Created by Aidan Woods on 04/03/2018.
 //
 
-import Sodium
 import Foundation
 
 public struct AsymmetricSecretKey: Key {
     public let version: Version
     public let material: Data
     
-    let secretBytes : Int = Sodium().sign.SecretKeyBytes
-    let seedBytes   : Int = Sodium().sign.SeedBytes
+    let secretBytes : Int = Sign.SecretKeyBytes
+    let seedBytes   : Int = Sign.SeedBytes
     let keypairBytes: Int = 96
     
     var encode: String { return material.base64UrlNpEncoded }
     var publicKey: AsymmetricPublicKey {
         return try! AsymmetricPublicKey(
-            material: Sodium().sign.keyPair(seed: material[0..<seedBytes])!
-                .publicKey
+            material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
         )
     }
     
@@ -31,7 +29,7 @@ public struct AsymmetricSecretKey: Key {
             case secretBytes:
                 self.material = material
             case seedBytes:
-                guard let keyPair = Sodium().sign.keyPair(seed: material) else {
+                guard let keyPair = Sign.keyPair(seed: material) else {
                     throw Exception.badMaterial(
                         "The material given could not be used to construct a"
                         + " key."
@@ -54,7 +52,7 @@ public struct AsymmetricSecretKey: Key {
     init? (version: Version = .v2) {
         switch version {
         case .v2:
-            guard let secretKey = Sodium().sign.keyPair()?.secretKey else {
+            guard let secretKey = Sign.keyPair()?.secretKey else {
                 return nil
             }
             do { try self.init(material: secretKey, version: version) }

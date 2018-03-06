@@ -5,14 +5,13 @@
 //  Created by Aidan Woods on 04/03/2018.
 //
 
-import Sodium
 import Foundation
 
 public struct AsymmetricPublicKey: Key {
     public let version: Version
     public let material: Data
 
-    let publicBytes: Int = Sodium().sign.PublicKeyBytes
+    let publicBytes: Int = Sign.PublicKeyBytes
 
     var encode: String { return material.base64UrlNpEncoded }
 
