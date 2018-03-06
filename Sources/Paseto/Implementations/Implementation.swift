@@ -1,6 +1,6 @@
 //
 //  Version.swift
-//  PasetoPackageDescription
+//  Paseto
 //
 //  Created by Aidan Woods on 04/03/2018.
 //
