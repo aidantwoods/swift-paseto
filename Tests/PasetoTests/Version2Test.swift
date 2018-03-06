@@ -10,7 +10,7 @@ import XCTest
 import Sodium
 
 class Version2Test: XCTestCase {
-    func testSVerify() {
+    func testVerify() {
         let pk = try! AsymmetricPublicKey(
             base64: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
