@@ -37,7 +37,7 @@ public struct AsymmetricSecretKey: Key {
                 }
                 self.material = keyPair.secretKey
             case keypairBytes:
-                self.material = material[0..<secretBytes]
+                self.material = material[..<secretBytes]
             default:
                 throw Exception.badLength(
                     "Public key must be 64 or 32 bytes long;"
