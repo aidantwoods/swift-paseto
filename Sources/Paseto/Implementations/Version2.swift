@@ -34,9 +34,11 @@ public struct Version2: Implementation {
             throw Exception.badFooter("Invalid message footer.")
         }
         
-        let payload   = signedMessage.payload
-        let message   = payload[..<(payload.count - signBytes)]
-        let signature = payload[(payload.count - signBytes)...]
+        let payload = signedMessage.payload
+        let signatureOffset = payload.count - signBytes
+        
+        let message   = payload[..<signatureOffset]
+        let signature = payload[signatureOffset...]
         
         let isValid = Sign.verify(
             message: Util.pae([header.asData, message, footer]),
