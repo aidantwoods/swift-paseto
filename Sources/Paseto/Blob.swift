@@ -25,7 +25,7 @@ public struct Blob {
         self.footer  = footer
     }
     
-    init?(serialised string: String) {
+    init? (serialised string: String) {
         let parts = string.split(
             separator: ".", omittingEmptySubsequences: false
         ).map(String.init)

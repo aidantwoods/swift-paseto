@@ -13,7 +13,7 @@ extension Data {
         return Sodium().utils.bin2base64(self, variant: .URLSAFE_NO_PADDING)!
     }
     
-    init?(base64UrlNpEncoded encoded: String) {
+    init? (base64UrlNpEncoded encoded: String) {
         guard let data = Sodium().utils
             .base642bin(encoded, variant: .URLSAFE_NO_PADDING) else {
                 return nil

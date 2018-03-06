@@ -51,7 +51,7 @@ public struct AsymmetricSecretKey: Key {
         self.version = version
     }
     
-    init?(version: Version = .v2) {
+    init? (version: Version = .v2) {
         switch version {
         case .v2:
             guard let secretKey = Sodium().sign.keyPair()?.secretKey else {

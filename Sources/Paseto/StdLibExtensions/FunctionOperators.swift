@@ -34,7 +34,7 @@ func ^• <A, B, C, D>(lhs: (A) -> B, rhs: C) -> D where
     return D(rhs.map(lhs))
 }
 
-prefix func !<D>(fn: @escaping (D) -> Bool) -> (D) -> Bool {
+prefix func ! <D>(fn: @escaping (D) -> Bool) -> (D) -> Bool {
     return (!) • fn
 }
 

@@ -22,7 +22,7 @@ public struct Header {
         self.purpose = purpose
     }
     
-    init?(serialised string: String) {
+    init? (serialised string: String) {
         let parts = string.split(
             separator: ".", omittingEmptySubsequences: false
         ).map(String.init)
@@ -31,11 +31,10 @@ public struct Header {
             return nil
         }
         
-        guard
-            let version = Version(rawValue: parts[0]),
-            let purpose = Purpose(rawValue: parts[1]),
-            parts[2] == "" else {
-                return nil
+        guard let version = Version(rawValue: parts[0]),
+              let purpose = Purpose(rawValue: parts[1]), parts[2] == ""
+        else {
+            return nil
         }
         
         self.init(version: version, purpose: purpose)

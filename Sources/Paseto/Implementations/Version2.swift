@@ -12,9 +12,7 @@ public struct Version2: Implementation {
     static let signBytes: Int = Sodium().sign.Bytes
     public static var version: Version { return .v2 }
     public static func sign(
-        _ data: Data,
-        with key: AsymmetricSecretKey,
-        footer: Data
+        _ data: Data, with key: AsymmetricSecretKey, footer: Data
     ) -> Blob {
         let header = Header(version: version, purpose: .Public)
 
@@ -27,9 +25,7 @@ public struct Version2: Implementation {
     }
 
     public static func verify(
-        _ signedMessage: Blob,
-        with key: AsymmetricPublicKey,
-        footer: Data
+        _ signedMessage: Blob, with key: AsymmetricPublicKey, footer: Data
     ) throws -> Data {
         let header = signedMessage.header
         guard header == Header(version: version, purpose: .Public) else {
