@@ -50,3 +50,33 @@ extension Implementation {
     }
 }
 
+extension Implementation {
+    static func verify(
+        _ signedMessage: Blob<SignedPayload>,
+        with key: AsymmetricPublicKey,
+        footer: Data
+    ) -> Data? {
+        return try? verify(signedMessage, with: key, footer: footer)
+    }
+
+    static func verify(
+        _ signedMessage: Blob<SignedPayload>, with key: AsymmetricPublicKey
+    ) -> Data? {
+        return try? verify(signedMessage, with: key)
+    }
+}
+
+extension Implementation {
+    static func sign(
+        _ string: String, with key: AsymmetricSecretKey
+    ) -> Blob<SignedPayload> {
+        return sign(Data(string.utf8), with: key)
+    }
+
+    static func verify(
+        _ signedMessage: Blob<SignedPayload>, with key: AsymmetricPublicKey
+    ) -> String? {
+        return verify(signedMessage, with: key)?.utf8String
+    }
+}
+

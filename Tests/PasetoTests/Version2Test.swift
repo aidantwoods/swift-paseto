@@ -20,9 +20,9 @@ class Version2Test: XCTestCase {
             + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
 
-        let message = try! Version2.verify(signedBlob, with: pk)
+        let message: String = Version2.verify(signedBlob, with: pk)!
 
-        XCTAssertEqual(message.utf8String! , "test")
+        XCTAssertEqual(message , "test")
     }
 
     func testSign() {
@@ -30,11 +30,11 @@ class Version2Test: XCTestCase {
 
         let message = "Hello world!"
 
-        let signedBlob = Version2.sign(Data(message.utf8), with: sk)
+        let signedBlob = Version2.sign(message, with: sk)
 
-        let verified = try! Version2.verify(signedBlob, with: sk.publicKey)
+        let verified: String = Version2.verify(signedBlob, with: sk.publicKey)!
 
-        XCTAssertEqual(message, verified.utf8String!)
+        XCTAssertEqual(message, verified)
     }
 }
 

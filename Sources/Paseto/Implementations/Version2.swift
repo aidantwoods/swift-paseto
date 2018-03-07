@@ -26,7 +26,9 @@ public struct Version2: Implementation {
     }
 
     public static func verify(
-        _ signedMessage: Blob<SignedPayload>, with key: AsymmetricPublicKey, footer: Data
+        _ signedMessage: Blob<SignedPayload>,
+        with key: AsymmetricPublicKey,
+        footer: Data
     ) throws -> Data {
         let header = signedMessage.header
 
