@@ -22,7 +22,19 @@ class Version2Test: XCTestCase {
 
         let message = try! Version2.verify(signedBlob, with: pk)
 
-        XCTAssertEqual(String(data: message, encoding: .utf8)!, "test")
+        XCTAssertEqual(message.utf8String! , "test")
+    }
+
+    func testSign() {
+        let sk = AsymmetricSecretKey(version: .v2)!
+
+        let message = "Hello world!"
+
+        let signedBlob = Version2.sign(Data(message.utf8), with: sk)
+
+        let verified = try! Version2.verify(signedBlob, with: sk.publicKey)
+
+        XCTAssertEqual(message, verified.utf8String!)
     }
 }
 
