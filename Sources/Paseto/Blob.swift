@@ -13,7 +13,7 @@ public struct Blob<P: Payload> {
     public let footer: Data
 
     var asString: String {
-        let main = header.asString + payload.base64
+        let main = header.asString + payload.encode
         guard !footer.isEmpty else { return main }
         return main + "." + footer.base64UrlNoPad
     }
@@ -31,7 +31,7 @@ public struct Blob<P: Payload> {
         guard [3, 4].contains(parts.count) else { return nil }
 
         guard let header  = Header(version: parts[0], purpose: parts[1]),
-              let payload = P(base64: parts[2])
+              let payload = P(encoded: parts[2])
         else { return nil }
 
         let footer: Data

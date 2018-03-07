@@ -13,10 +13,10 @@ public protocol Payload {
 }
 
 extension Payload {
-    init? (base64: String) {
-        guard let data = Data(base64UrlNoPad: base64) else { return nil }
+    init? (encoded: String) {
+        guard let data = Data(base64UrlNoPad: encoded) else { return nil }
         self.init(data: data)
     }
 
-    var base64: String { return self.asData.base64UrlNoPad }
+    var encode: String { return self.asData.base64UrlNoPad }
 }

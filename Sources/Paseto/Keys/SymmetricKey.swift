@@ -23,8 +23,8 @@ public struct SymmetricKey: Key {
         self.init(material: Sodium().secretBox.key()!, version: version)
     }
 
-    init (base64: String, version: Version = .v2) throws {
-        guard let decoded = Data(base64UrlNoPad: base64) else {
+    init (encoded: String, version: Version = .v2) throws {
+        guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         self.init(material: decoded, version: version)

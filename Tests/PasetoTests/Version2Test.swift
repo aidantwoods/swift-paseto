@@ -12,7 +12,7 @@ import Sodium
 class Version2Test: XCTestCase {
     func testVerify() {
         let pk = try! AsymmetricPublicKey(
-            base64: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
+            encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
         let signedBlob = Blob<SignedPayload>(

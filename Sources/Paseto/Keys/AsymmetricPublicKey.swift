@@ -29,8 +29,8 @@ public struct AsymmetricPublicKey: Key {
         self.material = material
     }
 
-    init (base64: String, version: Version = .v2) throws {
-        guard let decoded = Data(base64UrlNoPad: base64) else {
+    init (encoded: String, version: Version = .v2) throws {
+        guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         try self.init(material: decoded, version: version)
