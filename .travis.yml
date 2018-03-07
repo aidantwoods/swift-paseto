@@ -5,7 +5,6 @@ matrix:
       osx_image: xcode9.2
 
 script:
-  - swift build
   - swift test
 
 before_install:
