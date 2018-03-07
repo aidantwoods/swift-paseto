@@ -8,4 +8,5 @@ script:
   - swift test
 
 before_install:
+  - brew update
   - brew install libsodium
