@@ -8,12 +8,12 @@
 import Foundation
 
 public struct Version2: Implementation {
-    static let signBytes: Int = Sign.Bytes
+    
     public static var version: Version { return .v2 }
 
     public static func sign(
         _ data: Data, with key: AsymmetricSecretKey, footer: Data
-    ) -> Blob {
+    ) -> Blob<SignedPayload> {
         let header = Header(version: version, purpose: .Public)
 
         let signature = Sign.signature(
@@ -21,13 +21,16 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        return Blob(header: header, payload: data + signature, footer: footer)
+        let payload = SignedPayload(message: data, signature: signature)
+
+        return Blob(header: header, payload: payload, footer: footer)
     }
 
     public static func verify(
-        _ signedMessage: Blob, with key: AsymmetricPublicKey, footer: Data
+        _ signedMessage: Blob<SignedPayload>, with key: AsymmetricPublicKey, footer: Data
     ) throws -> Data {
         let header = signedMessage.header
+
         guard header == Header(version: version, purpose: .Public) else {
             throw Exception.badHeader("Bad message header.")
         }
@@ -36,15 +39,11 @@ public struct Version2: Implementation {
         }
 
         let payload = signedMessage.payload
-        let signatureOffset = payload.count - signBytes
-
-        let message   = payload[..<signatureOffset]
-        let signature = payload[signatureOffset...]
 
         let isValid = Sign.verify(
-            message: Util.pae([header.asData, message, footer]),
+            message: Util.pae([header.asData, payload.message, footer]),
             publicKey: key.material,
-            signature: signature
+            signature: payload.signature
         )
 
         guard isValid else {
@@ -53,7 +52,7 @@ public struct Version2: Implementation {
             )
         }
 
-        return message
+        return payload.message
     }
 
     public enum Exception: Error {

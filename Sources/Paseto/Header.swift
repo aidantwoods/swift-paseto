@@ -33,7 +33,7 @@ public struct Header {
     }
 
     init? (serialised string: String) {
-        let parts = Blob.split(string)
+        let parts = Header.split(string)
 
         guard parts.count == 3 else { return nil }
 
@@ -42,6 +42,12 @@ public struct Header {
         else { return nil }
 
         self = header
+    }
+
+    static func split(_ string: String) -> [String] {
+        return string.split(
+            separator: ".", omittingEmptySubsequences: false
+        ).map(String.init)
     }
 }
 

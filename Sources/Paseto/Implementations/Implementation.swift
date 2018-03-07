@@ -19,10 +19,12 @@ public protocol Implementation {
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey, footer: Data
-    ) -> Blob
+    ) -> Blob<SignedPayload>
 
     static func verify(
-        _ signedMessage: Blob, with key: AsymmetricPublicKey, footer: Data
+        _ signedMessage: Blob<SignedPayload>,
+        with key: AsymmetricPublicKey,
+        footer: Data
     ) throws -> Data
 }
 
@@ -35,12 +37,14 @@ extension Implementation {
 //        return decrypt(data, with: key, footer: Data("".utf8))
 //    }
 
-    static func sign(_ data: Data, with key: AsymmetricSecretKey) -> Blob {
+    static func sign(
+        _ data: Data, with key: AsymmetricSecretKey
+    ) -> Blob<SignedPayload> {
         return sign(data, with: key, footer: Data())
     }
 
     static func verify(
-        _ signedMessage: Blob, with key: AsymmetricPublicKey
+        _ signedMessage: Blob<SignedPayload>, with key: AsymmetricPublicKey
     ) throws -> Data {
         return try verify(signedMessage, with: key, footer: Data())
     }

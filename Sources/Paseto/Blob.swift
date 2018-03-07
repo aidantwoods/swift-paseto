@@ -7,31 +7,31 @@
 
 import Foundation
 
-public struct Blob {
+public struct Blob<P: Payload> {
     public let header: Header
-    public let payload: Data
+    public let payload: P
     public let footer: Data
 
     var asString: String {
-        let main = header.asString + payload.base64UrlNoPad
+        let main = header.asString + payload.base64
         guard !footer.isEmpty else { return main }
         return main + "." + footer.base64UrlNoPad
     }
     var asData: Data { return Data(self.asString.utf8) }
 
-    init (header: Header, payload: Data, footer: Data = Data()) {
+    init (header: Header, payload: P, footer: Data = Data()) {
         self.header  = header
         self.payload = payload
         self.footer  = footer
     }
 
     init? (serialised string: String) {
-        let parts = Blob.split(string)
+        let parts = Header.split(string)
 
         guard [3, 4].contains(parts.count) else { return nil }
 
         guard let header  = Header(version: parts[0], purpose: parts[1]),
-              let payload = Data(base64UrlNoPad: parts[2])
+              let payload = P(base64: parts[2])
         else { return nil }
 
         let footer: Data
@@ -40,11 +40,5 @@ public struct Blob {
         else { footer = Data() }
 
         self.init(header: header, payload: payload, footer: footer)
-    }
-
-    static func split(_ string: String) -> [String] {
-        return string.split(
-            separator: ".", omittingEmptySubsequences: false
-        ).map(String.init)
     }
 }

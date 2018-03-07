@@ -15,7 +15,7 @@ class Version2Test: XCTestCase {
             base64: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
-        let signedBlob = Blob(
+        let signedBlob = Blob<SignedPayload>(
             serialised: "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
             + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
