@@ -1,6 +1,10 @@
 os: osx
 language: objective-c
 
+cache:
+  directories:
+    - $HOME/Library/Caches/Homebrew
+
 matrix:
   include:
     - osx_image: xcode9.2
