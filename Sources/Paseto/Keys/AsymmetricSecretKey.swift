@@ -28,6 +28,10 @@ public struct AsymmetricSecretKey: Key {
             switch material.count {
             case secretBytes:
                 self.material = material
+
+            case keypairBytes:
+                self.material = material[..<secretBytes]
+
             case seedBytes:
                 guard let keyPair = Sign.keyPair(seed: material) else {
                     throw Exception.badMaterial(
@@ -36,8 +40,7 @@ public struct AsymmetricSecretKey: Key {
                     )
                 }
                 self.material = keyPair.secretKey
-            case keypairBytes:
-                self.material = material[..<secretBytes]
+
             default:
                 throw Exception.badLength(
                     "Public key must be 64 or 32 bytes long;"
@@ -52,13 +55,10 @@ public struct AsymmetricSecretKey: Key {
     init? (version: Version = .v2) {
         switch version {
         case .v2:
-            guard let secretKey = Sign.keyPair()?.secretKey else {
-                return nil
-            }
+            guard let secretKey = Sign.keyPair()?.secretKey else { return nil }
+
             do { try self.init(material: secretKey, version: version) }
-            catch {
-                return nil
-            }
+            catch { return nil }
         }
     }
 
