@@ -16,10 +16,9 @@ extension Data {
     var utf8String: String? { return String(data: self, encoding: .utf8) }
 
     init? (base64UrlNoPad encoded: String) {
-        guard let data = Sodium().utils
-            .base642bin(encoded, variant: .URLSAFE_NO_PADDING) else {
-                return nil
-        }
+        guard let data
+            = Sodium().utils.base642bin(encoded, variant: .URLSAFE_NO_PADDING)
+        else { return nil }
 
         self = data
     }

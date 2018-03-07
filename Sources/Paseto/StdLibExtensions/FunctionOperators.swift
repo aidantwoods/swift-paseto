@@ -28,7 +28,7 @@ func ^• <A, B, C>(lhs: (A) -> B, rhs: C) -> [B] where
 }
 
 func ^• <A, B, C, D>(lhs: (A) -> B, rhs: C) -> D where
-    C: Collection, C: SetAlgebra, D: SetAlgebra,
+    C: Collection & SetAlgebra, D: SetAlgebra,
     C.Element == A, D.Element == B
 {
     return D(rhs.map(lhs))
