@@ -1,8 +1,14 @@
+os: osx
+language: objective-c
+
 matrix:
   include:
-    - os: osx
-      language: objective-c
-      osx_image: xcode9.2
+    - osx_image: xcode9.2
+    - osx_image: xcode9.1
+    - osx_image: xcode9
+
+  allow_failures:
+    - osx_image: xcode9.3beta
 
 script:
   - swift test
