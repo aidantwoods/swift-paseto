@@ -8,7 +8,6 @@
 import Foundation
 
 public struct Version2: Implementation {
-    
     public static var version: Version { return .v2 }
 
     public static func sign(
@@ -54,7 +53,9 @@ public struct Version2: Implementation {
 
         return payload.message
     }
+}
 
+extension Version2 {
     public enum Exception: Error {
         case badHeader(String)
         case badFooter(String)

@@ -8,11 +8,9 @@
 import Sodium
 import Foundation
 
-public struct SymmetricKey: Key {
+public struct SymmetricKey {
     public let version: Version
     public let material: Data
-
-    var encode: String { return material.base64UrlNoPad }
 
     init (material: Data, version: Version = .v2) {
         self.material = material
@@ -22,14 +20,18 @@ public struct SymmetricKey: Key {
     init (version: Version = .v2) {
         self.init(material: Sodium().secretBox.key()!, version: version)
     }
+}
 
-    init (encoded: String, version: Version = .v2) throws {
+extension SymmetricKey: Key {
+    public init (encoded: String, version: Version = .v2) throws {
         guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         self.init(material: decoded, version: version)
     }
+}
 
+extension SymmetricKey {
     enum Exception: Error {
         case badEncoding(String)
     }

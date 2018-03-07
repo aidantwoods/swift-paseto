@@ -12,13 +12,6 @@ public struct Blob<P: Payload> {
     public let payload: P
     public let footer: Data
 
-    var asString: String {
-        let main = header.asString + payload.encode
-        guard !footer.isEmpty else { return main }
-        return main + "." + footer.base64UrlNoPad
-    }
-    var asData: Data { return Data(self.asString.utf8) }
-
     init (header: Header, payload: P, footer: Data = Data()) {
         self.header  = header
         self.payload = payload
@@ -41,4 +34,14 @@ public struct Blob<P: Payload> {
 
         self.init(header: header, payload: payload, footer: footer)
     }
+}
+
+extension Blob {
+    var asString: String {
+        let main = header.asString + payload.encode
+        guard !footer.isEmpty else { return main }
+        return main + "." + footer.base64UrlNoPad
+    }
+
+    var asData: Data { return Data(self.asString.utf8) }
 }

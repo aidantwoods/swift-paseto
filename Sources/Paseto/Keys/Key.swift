@@ -8,6 +8,12 @@
 import Foundation
 
 public protocol Key {
-    var version: Version { get }
     var material: Data { get }
+    var version: Version { get }
+
+    init (encoded: String, version: Version) throws
+}
+
+extension Key {
+    var encode: String { return material.base64UrlNoPad }
 }

@@ -7,13 +7,21 @@
 
 import Foundation
 
-public struct SignedPayload: Payload {
+public struct SignedPayload {
     let signature: Data
     let message: Data
-    static let signBytes: Int = Sign.Bytes
+
+    init (message: Data, signature: Data) {
+        self.message   = message
+        self.signature = signature
+    }
+}
+
+extension SignedPayload: Payload {
+    public var asData: Data { return message + signature }
 
     public init? (data: Data) {
-        let signatureOffset = data.count - SignedPayload.signBytes
+        let signatureOffset = data.count - Sign.Bytes
 
         guard signatureOffset > 0 else { return nil }
 
@@ -22,11 +30,4 @@ public struct SignedPayload: Payload {
             signature: data[signatureOffset...]
         )
     }
-
-    init (message: Data, signature: Data) {
-        self.message   = message
-        self.signature = signature
-    }
-
-    public var asData: Data { return message + signature }
 }

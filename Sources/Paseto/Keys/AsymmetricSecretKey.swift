@@ -7,20 +7,13 @@
 
 import Foundation
 
-public struct AsymmetricSecretKey: Key {
+public struct AsymmetricSecretKey {
     public let version: Version
     public let material: Data
 
     let secretBytes : Int = Sign.SecretKeyBytes
     let seedBytes   : Int = Sign.SeedBytes
     let keypairBytes: Int = 96
-
-    var encode: String { return material.base64UrlNoPad }
-    var publicKey: AsymmetricPublicKey {
-        return try! AsymmetricPublicKey(
-            material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
-        )
-    }
 
     init (material: Data, version: Version = .v2) throws {
         switch version {
@@ -62,13 +55,23 @@ public struct AsymmetricSecretKey: Key {
         }
     }
 
-    init (encoded: String, version: Version = .v2) throws {
+    var publicKey: AsymmetricPublicKey {
+        return try! AsymmetricPublicKey(
+            material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
+        )
+    }
+}
+
+extension AsymmetricSecretKey: Key {
+    public init (encoded: String, version: Version = .v2) throws {
         guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         try self.init(material: decoded, version: version)
     }
+}
 
+extension AsymmetricSecretKey {
     enum Exception: Error {
         case badLength(String)
         case badMaterial(String)

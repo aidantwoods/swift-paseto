@@ -16,4 +16,3 @@ extension Version {
         }
     }
 }
-

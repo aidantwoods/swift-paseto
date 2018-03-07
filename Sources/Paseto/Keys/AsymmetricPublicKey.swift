@@ -7,18 +7,14 @@
 
 import Foundation
 
-public struct AsymmetricPublicKey: Key {
+public struct AsymmetricPublicKey {
     public let version: Version
     public let material: Data
-
-    let publicBytes: Int = Sign.PublicKeyBytes
-
-    var encode: String { return material.base64UrlNoPad }
 
     init (material: Data, version: Version = .v2) throws {
         switch version {
         case .v2:
-            guard material.count == publicBytes else {
+            guard material.count == Sign.PublicKeyBytes else {
                 throw Exception.badLength(
                     "Public key must be 32 bytes long; \(material.count) given."
                 )
@@ -28,14 +24,18 @@ public struct AsymmetricPublicKey: Key {
         self.version  = version
         self.material = material
     }
+}
 
-    init (encoded: String, version: Version = .v2) throws {
+extension AsymmetricPublicKey: Key {
+    public init (encoded: String, version: Version = .v2) throws {
         guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
         try self.init(material: decoded, version: version)
     }
+}
 
+extension AsymmetricPublicKey {
     enum Exception: Error {
         case badLength(String)
         case badEncoding(String)

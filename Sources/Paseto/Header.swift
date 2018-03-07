@@ -11,12 +11,6 @@ public struct Header {
     public let version: Version
     public let purpose: Purpose
 
-    var asString: String {
-        return [version.rawValue, purpose.rawValue].joined(separator: ".") + "."
-    }
-
-    var asData: Data { return Data(self.asString.utf8) }
-
     init (version: Version, purpose: Purpose) {
         self.version = version
         self.purpose = purpose
@@ -25,9 +19,7 @@ public struct Header {
     init? (version v: String, purpose p: String) {
         guard let version = Version(rawValue: v),
               let purpose = Purpose(rawValue: p)
-        else {
-                return nil
-        }
+        else { return nil }
 
         self.init(version: version, purpose: purpose)
     }
@@ -49,6 +41,14 @@ public struct Header {
             separator: ".", omittingEmptySubsequences: false
         ).map(String.init)
     }
+}
+
+extension Header {
+    var asString: String {
+        return [version.rawValue, purpose.rawValue].joined(separator: ".") + "."
+    }
+
+    var asData: Data { return Data(self.asString.utf8) }
 }
 
 extension Header: Equatable {
