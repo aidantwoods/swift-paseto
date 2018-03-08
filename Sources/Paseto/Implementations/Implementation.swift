@@ -9,13 +9,14 @@ import Foundation
 
 public protocol Implementation {
     static var version: Version { get }
-//    static func encrypt(
-//        _ data: Data, with key: SymmetricKey, footer: Data
-//    ) -> Blob
-//
-//    static func decrypt(
-//        _ data: Blob, with key: SymmetricKey, footer: Data
-//    ) -> Data
+
+    static func encrypt(
+        _ message: Data, with key: SymmetricKey, footer: Data
+    ) -> Blob<EncryptedPayload>
+
+    static func decrypt(
+        _ encrypted: Blob<EncryptedPayload>, with key: SymmetricKey, footer: Data
+    ) throws -> Data
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey, footer: Data
@@ -29,13 +30,17 @@ public protocol Implementation {
 }
 
 extension Implementation {
-//    static func encrypt(_ data: Data, with key: SymmetricKey) -> Blob {
-//        return encrypt(data, with: key, footer: Data("".utf8))
-//    }
-//
-//    static func decrypt(_ data: Blob, with key: SymmetricKey) -> Data {
-//        return decrypt(data, with: key, footer: Data("".utf8))
-//    }
+    static func encrypt(
+        _ message: Data, with key: SymmetricKey
+    ) -> Blob<EncryptedPayload> {
+        return encrypt(message, with: key, footer: Data("".utf8))
+    }
+
+    static func decrypt(
+        _ encrypted: Blob<EncryptedPayload>, with key: SymmetricKey
+    ) throws -> Data {
+        return try decrypt(encrypted, with: key, footer: Data("".utf8))
+    }
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey
@@ -51,6 +56,20 @@ extension Implementation {
 }
 
 extension Implementation {
+    static func decrypt(
+        _ encrypted: Blob<EncryptedPayload>,
+        with key: SymmetricKey,
+        footer: Data
+    ) -> Data? {
+        return try? decrypt(encrypted, with: key, footer: footer)
+    }
+
+    static func decrypt(
+        _ encrypted: Blob<EncryptedPayload>, with key: SymmetricKey
+        ) -> Data? {
+        return try? decrypt(encrypted, with: key)
+    }
+
     static func verify(
         _ signedMessage: Blob<SignedPayload>,
         with key: AsymmetricPublicKey,
@@ -67,6 +86,18 @@ extension Implementation {
 }
 
 extension Implementation {
+    static func encrypt(
+        _ message: String, with key: SymmetricKey
+    ) -> Blob<EncryptedPayload> {
+        return encrypt(Data(message.utf8), with: key)
+    }
+
+    static func decrypt(
+        _ encrypted: Blob<EncryptedPayload>, with key: SymmetricKey
+    ) -> String? {
+        return decrypt(encrypted, with: key)?.utf8String
+    }
+
     static func sign(
         _ string: String, with key: AsymmetricSecretKey
     ) -> Blob<SignedPayload> {
