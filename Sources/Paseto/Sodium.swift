@@ -7,4 +7,5 @@
 
 import Sodium
 
-let Sign = Sodium().sign
+let sodium = Sodium()
+let Sign = sodium.sign
