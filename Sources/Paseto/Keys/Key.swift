@@ -9,9 +9,9 @@ import Foundation
 
 public protocol Key {
     var material: Data { get }
-    var version: Version { get }
+    static var version: Version { get }
 
-    init (encoded: String, version: Version) throws
+    init (encoded: String) throws
 }
 
 extension Key {

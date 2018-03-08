@@ -7,12 +7,11 @@
 
 import Foundation
 
-public struct AsymmetricPublicKey {
-    public let version: Version
+public struct AsymmetricPublicKey<V: Implementation> {
     public let material: Data
 
-    init (material: Data, version: Version = .v2) throws {
-        switch version {
+    init (material: Data) throws {
+        switch AsymmetricPublicKey.version {
         case .v2:
             guard material.count == Sign.PublicKeyBytes else {
                 throw Exception.badLength(
@@ -21,17 +20,20 @@ public struct AsymmetricPublicKey {
             }
         }
 
-        self.version  = version
         self.material = material
+    }
+
+    public static var version: Version {
+        return Version(implementation: V.self)
     }
 }
 
 extension AsymmetricPublicKey: Key {
-    public init (encoded: String, version: Version = .v2) throws {
+    public init (encoded: String) throws {
         guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw Exception.badEncoding("Could not base64 URL decode.")
         }
-        try self.init(material: decoded, version: version)
+        try self.init(material: decoded)
     }
 }
 

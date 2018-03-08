@@ -11,7 +11,7 @@ import Sodium
 
 class Version2Test: XCTestCase {
     func testVerify() {
-        let pk = try! AsymmetricPublicKey(
+        let pk = try! AsymmetricPublicKey<Version2>(
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
@@ -26,7 +26,7 @@ class Version2Test: XCTestCase {
     }
 
     func testSign() {
-        let sk = AsymmetricSecretKey(version: .v2)!
+        let sk = AsymmetricSecretKey<Version2>()
 
         let message = "Hello world!"
 
@@ -38,7 +38,7 @@ class Version2Test: XCTestCase {
     }
 
     func testDecrypt() {
-        let sk = try! SymmetricKey(
+        let sk = try! SymmetricKey<Version2>(
             encoded: "EOIf5G5PXsHrm45-QV-NxEHRvyg-uw38BOIajl7slZ4"
         )
 
@@ -53,7 +53,7 @@ class Version2Test: XCTestCase {
     }
 
     func testEncrypt() {
-        let sk = SymmetricKey()
+        let sk = SymmetricKey<Version2>()
 
         let message = """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
