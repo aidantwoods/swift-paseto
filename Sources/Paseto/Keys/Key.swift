@@ -7,13 +7,24 @@
 
 import Foundation
 
-public protocol Key {
+protocol Key {
     var material: Data { get }
     static var version: Version { get }
 
-    init (encoded: String) throws
+    init (material: Data) throws
 }
 
 extension Key {
     var encode: String { return material.base64UrlNoPad }
+
+    public init (encoded: String) throws {
+        guard let decoded = Data(base64UrlNoPad: encoded) else {
+            throw KeyException.badEncoding("Could not base64 URL decode.")
+        }
+        try self.init(material: decoded)
+    }
+}
+
+enum KeyException: Error {
+    case badEncoding(String)
 }

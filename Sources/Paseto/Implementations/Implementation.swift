@@ -31,7 +31,7 @@ public protocol Implementation {
     ) throws -> Data
 }
 
-extension Implementation {
+public extension Implementation {
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>
     ) -> Blob<EncryptedPayload> {
@@ -58,7 +58,7 @@ extension Implementation {
     }
 }
 
-extension Implementation {
+public extension Implementation {
     static func decrypt(
         _ encrypted: Blob<EncryptedPayload>,
         with key: SymmetricKey<Self>,
@@ -89,7 +89,7 @@ extension Implementation {
     }
 }
 
-extension Implementation {
+public extension Implementation {
     static func encrypt(
         _ message: String, with key: SymmetricKey<Self>
     ) -> Blob<EncryptedPayload> {

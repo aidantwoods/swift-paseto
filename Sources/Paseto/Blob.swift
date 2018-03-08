@@ -18,7 +18,7 @@ public struct Blob<P: Payload> {
         self.footer  = footer
     }
 
-    init? (serialised string: String) {
+    public init? (serialised string: String) {
         let parts = Header.split(string)
 
         guard [3, 4].contains(parts.count) else { return nil }

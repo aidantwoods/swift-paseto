@@ -11,11 +11,7 @@ import Foundation
 public struct SymmetricKey<V: Implementation> {
     public let material: Data
 
-    init (material: Data) {
-        self.material = material
-    }
-
-    init () {
+    public init () {
         switch SymmetricKey.version {
         case .v2:
             self.init(
@@ -30,16 +26,7 @@ public struct SymmetricKey<V: Implementation> {
 }
 
 extension SymmetricKey: Key {
-    public init (encoded: String) throws {
-        guard let decoded = Data(base64UrlNoPad: encoded) else {
-            throw Exception.badEncoding("Could not base64 URL decode.")
-        }
-        self.init(material: decoded)
-    }
-}
-
-extension SymmetricKey {
-    enum Exception: Error {
-        case badEncoding(String)
+    public init (material: Data) {
+        self.material = material
     }
 }

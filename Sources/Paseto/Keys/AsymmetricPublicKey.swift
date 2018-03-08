@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AsymmetricPublicKey<V: Implementation> {
+public struct AsymmetricPublicKey<V: Implementation>: Key {
     public let material: Data
 
     init (material: Data) throws {
@@ -28,18 +28,8 @@ public struct AsymmetricPublicKey<V: Implementation> {
     }
 }
 
-extension AsymmetricPublicKey: Key {
-    public init (encoded: String) throws {
-        guard let decoded = Data(base64UrlNoPad: encoded) else {
-            throw Exception.badEncoding("Could not base64 URL decode.")
-        }
-        try self.init(material: decoded)
-    }
-}
-
 extension AsymmetricPublicKey {
     enum Exception: Error {
         case badLength(String)
-        case badEncoding(String)
     }
 }

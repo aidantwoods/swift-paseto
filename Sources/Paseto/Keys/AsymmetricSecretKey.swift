@@ -14,6 +14,26 @@ public struct AsymmetricSecretKey<V: Implementation> {
     let seedBytes   : Int = Sign.SeedBytes
     let keypairBytes: Int = 96
 
+    public init () {
+        switch AsymmetricSecretKey.version {
+        case .v2:
+            let secretKey = Sign.keyPair()!.secretKey
+            try! self.init(material: secretKey)
+        }
+    }
+
+    public var publicKey: AsymmetricPublicKey<V> {
+        return try! AsymmetricPublicKey(
+            material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
+        )
+    }
+
+    public static var version: Version {
+        return Version(implementation: V.self)
+    }
+}
+
+extension AsymmetricSecretKey: Key {
     init (material: Data) throws {
         switch AsymmetricSecretKey.version {
         case .v2:
@@ -28,7 +48,7 @@ public struct AsymmetricSecretKey<V: Implementation> {
                 guard let keyPair = Sign.keyPair(seed: material) else {
                     throw Exception.badMaterial(
                         "The material given could not be used to construct a"
-                        + " key."
+                            + " key."
                     )
                 }
                 self.material = keyPair.secretKey
@@ -36,37 +56,10 @@ public struct AsymmetricSecretKey<V: Implementation> {
             default:
                 throw Exception.badLength(
                     "Public key must be 64 or 32 bytes long;"
-                    + "\(material.count) given."
+                        + "\(material.count) given."
                 )
             }
         }
-    }
-
-    init () {
-        switch AsymmetricSecretKey.version {
-        case .v2:
-            let secretKey = Sign.keyPair()!.secretKey
-            try! self.init(material: secretKey)
-        }
-    }
-
-    var publicKey: AsymmetricPublicKey<V> {
-        return try! AsymmetricPublicKey(
-            material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
-        )
-    }
-
-    public static var version: Version {
-        return Version(implementation: V.self)
-    }
-}
-
-extension AsymmetricSecretKey: Key {
-    public init (encoded: String) throws {
-        guard let decoded = Data(base64UrlNoPad: encoded) else {
-            throw Exception.badEncoding("Could not base64 URL decode.")
-        }
-        try self.init(material: decoded)
     }
 }
 
@@ -74,6 +67,5 @@ extension AsymmetricSecretKey {
     enum Exception: Error {
         case badLength(String)
         case badMaterial(String)
-        case badEncoding(String)
     }
 }
