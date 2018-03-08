@@ -25,6 +25,6 @@ extension Key {
     }
 }
 
-enum KeyException: Error {
+public enum KeyException: Error {
     case badEncoding(String)
 }
