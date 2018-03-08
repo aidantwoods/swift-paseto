@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AsymmetricSecretKey<V: Implementation> {
+public struct AsymmetricSecretKey<V: Implementation>: Key {
     public let material: Data
 
     let secretBytes : Int = Sign.SecretKeyBytes
@@ -33,7 +33,7 @@ public struct AsymmetricSecretKey<V: Implementation> {
     }
 }
 
-extension AsymmetricSecretKey: Key {
+public extension AsymmetricSecretKey {
     init (material: Data) throws {
         switch AsymmetricSecretKey.version {
         case .v2:
@@ -63,7 +63,7 @@ extension AsymmetricSecretKey: Key {
     }
 }
 
-extension AsymmetricSecretKey {
+public extension AsymmetricSecretKey {
     enum Exception: Error {
         case badLength(String)
         case badMaterial(String)

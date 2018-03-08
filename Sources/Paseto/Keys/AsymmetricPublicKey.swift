@@ -10,7 +10,7 @@ import Foundation
 public struct AsymmetricPublicKey<V: Implementation>: Key {
     public let material: Data
 
-    init (material: Data) throws {
+    public init (material: Data) throws {
         switch AsymmetricPublicKey.version {
         case .v2:
             guard material.count == Sign.PublicKeyBytes else {
@@ -28,7 +28,7 @@ public struct AsymmetricPublicKey<V: Implementation>: Key {
     }
 }
 
-extension AsymmetricPublicKey {
+public extension AsymmetricPublicKey {
     enum Exception: Error {
         case badLength(String)
     }
