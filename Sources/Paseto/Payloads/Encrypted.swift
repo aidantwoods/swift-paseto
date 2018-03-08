@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct EncryptedPayload {
+public struct Encrypted {
     let nonce: Data
     let cipherText: Data
 
@@ -17,7 +17,7 @@ public struct EncryptedPayload {
     }
 }
 
-extension EncryptedPayload: Payload {
+extension Encrypted: Payload {
     public var asData: Data { return nonce + cipherText }
 
     public init? (data: Data) {

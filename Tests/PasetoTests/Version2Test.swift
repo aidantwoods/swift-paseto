@@ -15,7 +15,7 @@ class Version2Test: XCTestCase {
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
-        let signedBlob = Blob<SignedPayload>(
+        let signedBlob = Blob<Signed>(
             "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
                 + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
@@ -42,7 +42,7 @@ class Version2Test: XCTestCase {
             encoded: "EOIf5G5PXsHrm45-QV-NxEHRvyg-uw38BOIajl7slZ4"
         )
 
-        let encryptedBlob = Blob<EncryptedPayload>(
+        let encryptedBlob = Blob<Encrypted>(
             "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
                 + "vk0T-IXh5SlJPkPrjJ7cU"
         )!
@@ -76,7 +76,7 @@ class Version2Test: XCTestCase {
     }
 
     func testExample1() {
-        let blob = Blob<EncryptedPayload>(
+        let blob = Blob<Encrypted>(
             "v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqI"
                 + "IhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhf"
                 + "wHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aX"

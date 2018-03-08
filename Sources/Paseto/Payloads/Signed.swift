@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SignedPayload {
+public struct Signed {
     let signature: Data
     let message: Data
 
@@ -17,7 +17,7 @@ public struct SignedPayload {
     }
 }
 
-extension SignedPayload: Payload {
+extension Signed: Payload {
     public var asData: Data { return message + signature }
 
     public init? (data: Data) {

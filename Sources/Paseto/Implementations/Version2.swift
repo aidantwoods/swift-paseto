@@ -12,7 +12,7 @@ public struct Version2: Implementation {
 
     public static func encrypt(
         _ message: Data, with key: SymmetricKey<Version2>, footer: Data
-    ) -> Blob<EncryptedPayload> {
+    ) -> Blob<Encrypted> {
         let nonceBytes = Int(Aead.nonceBytes)
         let preNonce = sodium.randomBytes.buf(length: nonceBytes)!
 
@@ -31,13 +31,13 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = EncryptedPayload(nonce: nonce, cipherText: cipherText)
+        let payload = Encrypted(nonce: nonce, cipherText: cipherText)
 
         return Blob(header: header, payload: payload, footer: footer)
     }
 
     public static func decrypt(
-        _ encrypted: Blob<EncryptedPayload>,
+        _ encrypted: Blob<Encrypted>,
         with key: SymmetricKey<Version2>,
         footer: Data
     ) throws -> Data {
@@ -69,7 +69,7 @@ public struct Version2: Implementation {
 
     public static func sign(
         _ data: Data, with key: AsymmetricSecretKey<Version2>, footer: Data
-    ) -> Blob<SignedPayload> {
+    ) -> Blob<Signed> {
         let header = Header(version: version, purpose: .Public)
 
         let signature = Sign.signature(
@@ -77,13 +77,13 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = SignedPayload(message: data, signature: signature)
+        let payload = Signed(message: data, signature: signature)
 
         return Blob(header: header, payload: payload, footer: footer)
     }
 
     public static func verify(
-        _ signedMessage: Blob<SignedPayload>,
+        _ signedMessage: Blob<Signed>,
         with key: AsymmetricPublicKey<Version2>,
         footer: Data
     ) throws -> Data {
