@@ -74,5 +74,34 @@ class Version2Test: XCTestCase {
 
         XCTAssertEqual(message, decrypted)
     }
+
+    func testExample1() {
+        let blob = Blob<EncryptedPayload>(
+            "v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqI"
+                + "IhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhf"
+                + "wHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aX"
+                + "ZlIEVudGVycHJpc2Vz"
+        )!
+
+        let sk = SymmetricKey<Version2>(material: Sodium().utils.hex2bin(
+            "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
+        )!)
+
+        let expected = [
+            "data": "this is a signed message",
+            "expires": "2019-01-01T00:00:00+00:00"
+        ]
+
+        let decrypted = try! Version2.decrypt(
+            blob,
+            with: sk,
+            footer: Data("Paragon Initiative Enterprises".utf8)
+        )
+
+        let result = try! JSONSerialization.jsonObject(with: decrypted)
+            as! [String: String]
+
+        XCTAssertEqual(expected, result)
+    }
 }
 
