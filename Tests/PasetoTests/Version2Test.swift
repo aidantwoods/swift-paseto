@@ -36,5 +36,20 @@ class Version2Test: XCTestCase {
 
         XCTAssertEqual(message, verified)
     }
+
+    func testDecrypt() {
+        let sk = try! SymmetricKey(
+            encoded: "EOIf5G5PXsHrm45-QV-NxEHRvyg-uw38BOIajl7slZ4"
+        )
+
+        let encryptedBlob = Blob<EncryptedPayload>(
+            serialised: "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
+            + "vk0T-IXh5SlJPkPrjJ7cU"
+        )!
+
+        let message: String = Version2.decrypt(encryptedBlob, with: sk)!
+
+        XCTAssertEqual(message, "Foobar!")
+    }
 }
 
