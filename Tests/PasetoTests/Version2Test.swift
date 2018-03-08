@@ -16,7 +16,7 @@ class Version2Test: XCTestCase {
         )
 
         let signedBlob = Blob<SignedPayload>(
-            serialised: "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
+            "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
                 + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
 
@@ -43,7 +43,7 @@ class Version2Test: XCTestCase {
         )
 
         let encryptedBlob = Blob<EncryptedPayload>(
-            serialised: "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
+            "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
                 + "vk0T-IXh5SlJPkPrjJ7cU"
         )!
 
