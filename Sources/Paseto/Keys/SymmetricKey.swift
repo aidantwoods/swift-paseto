@@ -18,7 +18,13 @@ public struct SymmetricKey {
     }
 
     init (version: Version = .v2) {
-        self.init(material: Sodium().secretBox.key()!, version: version)
+        switch version {
+        case .v2:
+            self.init(
+                material: sodium.randomBytes.buf(length: Int(Aead.keyBytes))!,
+                version: version
+            )
+        }
     }
 }
 
