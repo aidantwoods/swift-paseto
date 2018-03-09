@@ -10,9 +10,9 @@ import Foundation
 infix operator <+: AdditionPrecedence
 
 public struct Token {
-    var claims: [String: String]
-    var footer: String
-    var allowedVersions: [Version]
+    public var claims: [String: String]
+    public var footer: String
+    public var allowedVersions: [Version]
 
     public init (
         claims: [String: String] = [:],

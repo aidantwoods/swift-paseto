@@ -36,17 +36,17 @@ public struct Blob<P: Payload> {
     }
 }
 
-extension Blob {
-    var asString: String {
+public extension Blob {
+    public var asString: String {
         let main = header.asString + payload.encode
         guard !footer.isEmpty else { return main }
         return main + "." + footer.base64UrlNoPad
     }
 
-    var asData: Data { return Data(self.asString.utf8) }
+    public var asData: Data { return Data(self.asString.utf8) }
 }
 
-extension Blob where P == Signed {
+public extension Blob where P == Signed {
     func verify<V>(with key: AsymmetricPublicKey<V>) throws -> Token {
         let message = try V.verify(self, with: key)
         return try token(jsonData: message)
@@ -57,7 +57,7 @@ extension Blob where P == Signed {
     }
 }
 
-extension Blob where P == Encrypted {
+public extension Blob where P == Encrypted {
     func decrypt<V>(with key: SymmetricKey<V>) throws -> Token {
         let message = try V.decrypt(self, with: key)
         return try token(jsonData: message)
