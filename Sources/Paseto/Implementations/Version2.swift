@@ -37,17 +37,13 @@ public struct Version2: Implementation {
     }
 
     public static func decrypt(
-        _ encrypted: Blob<Encrypted>,
-        with key: SymmetricKey<Version2>,
-        footer: Data
+        _ encrypted: Blob<Encrypted>, with key: SymmetricKey<Version2>
     ) throws -> Data {
         let header = encrypted.header
+        let footer = encrypted.footer
 
         guard header == Header(version: version, purpose: .Local) else {
             throw Exception.badHeader("Bad message header.")
-        }
-        guard footer == encrypted.footer else {
-            throw Exception.badFooter("Invalid message footer.")
         }
 
         let nonce      = encrypted.payload.nonce
@@ -83,17 +79,13 @@ public struct Version2: Implementation {
     }
 
     public static func verify(
-        _ signedMessage: Blob<Signed>,
-        with key: AsymmetricPublicKey<Version2>,
-        footer: Data
+        _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Version2>
     ) throws -> Data {
         let header = signedMessage.header
+        let footer = signedMessage.footer
 
         guard header == Header(version: version, purpose: .Public) else {
             throw Exception.badHeader("Bad message header.")
-        }
-        guard footer == signedMessage.footer else {
-            throw Exception.badFooter("Invalid message footer.")
         }
 
         let payload = signedMessage.payload
@@ -117,7 +109,6 @@ public struct Version2: Implementation {
 extension Version2 {
     public enum Exception: Error {
         case badHeader(String)
-        case badFooter(String)
         case invalidSignature(String)
         case invalidMessage(String)
     }
