@@ -7,7 +7,8 @@
 
 import Foundation
 
-public struct AsymmetricSecretKey<V: Implementation>: Key {
+public struct AsymmetricSecretKey<V: Implementation>: VersionedKey {
+    typealias VersionType = V
     public let material: Data
 
     let secretBytes : Int = Sign.SecretKeyBytes
@@ -27,8 +28,6 @@ public struct AsymmetricSecretKey<V: Implementation>: Key {
             material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
         )
     }
-
-    public static var version: Version { return V.version }
 }
 
 public extension AsymmetricSecretKey {

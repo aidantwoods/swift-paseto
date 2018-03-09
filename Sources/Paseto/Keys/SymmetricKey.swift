@@ -19,11 +19,10 @@ public struct SymmetricKey<V: Implementation> {
             )
         }
     }
-
-    public static var version: Version { return V.version }
 }
 
-extension SymmetricKey: Key {
+extension SymmetricKey: VersionedKey {
+    typealias VersionType = V
     public init (material: Data) {
         self.material = material
     }

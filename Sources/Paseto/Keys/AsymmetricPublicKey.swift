@@ -7,7 +7,8 @@
 
 import Foundation
 
-public struct AsymmetricPublicKey<V: Implementation>: Key {
+public struct AsymmetricPublicKey<V: Implementation>: VersionedKey {
+    typealias VersionType = V
     public let material: Data
 
     public init (material: Data) throws {
@@ -22,8 +23,6 @@ public struct AsymmetricPublicKey<V: Implementation>: Key {
 
         self.material = material
     }
-
-    public static var version: Version { return V.version }
 }
 
 public extension AsymmetricPublicKey {
