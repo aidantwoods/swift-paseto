@@ -10,20 +10,26 @@ import Paseto
 
 class TokenTest: XCTestCase {
     func testDecrypt() {
-        let key = try! SymmetricKey<Version2>(
-            encoded: "cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8"
-        )
-
-        let blob = Blob<Encrypted>("""
+        // setup
+        let message = """
             v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqII
             hOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L
             7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc
             2Vz
             """.replacingOccurrences(of: "\n", with: "")
-        )!
 
+        // load a version2 symmetric key
+        let key = try! SymmetricKey<Version2>(
+            encoded: "cHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo8"
+        )
+
+        // we expect our message is encrypted (i.e. a "local" purpose)
+        let blob = Blob<Encrypted>(message)!
+        // encrypted blobs are specialised to have a decrypt method
+        // to obtain a token, given a symmetric key
         let token = blob.decrypt(with: key)!
 
+        // test our token is what we expected
         let expectedClaims = [
             "data": "this is a signed message",
             "expires": "2019-01-01T00:00:00+00:00",
@@ -33,7 +39,9 @@ class TokenTest: XCTestCase {
         let expectedFooter = "Paragon Initiative Enterprises"
         XCTAssertEqual(expectedFooter, token.footer)
 
-        XCTAssertEqual(type(of: key).version, .v2)
+        // allowed versions should be identical to that of the type of key used
+        // for decryption
+        XCTAssertEqual([type(of: key).version], token.allowedVersions)
     }
 
     func testEncrypt() {
