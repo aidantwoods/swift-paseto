@@ -136,3 +136,11 @@ public extension Token {
         case disallowedVersion(String)
     }
 }
+
+extension Token: Equatable {
+    public static func == (left: Token, right: Token) -> Bool {
+        return left.claims == right.claims
+            && left.footer == right.footer
+            && left.allowedVersions == right.allowedVersions
+    }
+}
