@@ -45,6 +45,10 @@ public struct Token {
 }
 
 public extension Token {
+    public func add(claims: [String: String]) -> Token {
+        return self <+ claims
+    }
+
     public func replace(claims: [String: String]) -> Token {
         return Token(
             claims: claims,
