@@ -8,8 +8,8 @@
 import Foundation
 
 public struct Blob<P: Payload> {
-    public let header: Header
-    public let payload: P
+    let header: Header
+    let payload: P
     public let footer: Data
 
     init (header: Header, payload: P, footer: Data = Data()) {
@@ -44,4 +44,40 @@ extension Blob {
     }
 
     var asData: Data { return Data(self.asString.utf8) }
+}
+
+extension Blob where P == Signed {
+    func verify<V>(with key: AsymmetricPublicKey<V>) throws -> Token {
+        let message = try V.verify(self, with: key)
+        return try token(jsonData: message)
+    }
+}
+
+extension Blob where P == Encrypted {
+    func decrypt<V>(with key: SymmetricKey<V>) throws -> Token {
+        let message = try V.decrypt(self, with: key)
+        return try token(jsonData: message)
+    }
+}
+
+extension Blob {
+    func token(jsonData: Data) throws -> Token {
+        guard let footer = self.footer.utf8String else {
+            throw Exception.badEncoding(
+                "Could not convert the footer to a UTF-8 string."
+            )
+        }
+
+        return try Token(
+            jsonData: jsonData,
+            footer: footer,
+            allowedVersions: [header.version]
+        )
+    }
+}
+
+extension Blob {
+    enum Exception: Error {
+        case badEncoding(String)
+    }
 }
