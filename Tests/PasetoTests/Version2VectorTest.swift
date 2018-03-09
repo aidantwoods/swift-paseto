@@ -14,8 +14,8 @@ class Version2VectorTest: XCTestCase {
         hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
     )
 
-    let nullKey = SymmetricKey<Version2>(
-        material: Data(String(repeating: "\0", count: 32).utf8)
+    let nullKey = try! SymmetricKey<Version2>(
+        hex: String(repeating: "00", count: 32)
     )
 
     let fullKey = try! SymmetricKey<Version2>(
