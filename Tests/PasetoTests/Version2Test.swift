@@ -92,16 +92,15 @@ class Version2Test: XCTestCase {
             "expires": "2019-01-01T00:00:00+00:00"
         ]
 
-        let decrypted = try! Version2.decrypt(
-            blob,
-            with: sk,
-            footer: Data("Paragon Initiative Enterprises".utf8)
-        )
+        let expectedFooter = Data("Paragon Initiative Enterprises".utf8)
+
+        let decrypted = try! Version2.decrypt(blob, with: sk)
 
         let result = try! JSONSerialization.jsonObject(with: decrypted)
             as! [String: String]
 
         XCTAssertEqual(expected, result)
+        XCTAssertEqual(expectedFooter, blob.footer)
     }
 }
 
