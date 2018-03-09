@@ -51,12 +51,20 @@ extension Blob where P == Signed {
         let message = try V.verify(self, with: key)
         return try token(jsonData: message)
     }
+
+    func verify<V>(with key: AsymmetricPublicKey<V>) -> Token? {
+        return try? verify(with: key)
+    }
 }
 
 extension Blob where P == Encrypted {
     func decrypt<V>(with key: SymmetricKey<V>) throws -> Token {
         let message = try V.decrypt(self, with: key)
         return try token(jsonData: message)
+    }
+
+    func decrypt<V>(with key: SymmetricKey<V>) -> Token? {
+        return try? decrypt(with: key)
     }
 }
 
