@@ -10,11 +10,21 @@ import Foundation
 public struct Version2: Implementation {
     public static var version: Version { return .v2 }
 
-    public static func encrypt(
-        _ message: Data, with key: SymmetricKey<Version2>, footer: Data
+    internal static func encrypt(
+        _ message: Data,
+        with key: SymmetricKey<Version2>,
+        footer: Data,
+        nonce unitTestNonce: Data?
     ) -> Blob<Encrypted> {
         let nonceBytes = Int(Aead.nonceBytes)
-        let preNonce = sodium.randomBytes.buf(length: nonceBytes)!
+
+        let preNonce: Data
+
+        if case let .some(given) = unitTestNonce, given.count == nonceBytes {
+            preNonce = given
+        } else {
+            preNonce = sodium.randomBytes.buf(length: nonceBytes)!
+        }
 
         let nonce = sodium.genericHash.hash(
             message: message,
@@ -34,6 +44,12 @@ public struct Version2: Implementation {
         let payload = Encrypted(nonce: nonce, cipherText: cipherText)
 
         return Blob(header: header, payload: payload, footer: footer)
+    }
+
+    public static func encrypt(
+        _ message: Data, with key: SymmetricKey<Version2>, footer: Data
+    ) -> Blob<Encrypted> {
+        return encrypt(message, with: key, footer: footer, nonce: nil)
     }
 
     public static func decrypt(
