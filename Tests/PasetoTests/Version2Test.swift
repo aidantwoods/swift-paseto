@@ -102,5 +102,17 @@ class Version2Test: XCTestCase {
         XCTAssertEqual(expected, result)
         XCTAssertEqual(expectedFooter, blob.footer)
     }
+
+    func testLargeData() {
+        let sk = SymmetricKey<Version2>()
+
+        let message = Sodium().randomBytes.buf(length: Int(1 << 25))!
+
+        let blob = Version2.encrypt(message, with: sk)
+
+        let result: Data = Version2.decrypt(blob, with: sk)!
+
+        XCTAssertEqual(message, result)
+    }
 }
 
