@@ -15,11 +15,18 @@ protocol Key {
 }
 
 extension Key {
-    var encode: String { return material.base64UrlNoPad }
+    public var encode: String { return material.base64UrlNoPad }
 
     public init (encoded: String) throws {
         guard let decoded = Data(base64UrlNoPad: encoded) else {
             throw KeyException.badEncoding("Could not base64 URL decode.")
+        }
+        try self.init(material: decoded)
+    }
+
+    public init (hex: String) throws {
+        guard let decoded = sodium.utils.hex2bin(hex) else {
+            throw KeyException.badEncoding("Could not hex decode.")
         }
         try self.init(material: decoded)
     }
