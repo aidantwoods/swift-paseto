@@ -23,9 +23,7 @@ public struct AsymmetricPublicKey<V: Implementation>: Key {
         self.material = material
     }
 
-    public static var version: Version {
-        return Version(implementation: V.self)
-    }
+    public static var version: Version { return V.version }
 }
 
 public extension AsymmetricPublicKey {

@@ -28,9 +28,7 @@ public struct AsymmetricSecretKey<V: Implementation>: Key {
         )
     }
 
-    public static var version: Version {
-        return Version(implementation: V.self)
-    }
+    public static var version: Version { return V.version }
 }
 
 public extension AsymmetricSecretKey {

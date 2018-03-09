@@ -8,8 +8,6 @@
 import Foundation
 
 public protocol Implementation {
-    static var version: Version { get }
-
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>, footer: Data
     ) -> Blob<Encrypted>
@@ -25,6 +23,10 @@ public protocol Implementation {
     static func verify(
         _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Self>
     ) throws -> Data
+}
+
+public extension Implementation {
+    static var version: Version { return Version(implementation: self) }
 }
 
 public extension Implementation {

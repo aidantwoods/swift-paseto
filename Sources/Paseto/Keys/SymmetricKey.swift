@@ -20,9 +20,7 @@ public struct SymmetricKey<V: Implementation> {
         }
     }
 
-    public static var version: Version {
-        return Version(implementation: V.self)
-    }
+    public static var version: Version { return V.version }
 }
 
 extension SymmetricKey: Key {

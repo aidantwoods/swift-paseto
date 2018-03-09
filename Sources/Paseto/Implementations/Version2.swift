@@ -8,8 +8,6 @@
 import Foundation
 
 public struct Version2: Implementation {
-    public static var version: Version { return .v2 }
-
     internal static func encrypt(
         _ message: Data,
         with key: SymmetricKey<Version2>,
