@@ -10,18 +10,18 @@ import Foundation
 public protocol Implementation {
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>, footer: Data
-    ) throws -> Blob<Encrypted>
+    ) throws -> Blob<Encrypted<Self>, Self>
 
     static func decrypt(
-        _ encrypted: Blob<Encrypted>, with key: SymmetricKey<Self>
+        _ encrypted: Blob<Encrypted<Self>, Self>, with key: SymmetricKey<Self>
     ) throws -> Data
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey<Self>, footer: Data
-    ) throws -> Blob<Signed>
+    ) throws -> Blob<Signed<Self>, Self>
 
     static func verify(
-        _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Self>
+        _ signedMessage: Blob<Signed<Self>, Self>, with key: AsymmetricPublicKey<Self>
     ) throws -> Data
 }
 
@@ -32,13 +32,13 @@ public extension Implementation {
 public extension Implementation {
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>
-    ) throws -> Blob<Encrypted> {
+    ) throws -> Blob<Encrypted<Self>, Self> {
         return try encrypt(message, with: key, footer: Data())
     }
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey<Self>
-    ) throws -> Blob<Signed> {
+    ) throws -> Blob<Signed<Self>, Self> {
         return try sign(data, with: key, footer: Data())
     }
 }
@@ -46,24 +46,24 @@ public extension Implementation {
 public extension Implementation {
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>, footer: Data = Data()
-    ) -> Blob<Encrypted>? {
+    ) -> Blob<Encrypted<Self>, Self>? {
         return try? encrypt(message, with: key, footer: footer)
     }
 
     static func decrypt(
-        _ encrypted: Blob<Encrypted>, with key: SymmetricKey<Self>
+        _ encrypted: Blob<Encrypted<Self>, Self>, with key: SymmetricKey<Self>
     ) -> Data? {
         return try? decrypt(encrypted, with: key)
     }
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey<Self>, footer: Data
-    ) -> Blob<Signed>? {
+    ) -> Blob<Signed<Self>, Self>? {
         return try? sign(data, with: key, footer: footer)
     }
 
     static func verify(
-        _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Self>
+        _ signedMessage: Blob<Signed<Self>, Self>, with key: AsymmetricPublicKey<Self>
     ) -> Data? {
         return try? verify(signedMessage, with: key)
     }
@@ -72,12 +72,12 @@ public extension Implementation {
 public extension Implementation {
     static func encrypt(
         _ message: String, with key: SymmetricKey<Self>, footer: Data = Data()
-    ) -> Blob<Encrypted>? {
+    ) -> Blob<Encrypted<Self>, Self>? {
         return encrypt(Data(message.utf8), with: key, footer: footer)
     }
 
     static func decrypt(
-        _ encrypted: Blob<Encrypted>, with key: SymmetricKey<Self>
+        _ encrypted: Blob<Encrypted<Self>, Self>, with key: SymmetricKey<Self>
     ) -> String? {
         return decrypt(encrypted, with: key)?.utf8String
     }
@@ -86,12 +86,12 @@ public extension Implementation {
         _ string: String,
         with key: AsymmetricSecretKey<Self>,
         footer: Data = Data()
-    ) -> Blob<Signed>? {
+    ) -> Blob<Signed<Self>, Self>? {
         return sign(Data(string.utf8), with: key, footer: footer)
     }
 
     static func verify(
-        _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Self>
+        _ signedMessage: Blob<Signed<Self>, Self>, with key: AsymmetricPublicKey<Self>
     ) -> String? {
         return verify(signedMessage, with: key)?.utf8String
     }

@@ -13,8 +13,11 @@ public enum Purpose: String {
 extension Purpose {
     init <I: Payload>(payload: I.Type) {
         switch payload {
-        case is Encrypted.Type: self = .Local
-        case is Signed.Type   : self = .Public
+        case is Encrypted<Version1>.Type, is Encrypted<Version2>.Type:
+            self = .Local
+
+        case is Signed<Version1>.Type, is Signed<Version2>.Type:
+            self = .Public
         default: fatalError("All implementations must be enumerated")
         }
     }

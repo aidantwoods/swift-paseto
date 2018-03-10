@@ -7,13 +7,16 @@
 
 import Foundation
 
-public struct Blob<P: Payload> {
+public struct Blob<P: VersionedPayload, V> where V == P.VersionType {
     public let header: Header
     let payload: P
     public let footer: Data
 
-    init (header: Header, payload: P, footer: Data = Data()) {
-        self.header  = header
+    init (payload: P, footer: Data = Data()) {
+        self.header  = Header(
+            version: Version(implementation: V.self),
+            purpose: Purpose(payload: P.self)
+        )
         self.payload = payload
         self.footer  = footer
     }
@@ -26,15 +29,13 @@ public struct Blob<P: Payload> {
         ) = Blob.deconstruct(string)
         else { return nil }
 
-        guard header.purpose == Purpose(payload: P.self) else { return nil }
-
-        guard let payload = P(version: header.version, encoded: encodedPayload)
+        guard header.version == Version(implementation: V.self),
+              header.purpose == Purpose(payload: P.self),
+              let payload = P(encoded: encodedPayload),
+              let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
 
-        guard let footer = Data(base64UrlNoPad: encodedFooter)
-        else { return nil }
-
-        self.init(header: header, payload: payload, footer: footer)
+        self.init(payload: payload, footer: footer)
     }
 
     internal static func deconstruct(
@@ -69,24 +70,24 @@ public extension Blob {
     public var asData: Data { return Data(self.asString.utf8) }
 }
 
-public extension Blob where P == Signed {
-    func verify<V>(with key: AsymmetricPublicKey<V>) throws -> Token {
+public extension Blob where P == Signed<V> {
+    func verify(with key: AsymmetricPublicKey<V>) throws -> Token {
         let message = try V.verify(self, with: key)
         return try token(jsonData: message)
     }
 
-    func verify<V>(with key: AsymmetricPublicKey<V>) -> Token? {
+    func verify(with key: AsymmetricPublicKey<V>) -> Token? {
         return try? verify(with: key)
     }
 }
 
-public extension Blob where P == Encrypted {
-    func decrypt<V>(with key: SymmetricKey<V>) throws -> Token {
+public extension Blob where P == Encrypted<V> {
+    func decrypt(with key: SymmetricKey<V>) throws -> Token {
         let message = try V.decrypt(self, with: key)
         return try token(jsonData: message)
     }
 
-    func decrypt<V>(with key: SymmetricKey<V>) -> Token? {
+    func decrypt(with key: SymmetricKey<V>) -> Token? {
         return try? decrypt(with: key)
     }
 }
