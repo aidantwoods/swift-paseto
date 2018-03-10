@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AsymmetricSecretKey<V: Implementation>: VersionedKey {
+public struct AsymmetricSecretKey<V: Implementation>: Key {
     typealias VersionType = V
     public let material: Data
 

@@ -19,7 +19,7 @@ public struct Encrypted<V: Implementation> {
     }
 }
 
-extension Encrypted: VersionedPayload {
+extension Encrypted: Payload {
     public typealias VersionType = V
     public var asData: Data {
         switch Encrypted.version {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Blob<P: VersionedPayload, V> where V == P.VersionType {
+public struct Blob<P: Payload, V> where V == P.VersionType {
     public let header: Header = Blob.header
     let payload: P
     public let footer: Data

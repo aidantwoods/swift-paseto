@@ -17,7 +17,7 @@ public struct Signed<V: Implementation> {
     }
 }
 
-extension Signed: VersionedPayload {
+extension Signed: Payload {
     public typealias VersionType = V
     public var asData: Data {
         switch Signed.version {
