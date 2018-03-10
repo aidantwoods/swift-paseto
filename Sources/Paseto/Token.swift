@@ -100,7 +100,7 @@ public extension Token {
             )
         }
 
-        return V.sign(claimsData, with: key, footer: Data(footer.utf8))
+        return try V.sign(claimsData, with: key, footer: Data(footer.utf8))
     }
 
     func encrypt<V>(with key: SymmetricKey<V>) throws -> Blob<Encrypted> {
@@ -116,7 +116,7 @@ public extension Token {
             )
         }
 
-        return V.encrypt(claimsData, with: key, footer: Data(footer.utf8))
+        return try V.encrypt(claimsData, with: key, footer: Data(footer.utf8))
     }
 }
 

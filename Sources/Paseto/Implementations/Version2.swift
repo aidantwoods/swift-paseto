@@ -45,7 +45,9 @@ public struct Version2: Implementation {
     }
 
     public static func encrypt(
-        _ message: Data, with key: SymmetricKey<Version2>, footer: Data
+        _ message: Data,
+        with key: SymmetricKey<Version2>,
+        footer: Data = Data()
     ) -> Blob<Encrypted> {
         return encrypt(message, with: key, footer: footer, unitTestNonce: nil)
     }
@@ -78,7 +80,9 @@ public struct Version2: Implementation {
     }
 
     public static func sign(
-        _ data: Data, with key: AsymmetricSecretKey<Version2>, footer: Data
+        _ data: Data,
+        with key: AsymmetricSecretKey<Version2>,
+        footer: Data = Data()
     ) -> Blob<Signed> {
         let header = Header(version: version, purpose: .Public)
 
@@ -117,6 +121,24 @@ public struct Version2: Implementation {
         }
 
         return payload.message
+    }
+}
+
+public extension Version2 {
+    static func encrypt(
+        _ message: String,
+        with key: SymmetricKey<Version2>,
+        footer: Data = Data()
+    ) -> Blob<Encrypted> {
+        return encrypt(Data(message.utf8), with: key, footer: footer)
+    }
+
+    static func sign(
+        _ string: String,
+        with key: AsymmetricSecretKey<Version2>,
+        footer: Data = Data()
+    ) -> Blob<Signed> {
+        return sign(Data(string.utf8), with: key, footer: footer)
     }
 }
 
