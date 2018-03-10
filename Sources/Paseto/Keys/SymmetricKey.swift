@@ -13,6 +13,11 @@ public struct SymmetricKey<V: Implementation> {
 
     public init () {
         switch SymmetricKey.version {
+        case .v1:
+            self.init(
+                material: sodium.randomBytes.buf(length: Version1.keyBytes)!
+            )
+
         case .v2:
             self.init(
                 material: sodium.randomBytes.buf(length: Int(Aead.keyBytes))!

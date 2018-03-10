@@ -22,12 +22,30 @@ public struct Signed {
 extension Signed: Payload {
     public var asData: Data {
         switch version {
+        case .v1:
+            fatalError("""
+                Not implemented.
+                Swift's standard library requires at least OSX 10.13 to use the
+                RSA that we need. There isn't much value in only implementing
+                this for one platform. Alternative solution is sought.
+                """
+            )
+
         case .v2: return message + signature
         }
     }
 
     public init? (version: Version, data: Data) {
         switch version {
+        case .v1:
+            fatalError("""
+                Not implemented.
+                Swift's standard library requires at least OSX 10.13 to use the
+                RSA that we need. There isn't much value in only implementing
+                this for one platform. Alternative solution is sought.
+                """
+            )
+
         case .v2:
             let signatureOffset = data.count - Sign.Bytes
 
