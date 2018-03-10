@@ -134,4 +134,66 @@ class TokenTest: XCTestCase {
         let expectedVersions: [Version] = [.v2]
         XCTAssertEqual(unsealedToken.allowedVersions, expectedVersions)
     }
+
+    func testV2Sign() {
+        let token = Token(claims: ["foo": "bar"])
+            .replace(allowedVersions: [.v2])
+            .replace(footer: "There be secrets within...")
+            .add(claims: [
+                "bar": "baz",
+                "boo": "bop",
+            ])
+
+        let key = AsymmetricSecretKey<Version2>()
+
+        let blob = token.sign(with: key)!
+        let unsealedToken = blob.verify(with: key.publicKey)!
+
+        let expectedClaims = [
+            "foo": "bar",
+            "bar": "baz",
+            "boo": "bop",
+        ]
+        XCTAssertEqual(unsealedToken.claims, expectedClaims)
+
+        let expectedFooter = "There be secrets within..."
+        XCTAssertEqual(unsealedToken.footer, expectedFooter)
+
+        let expectedVersions: [Version] = [.v2]
+        XCTAssertEqual(unsealedToken.allowedVersions, expectedVersions)
+    }
+
+    func testV2Verify() {
+        // setup
+        let message = """
+            v2.public.eyJleHAiOiIyMDM5LTAxLTAxVDAwOjAwOjAwKzAwOjAwIiwiZGF0YSI6
+            InRoaXMgaXMgYSBzaWduZWQgbWVzc2FnZSJ91gC7-jCWsN3mv4uJaZxZp0btLJgcyV
+            wL-svJD7f4IHyGteKe3HTLjHYTGHI1MtCqJ-ESDLNoE7otkIzamFskCA
+            """.replacingOccurrences(of: "\n", with: "")
+
+        // load a version2 symmetric key
+        let key = try! AsymmetricPublicKey<Version2>(
+            encoded: "ETJDl_U1ViF41T_1OOSdWhYiQpcFVrTt2VDIfH2GZIo"
+        )
+
+        // we expect our message is encrypted (i.e. a "local" purpose)
+        let blob = Blob<Signed>(message)!
+        // encrypted blobs are specialised to have a decrypt method
+        // to obtain a token, given a symmetric key
+        let token = blob.verify(with: key)!
+
+        // test our token is what we expected
+        let expectedClaims = [
+            "data": "this is a signed message",
+            "exp": "2039-01-01T00:00:00+00:00",
+        ]
+        XCTAssertEqual(expectedClaims, token.claims)
+
+        let expectedFooter = ""
+        XCTAssertEqual(expectedFooter, token.footer)
+
+        // allowed versions should be identical to that of the type of key used
+        // for decryption
+        XCTAssertEqual([type(of: key).version], token.allowedVersions)
+    }
 }
