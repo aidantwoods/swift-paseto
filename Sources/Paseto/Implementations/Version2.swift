@@ -12,7 +12,7 @@ public struct Version2: Implementation {
         _ message: Data,
         with key: SymmetricKey<Version2>,
         footer: Data,
-        nonce unitTestNonce: Data?
+        unitTestNonce: Data?
     ) -> Blob<Encrypted> {
         let nonceBytes = Int(Aead.nonceBytes)
 
@@ -47,7 +47,7 @@ public struct Version2: Implementation {
     public static func encrypt(
         _ message: Data, with key: SymmetricKey<Version2>, footer: Data
     ) -> Blob<Encrypted> {
-        return encrypt(message, with: key, footer: footer, nonce: nil)
+        return encrypt(message, with: key, footer: footer, unitTestNonce: nil)
     }
 
     public static func decrypt(
