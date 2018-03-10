@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Blob<P: Payload> {
-    let header: Header
+    public let header: Header
     let payload: P
     public let footer: Data
 
