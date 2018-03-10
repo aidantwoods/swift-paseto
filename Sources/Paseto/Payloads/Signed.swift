@@ -8,26 +8,36 @@
 import Foundation
 
 public struct Signed {
-    let signature: Data
+    let version: Version
     let message: Data
+    let signature: Data
 
-    init (message: Data, signature: Data) {
+    init (version: Version, message: Data, signature: Data) {
+        self.version   = version
         self.message   = message
         self.signature = signature
     }
 }
 
 extension Signed: Payload {
-    public var asData: Data { return message + signature }
+    public var asData: Data {
+        switch version {
+        case .v2: return message + signature
+        }
+    }
 
-    public init? (data: Data) {
-        let signatureOffset = data.count - Sign.Bytes
+    public init? (version: Version, data: Data) {
+        switch version {
+        case .v2:
+            let signatureOffset = data.count - Sign.Bytes
 
-        guard signatureOffset > 0 else { return nil }
+            guard signatureOffset > 0 else { return nil }
 
-        self.init(
-            message:   data[..<signatureOffset],
-            signature: data[signatureOffset...]
-        )
+            self.init(
+                version:   version,
+                message:   data[..<signatureOffset],
+                signature: data[signatureOffset...]
+            )
+        }
     }
 }

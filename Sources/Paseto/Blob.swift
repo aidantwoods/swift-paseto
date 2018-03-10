@@ -24,7 +24,7 @@ public struct Blob<P: Payload> {
         guard [3, 4].contains(parts.count) else { return nil }
 
         guard let header  = Header(version: parts[0], purpose: parts[1]),
-              let payload = P(encoded: parts[2])
+              let payload = P(version: header.version, encoded: parts[2])
         else { return nil }
 
         let footer: Data

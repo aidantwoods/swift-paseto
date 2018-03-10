@@ -39,7 +39,11 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = Encrypted(nonce: nonce, cipherText: cipherText)
+        let payload = Encrypted(
+            version: version,
+            nonce: nonce,
+            cipherText: cipherText
+        )
 
         return Blob(header: header, payload: payload, footer: footer)
     }
@@ -91,7 +95,11 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = Signed(message: data, signature: signature)
+        let payload = Signed(
+            version: version,
+            message: data,
+            signature: signature
+        )
 
         return Blob(header: header, payload: payload, footer: footer)
     }

@@ -8,14 +8,14 @@
 import Foundation
 
 public protocol Payload {
-    init? (data: Data)
+    init? (version: Version, data: Data)
     var asData: Data { get }
 }
 
 extension Payload {
-    init? (encoded: String) {
+    init? (version: Version, encoded: String) {
         guard let data = Data(base64UrlNoPad: encoded) else { return nil }
-        self.init(data: data)
+        self.init(version: version, data: data)
     }
 
     var encode: String { return self.asData.base64UrlNoPad }
