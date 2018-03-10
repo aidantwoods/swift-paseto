@@ -7,7 +7,11 @@
 
 import Foundation
 
-public struct Blob<P: Payload, V> where V == P.VersionType {
+public struct Blob<P: Payload>: MetaBlob {
+    public typealias VersionType = P.VersionType
+    public typealias PayloadType = P
+    typealias V = VersionType
+
     public let header: Header = Blob.header
     let payload: P
     public let footer: Data
@@ -70,44 +74,6 @@ public extension Blob {
     }
 
     public var asData: Data { return Data(self.asString.utf8) }
-}
-
-public extension Blob where P == Signed<V> {
-    func verify(with key: AsymmetricPublicKey<V>) throws -> Token {
-        let message = try V.verify(self, with: key)
-        return try token(jsonData: message)
-    }
-
-    func verify(with key: AsymmetricPublicKey<V>) -> Token? {
-        return try? verify(with: key)
-    }
-}
-
-public extension Blob where P == Encrypted<V> {
-    func decrypt(with key: SymmetricKey<V>) throws -> Token {
-        let message = try V.decrypt(self, with: key)
-        return try token(jsonData: message)
-    }
-
-    func decrypt(with key: SymmetricKey<V>) -> Token? {
-        return try? decrypt(with: key)
-    }
-}
-
-extension Blob {
-    func token(jsonData: Data) throws -> Token {
-        guard let footer = self.footer.utf8String else {
-            throw Exception.badEncoding(
-                "Could not convert the footer to a UTF-8 string."
-            )
-        }
-
-        return try Token(
-            jsonData: jsonData,
-            footer: footer,
-            allowedVersions: [header.version]
-        )
-    }
 }
 
 extension Blob {

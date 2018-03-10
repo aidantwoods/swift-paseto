@@ -19,7 +19,7 @@ public struct Version1 {
         with key: SymmetricKey<Version1>,
         footer: Data,
         unitTestNonce: Data?
-    ) throws -> Blob<Encrypted<Version1>, Version1> {
+    ) throws -> Blob<Encrypted<Version1>> {
         let preNonce: Data
 
         if case let .some(given) = unitTestNonce, given.count == nonceBytes {
@@ -65,7 +65,7 @@ extension Version1: Implementation {
         _ message: Data,
         with key: SymmetricKey<Version1>,
         footer: Data
-    ) throws -> Blob<Encrypted<Version1>, Version1> {
+    ) throws -> Blob<Encrypted<Version1>> {
         return try encrypt(
             message,
             with: key,
@@ -75,7 +75,7 @@ extension Version1: Implementation {
     }
 
     public static func decrypt(
-        _ encrypted: Blob<Encrypted<Version1>, Version1>,
+        _ encrypted: Blob<Encrypted<Version1>>,
         with key: SymmetricKey<Version1>
     ) throws -> Data {
         let (header, footer) = (encrypted.header, encrypted.footer)
@@ -114,7 +114,7 @@ extension Version1: Implementation {
         _ data: Data,
         with key: AsymmetricSecretKey<Version1>,
         footer: Data
-    ) throws -> Blob<Signed<Version1>, Version1> {
+    ) throws -> Blob<Signed<Version1>> {
         throw Exception.notImplemented("""
             Not implemented.
             Swift's standard library requires at least OSX 10.13 to use the
@@ -125,7 +125,7 @@ extension Version1: Implementation {
     }
 
     public static func verify(
-        _ signedMessage: Blob<Signed<Version1>, Version1>,
+        _ signedMessage: Blob<Signed<Version1>>,
         with key: AsymmetricPublicKey<Version1>
     ) throws -> Data {
         throw Exception.notImplemented("""
