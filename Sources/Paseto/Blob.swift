@@ -8,15 +8,11 @@
 import Foundation
 
 public struct Blob<P: VersionedPayload, V> where V == P.VersionType {
-    public let header: Header
+    public let header: Header = Blob.header
     let payload: P
     public let footer: Data
 
     init (payload: P, footer: Data = Data()) {
-        self.header  = Header(
-            version: Version(implementation: V.self),
-            purpose: Purpose(payload: P.self)
-        )
         self.payload = payload
         self.footer  = footer
     }
@@ -29,8 +25,7 @@ public struct Blob<P: VersionedPayload, V> where V == P.VersionType {
         ) = Blob.deconstruct(string)
         else { return nil }
 
-        guard header.version == Version(implementation: V.self),
-              header.purpose == Purpose(payload: P.self),
+        guard header == Blob.header,
               let payload = P(encoded: encodedPayload),
               let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
@@ -57,6 +52,13 @@ public struct Blob<P: VersionedPayload, V> where V == P.VersionType {
 
     public static func header(_ string: String) -> Header? {
         return deconstruct(string)?.header
+    }
+
+    public static var header: Header {
+        return Header(
+            version: Version(implementation: V.self),
+            purpose: Purpose(payload: P.self)
+        )
     }
 }
 
