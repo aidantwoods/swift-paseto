@@ -16,10 +16,17 @@ let package = Package(
         .library(name: "Paseto", targets: ["Paseto"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/jedisct1/swift-sodium.git", .revision("dc62e765f5110a1bfb16a692e18180ba1ee9ae9f")),
+        .package(
+            url: "https://github.com/jedisct1/swift-sodium.git",
+            .revision("dc62e765f5110a1bfb16a692e18180ba1ee9ae9f")
+        ),
+        .package(
+            url: "https://github.com/krzyzanowskim/CryptoSwift.git",
+            .upToNextMinor(from: "0.8.0")
+        )
     ],
     targets: [
-        .target(name: "Paseto", dependencies: ["Sodium"]),
+        .target(name: "Paseto", dependencies: ["Sodium", "CryptoSwift"]),
         .testTarget(name: "PasetoTests", dependencies: ["Paseto"]),
     ]
 )
