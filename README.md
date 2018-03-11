@@ -26,7 +26,8 @@ tokens.
 ## Key Differences between Paseto and JWT
 
 Unlike JSON Web Tokens (JWT), which gives developers more than enough rope with
-which to hang themselves, Paseto only allows secure operations. JWT gives you "algorithm agility", Paseto gives you "versioned protocols". It's incredibly
+which to hang themselves, Paseto only allows secure operations. JWT gives you
+"algorithm agility", Paseto gives you "versioned protocols". It's incredibly
 unlikely that you'll be able to use Paseto in
 [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
 
@@ -77,7 +78,7 @@ The following are automatically resolved when using Swift Package Manager.
   instead.
 
 # Overview of the Swift library
-The Paseto Swift library is designed with the aim of using to Swift compiler to
+The Paseto Swift library is designed with the aim of using the Swift compiler to
 catch as many usage errors as possible.
 
 At some point, you the user will have to decide which key to use when using
