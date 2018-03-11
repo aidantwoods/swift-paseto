@@ -88,9 +88,9 @@ or signed if using public tokens).
 
 The Paseto Swift library passes this information via type arguments (generics)
 so entire classes of misuse examples aren't possible (e.g. 
-creating a version 2 key and accidently producing a version 1 token,
-or trying to decrypt a signed token). In-fact, the functions that would enable
-you to even attempt these examples just don't exist.
+creating a version 2 key and accidentally attempting to produce a version 1
+token, or trying to decrypt a signed token). In-fact, the functions that would
+enable you to even attempt these examples just don't exist.
 
 Okay, so what does all that look like?
 
@@ -136,7 +136,7 @@ specialised `decrypt(with: SymmetricKey<Version2>)` method, which can be used
 to retrieve the original token (when given a key). i.e. we can do:
 
 ```swift
-guard let try? decryptedToken = blob.decrypt(with: symmetricKey) else { /* respond to failure */}
+guard let try? decryptedToken = blob.decrypt(with: symmetricKey) else { /* respond to failure */ }
 ```
 
 
@@ -153,7 +153,7 @@ do the following:
 guard let signedBlob = try? token.sign(with: secretKey) else { /* respond to failure */ }
 ```
 
-`signedBlob` is of type `Blob<Signed<Version2>`. This means that it has a
+`signedBlob` is of type `Blob<Signed<Version2>>`. This means that it has a
 specialised `verify(with: AsymmetricPublicKey<Version2>)` method, which can be
 used to verify the contents and produce a verified token.
 
@@ -166,7 +166,7 @@ let publicKey = secretKey.publicKey
 `publicKey` is of type `AsymmetricPublicKey<Version2>`, so we may use:
 
 ```swift
-guard let try? verifiedToken = signedBlob.verify(with: publicKey) else { /* respond to failure */}
+guard let try? verifiedToken = signedBlob.verify(with: publicKey) else { /* respond to failure */ }
 ```
 
 to reproduce the original token from the `signedBlob`.
@@ -196,15 +196,15 @@ let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpb
 guard let key = try? SymmetricKey<Version2>(
     hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
 ) else {
-    /* respond to error */
+    /* respond to failure */
 }
 
 guard let blob = try? Blob<Encrypted<Version2>>(rawToken) else {
-    /* respond to error */
+    /* respond to failure */
 }
 
 guard let token = try? blob.decrypt(with: key) else {
-    /* respond to error */
+    /* respond to failure */
 }
 
 // the following will succeed
@@ -223,7 +223,7 @@ is of a valid format, and does not guarantee anything about the contents.
 
 For example, using `rawToken` from above:
 ```swift
-guard let header = Util.header(of: rawToken) else { /* this isn't a valid paseto token */ }
+guard let header = Util.header(of: rawToken) else { /* this isn't a valid Paseto token */ }
 ```
 
 A `Header` is of the following structure:
@@ -237,7 +237,7 @@ struct Header {
 where `version` is either `.v1` or `.v2`, and `purpose` is either `.Public` (a
 signed blob) or `.Local` (an encrypted blob).
 
-As `Version` and `Purpose` are enums, it is reccomended that you use an
+As `Version` and `Purpose` are enums, it is recommended that you use an
 explicitly exhaustive (i.e. no default) switch-case construct to select
 different code paths. Making this explicitly exhaustive ensures that if, say
 additional versions are added then the Swift compiler will inform you when you
@@ -250,9 +250,9 @@ does not correspond to the blob's type arguments then the initialiser will fail.
 ## Version 2
 Version 2 (the recommended version by the specification) is fully supported.
 
-## Version 1
-Version 1 (the compatability version) is (ironically) only partially supported
-due to compatability issues (Swift is a new language 🤷‍♂️).
+## Version 1 (partial)
+Version 1 (the compatibility version) is (ironically) only partially supported
+due to compatibility issues (Swift is a new language 🤷‍♂️).
 
 Version 1 in the local mode (i.e. encrypted payloads using symmetric keys) is
 fully supported.
