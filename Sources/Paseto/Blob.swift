@@ -54,10 +54,6 @@ public struct Blob<P: Payload>: MetaBlob {
         )
     }
 
-    public static func header(_ string: String) -> Header? {
-        return deconstruct(string)?.header
-    }
-
     public static var header: Header {
         return Header(
             version: Version(implementation: V.self),
