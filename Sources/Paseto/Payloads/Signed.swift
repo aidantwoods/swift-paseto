@@ -7,21 +7,20 @@
 
 import Foundation
 
-public struct Signed {
-    let version: Version
+public struct Signed<V: Implementation> {
     let message: Data
     let signature: Data
 
-    init (version: Version, message: Data, signature: Data) {
-        self.version   = version
+    init (message: Data, signature: Data) {
         self.message   = message
         self.signature = signature
     }
 }
 
 extension Signed: Payload {
+    public typealias VersionType = V
     public var asData: Data {
-        switch version {
+        switch Signed.version {
         case .v1:
             fatalError("""
                 Not implemented.
@@ -35,8 +34,8 @@ extension Signed: Payload {
         }
     }
 
-    public init? (version: Version, data: Data) {
-        switch version {
+    public init? (data: Data) {
+        switch Signed.version {
         case .v1:
             fatalError("""
                 Not implemented.
@@ -52,7 +51,6 @@ extension Signed: Payload {
             guard signatureOffset > 0 else { return nil }
 
             self.init(
-                version:   version,
                 message:   data[..<signatureOffset],
                 signature: data[signatureOffset...]
             )

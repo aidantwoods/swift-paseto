@@ -15,7 +15,7 @@ class Version1Test: XCTestCase {
             hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )
 
-        let encryptedBlob = Blob<Encrypted>(
+        let encryptedBlob = Blob<Encrypted<Version1>>(
             "v1.local.rElw-WywOuwAqKC9Yao3YokSp7vx0YiUB9hLTnsVOYYTojmVaYumJSQt8aggtCaFKWyaodw5k-CUWhYKATopiabAl4OAmTxHCfm2E4NSPvrmMcmi8n-JcZ93HpcxC6rx_ps22vutv7iP7wf8QcSD1Mwx.Q3VvbiBBbHBpbnVz"
             )!
 

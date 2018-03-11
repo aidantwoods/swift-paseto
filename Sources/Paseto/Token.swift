@@ -87,7 +87,7 @@ extension Token {
 }
 
 public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) throws -> Blob<Signed> {
+    func sign<V>(with key: AsymmetricSecretKey<V>) throws -> Blob<Signed<V>> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
@@ -103,7 +103,7 @@ public extension Token {
         return try V.sign(claimsData, with: key, footer: Data(footer.utf8))
     }
 
-    func encrypt<V>(with key: SymmetricKey<V>) throws -> Blob<Encrypted> {
+    func encrypt<V>(with key: SymmetricKey<V>) throws -> Blob<Encrypted<V>> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
@@ -121,10 +121,10 @@ public extension Token {
 }
 
 public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) -> Blob<Signed>? {
+    func sign<V>(with key: AsymmetricSecretKey<V>) -> Blob<Signed<V>>? {
         return try? sign(with: key)
     }
-    func encrypt<V>(with key: SymmetricKey<V>) -> Blob<Encrypted>? {
+    func encrypt<V>(with key: SymmetricKey<V>) -> Blob<Encrypted<V>>? {
         return try? encrypt(with: key)
     }
 }

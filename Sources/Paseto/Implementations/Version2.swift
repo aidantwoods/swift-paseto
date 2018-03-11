@@ -13,7 +13,7 @@ public struct Version2: Implementation {
         with key: SymmetricKey<Version2>,
         footer: Data,
         unitTestNonce: Data?
-    ) -> Blob<Encrypted> {
+    ) -> Blob<Encrypted<Version2>> {
         let nonceBytes = Int(Aead.nonceBytes)
 
         let preNonce: Data
@@ -39,32 +39,26 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = Encrypted(
-            version: version,
+        let payload = Encrypted<Version2>(
             nonce: nonce,
             cipherText: cipherText
         )
 
-        return Blob(header: header, payload: payload, footer: footer)
+        return Blob(payload: payload, footer: footer)
     }
 
     public static func encrypt(
         _ message: Data,
         with key: SymmetricKey<Version2>,
         footer: Data = Data()
-    ) -> Blob<Encrypted> {
+    ) -> Blob<Encrypted<Version2>> {
         return encrypt(message, with: key, footer: footer, unitTestNonce: nil)
     }
 
     public static func decrypt(
-        _ encrypted: Blob<Encrypted>, with key: SymmetricKey<Version2>
+        _ encrypted: Blob<Encrypted<Version2>>, with key: SymmetricKey<Version2>
     ) throws -> Data {
-        let header = encrypted.header
-        let footer = encrypted.footer
-
-        guard header == Header(version: version, purpose: .Local) else {
-            throw Exception.badHeader("Bad message header.")
-        }
+        let (header, footer) = (encrypted.header, encrypted.footer)
 
         let nonce      = encrypted.payload.nonce
         let cipherText = encrypted.payload.cipherText
@@ -87,7 +81,7 @@ public struct Version2: Implementation {
         _ data: Data,
         with key: AsymmetricSecretKey<Version2>,
         footer: Data = Data()
-    ) -> Blob<Signed> {
+    ) -> Blob<Signed<Version2>> {
         let header = Header(version: version, purpose: .Public)
 
         let signature = Sign.signature(
@@ -95,24 +89,18 @@ public struct Version2: Implementation {
             secretKey: key.material
         )!
 
-        let payload = Signed(
-            version: version,
+        let payload = Signed<Version2>(
             message: data,
             signature: signature
         )
 
-        return Blob(header: header, payload: payload, footer: footer)
+        return Blob(payload: payload, footer: footer)
     }
 
     public static func verify(
-        _ signedMessage: Blob<Signed>, with key: AsymmetricPublicKey<Version2>
+        _ signedMessage: Blob<Signed<Version2>>, with key: AsymmetricPublicKey<Version2>
     ) throws -> Data {
-        let header = signedMessage.header
-        let footer = signedMessage.footer
-
-        guard header == Header(version: version, purpose: .Public) else {
-            throw Exception.badHeader("Bad message header.")
-        }
+        let (header, footer) = (signedMessage.header, signedMessage.footer)
 
         let payload = signedMessage.payload
 
@@ -137,7 +125,7 @@ public extension Version2 {
         _ message: String,
         with key: SymmetricKey<Version2>,
         footer: Data = Data()
-    ) -> Blob<Encrypted> {
+    ) -> Blob<Encrypted<Version2>> {
         return encrypt(Data(message.utf8), with: key, footer: footer)
     }
 
@@ -145,14 +133,13 @@ public extension Version2 {
         _ string: String,
         with key: AsymmetricSecretKey<Version2>,
         footer: Data = Data()
-    ) -> Blob<Signed> {
+    ) -> Blob<Signed<Version2>> {
         return sign(Data(string.utf8), with: key, footer: footer)
     }
 }
 
 extension Version2 {
     public enum Exception: Error {
-        case badHeader(String)
         case invalidSignature(String)
         case invalidMessage(String)
     }

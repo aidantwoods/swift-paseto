@@ -26,7 +26,7 @@ public struct SymmetricKey<V: Implementation> {
     }
 }
 
-extension SymmetricKey: VersionedKey {
+extension SymmetricKey: Key {
     typealias VersionType = V
     public init (material: Data) {
         self.material = material

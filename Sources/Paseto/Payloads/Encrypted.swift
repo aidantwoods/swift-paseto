@@ -7,14 +7,12 @@
 
 import Foundation
 
-public struct Encrypted {
-    let version: Version
+public struct Encrypted<V: Implementation> {
     let nonce: Data
     let cipherText: Data
     let mac: Data
 
-    init (version: Version, nonce: Data, cipherText: Data, mac: Data = Data()) {
-        self.version    = version
+    init (nonce: Data, cipherText: Data, mac: Data = Data()) {
         self.nonce      = nonce
         self.cipherText = cipherText
         self.mac        = mac
@@ -22,15 +20,16 @@ public struct Encrypted {
 }
 
 extension Encrypted: Payload {
+    public typealias VersionType = V
     public var asData: Data {
-        switch version {
+        switch Encrypted.version {
         case .v1: return nonce + cipherText + mac
         case .v2: return nonce + cipherText
         }
     }
 
-    public init? (version: Version, data: Data) {
-        switch version {
+    public init? (data: Data) {
+        switch Encrypted.version {
         case .v1:
             let nonceLen = Version1.nonceBytes
             let macLen   = Version1.macBytes
@@ -40,7 +39,6 @@ extension Encrypted: Payload {
             let macOffset = data.count - macLen
 
             self.init(
-                version:    version,
                 nonce:      data[..<nonceLen],
                 cipherText: data[nonceLen..<macOffset],
                 mac:        data[macOffset...]
@@ -52,7 +50,6 @@ extension Encrypted: Payload {
             guard data.count > nonceLen else { return nil }
 
             self.init(
-                version:    version,
                 nonce:      data[..<nonceLen],
                 cipherText: data[nonceLen...]
             )

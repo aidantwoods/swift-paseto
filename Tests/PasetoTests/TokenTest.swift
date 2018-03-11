@@ -24,7 +24,7 @@ class TokenTest: XCTestCase {
         )
 
         // we expect our message is encrypted (i.e. a "local" purpose)
-        let blob = Blob<Encrypted>(message)!
+        let blob = Blob<Encrypted<Version1>>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
         let token = blob.decrypt(with: key)!
@@ -59,7 +59,7 @@ class TokenTest: XCTestCase {
         )
 
         // we expect our message is encrypted (i.e. a "local" purpose)
-        let blob = Blob<Encrypted>(message)!
+        let blob = Blob<Encrypted<Version2>>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
         let token = blob.decrypt(with: key)!
@@ -177,7 +177,7 @@ class TokenTest: XCTestCase {
         )
 
         // we expect our message is encrypted (i.e. a "local" purpose)
-        let blob = Blob<Signed>(message)!
+        let blob = Blob<Signed<Version2>>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
         let token = blob.verify(with: key)!
