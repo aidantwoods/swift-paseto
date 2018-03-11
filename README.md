@@ -20,8 +20,7 @@ Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
 # What is Paseto?
 
 [Paseto](https://github.com/paragonie/paseto) (Platform-Agnostic SEcurity
-TOkens) is a specification and reference implementation for secure stateless
-tokens.
+TOkens) is a specification for secure stateless tokens.
 
 ## Key Differences between Paseto and JWT
 
