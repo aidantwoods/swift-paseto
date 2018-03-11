@@ -51,7 +51,7 @@ class Version1Test: XCTestCase {
     func testLargeishData() {
         let sk = SymmetricKey<Version1>()
 
-        let message = Sodium().randomBytes.buf(length: Int(1 << 15))!
+        let message = Sodium().randomBytes.buf(length: Int(1 << 17))!
 
         let blob = Version1.encrypt(message, with: sk)!
 
