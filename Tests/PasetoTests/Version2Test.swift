@@ -114,5 +114,24 @@ class Version2Test: XCTestCase {
 
         XCTAssertEqual(message, result)
     }
+
+    func testReadmeExample() {
+        let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz"
+
+        let key = try! SymmetricKey<Version2>(
+            hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
+        )
+
+        let blob = Blob<Encrypted<Version2>>(rawToken)!
+
+        let token = blob.decrypt(with: key)!
+
+        XCTAssertEqual(
+            ["data": "this is a signed message", "exp": "2039-01-01T00:00:00+00:00"],
+            token.claims
+        )
+
+        XCTAssertEqual("Paragon Initiative Enterprises", token.footer)
+    }
 }
 
