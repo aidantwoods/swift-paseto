@@ -15,7 +15,7 @@ Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
   * [Requirements](#requirements)
   * [Dependencies](#dependencies)
 * [Overview of the Swift library](#overview-of-the-swift-library)
-* [Supported Paseto Versions](supported-paseto-versions)
+* [Supported Paseto Versions](#supported-paseto-versions)
 
 # What is Paseto?
 
