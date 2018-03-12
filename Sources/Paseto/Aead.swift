@@ -10,8 +10,8 @@ import Clibsodium
 
 public struct Aead {
     public static let nonceBytes = crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-    public static let keyBytes = crypto_aead_xchacha20poly1305_ietf_KEYBYTES
-    public static let aBytes = crypto_aead_xchacha20poly1305_ietf_ABYTES
+    public static let keyBytes   = crypto_aead_xchacha20poly1305_ietf_KEYBYTES
+    public static let aBytes     = crypto_aead_xchacha20poly1305_ietf_ABYTES
 
     public static func xchacha20poly1305_ietf_encrypt(
         message: Data,

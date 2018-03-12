@@ -10,13 +10,12 @@ import Foundation
 public struct Blob<P: Payload>: MetaBlob {
     public typealias VersionType = P.VersionType
     public typealias PayloadType = P
-    typealias V = VersionType
 
     public let header: Header = Blob.header
-    let payload: P
+    let payload: PayloadType
     public let footer: Data
 
-    init (payload: P, footer: Data = Data()) {
+    init (payload: PayloadType, footer: Data = Data()) {
         self.payload = payload
         self.footer  = footer
     }
@@ -30,7 +29,7 @@ public struct Blob<P: Payload>: MetaBlob {
         else { return nil }
 
         guard header == Blob.header,
-              let payload = P(encoded: encodedPayload),
+              let payload = PayloadType(encoded: encodedPayload),
               let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
 
@@ -56,8 +55,8 @@ public struct Blob<P: Payload>: MetaBlob {
 
     public static var header: Header {
         return Header(
-            version: Version(implementation: V.self),
-            purpose: Purpose(payload: P.self)
+            version: Version(implementation: VersionType.self),
+            purpose: Purpose(payload: PayloadType.self)
         )
     }
 }

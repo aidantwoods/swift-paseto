@@ -11,9 +11,9 @@ public struct AsymmetricSecretKey<V: Implementation>: Key {
     typealias VersionType = V
     public let material: Data
 
-    let secretBytes : Int = Sign.SecretKeyBytes
-    let seedBytes   : Int = Sign.SeedBytes
-    let keypairBytes: Int = 96
+    let secretBytes  = Sign.SecretKeyBytes
+    let seedBytes    = Sign.SeedBytes
+    let keypairBytes = 96
 
     public init () {
         switch AsymmetricSecretKey.version {

@@ -17,7 +17,7 @@ class Version1Test: XCTestCase {
 
         let encryptedBlob = Blob<Encrypted<Version1>>(
             "v1.local.rElw-WywOuwAqKC9Yao3YokSp7vx0YiUB9hLTnsVOYYTojmVaYumJSQt8aggtCaFKWyaodw5k-CUWhYKATopiabAl4OAmTxHCfm2E4NSPvrmMcmi8n-JcZ93HpcxC6rx_ps22vutv7iP7wf8QcSD1Mwx.Q3VvbiBBbHBpbnVz"
-            )!
+        )!
 
         let message: String = Version1.decrypt(encryptedBlob, with: sk)!
 
