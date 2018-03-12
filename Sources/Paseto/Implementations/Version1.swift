@@ -187,6 +187,5 @@ fileprivate extension SymmetricKey where VersionType == Version1 {
 extension SymmetricKey {
     enum Exception: Error {
         case badSalt(String)
-        case hmacFailure(String)
     }
 }
