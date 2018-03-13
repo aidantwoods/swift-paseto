@@ -18,12 +18,7 @@ public enum Util {
         // clear out the MSB
         let m = n & (UInt64.max >> 1)
 
-        let codeToStr: (UInt64) -> String
-            = String.init • UnicodeScalar.init • UInt8.init
-
-        let str = (0..<8).reduce("") { $0 + codeToStr((m >> (8 * $1)) & 255) }
-
-        return Data(str.utf8)
+        return Data((0..<8).map { m >> (8 * $0) & 255 }.map(UInt8.init))
     }
 
     public static func header(of string: String) -> Header? {
