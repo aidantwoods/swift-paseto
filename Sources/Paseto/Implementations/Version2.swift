@@ -141,6 +141,5 @@ public extension Version2 {
 extension Version2 {
     public enum Exception: Error {
         case invalidSignature(String)
-        case invalidMessage(String)
     }
 }
