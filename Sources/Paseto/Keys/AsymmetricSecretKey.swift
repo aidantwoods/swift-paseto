@@ -82,7 +82,7 @@ public extension AsymmetricSecretKey {
 
             default:
                 throw Exception.badLength(
-                    "Public key must be 64 or 32 bytes long;"
+                    "Secret key must be 64 or 32 bytes long;"
                         + "\(material.count) given."
                 )
             }
