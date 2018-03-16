@@ -133,5 +133,30 @@ class Version2Test: XCTestCase {
 
         XCTAssertEqual("Paragon Initiative Enterprises", token.footer)
     }
+
+    func testDocExample() {
+        let key = SymmetricKey<Version2>()
+        let message = Version2.encrypt("Hello world!", with: key)
+        let pasetoString = message.asString
+        let verySensitiveKeyMaterial = key.encode
+
+        XCTAssertEqual("Hello world!", Version2.decrypt(message, with: key)!)
+        XCTAssertEqual(
+            "Hello world!",
+            Version2.decrypt(
+                Blob<Encrypted<Version2>>(pasetoString)!,
+                with: key
+            )!
+        )
+        XCTAssertEqual(
+            "Hello world!",
+            Version2.decrypt(
+                Blob<Encrypted<Version2>>(pasetoString)!,
+                with: try! SymmetricKey<Version2>(
+                    encoded: verySensitiveKeyMaterial
+                )
+            )!
+        )
+    }
 }
 
