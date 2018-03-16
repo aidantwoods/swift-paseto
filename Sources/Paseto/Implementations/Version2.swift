@@ -120,6 +120,7 @@ public struct Version2: Implementation {
     }
 }
 
+// non throwing/optional implementations are available for Version 2
 public extension Version2 {
     static func encrypt(
         _ message: String,
