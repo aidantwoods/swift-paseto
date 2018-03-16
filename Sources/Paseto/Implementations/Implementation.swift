@@ -72,6 +72,22 @@ public extension Implementation {
 public extension Implementation {
     static func encrypt(
         _ message: String, with key: SymmetricKey<Self>, footer: Data = Data()
+    ) throws -> Blob<Encrypted<Self>> {
+        return try encrypt(Data(message.utf8), with: key, footer: footer)
+    }
+
+    static func sign(
+        _ string: String,
+        with key: AsymmetricSecretKey<Self>,
+        footer: Data = Data()
+    ) throws -> Blob<Signed<Self>> {
+        return try sign(Data(string.utf8), with: key, footer: footer)
+    }
+}
+
+public extension Implementation {
+    static func encrypt(
+        _ message: String, with key: SymmetricKey<Self>, footer: Data = Data()
     ) -> Blob<Encrypted<Self>>? {
         return encrypt(Data(message.utf8), with: key, footer: footer)
     }
