@@ -357,7 +357,7 @@ that will allow `footer` to be omitted because it is optional.
 
 ## Example
 The following will generate a new symmetric key, encrypt a message with it,
-convert it to a string for sending, and store the key used in an exported
+convert it to a `String` for sending, and store the key used in an exported
 format:
 
 ```swift
