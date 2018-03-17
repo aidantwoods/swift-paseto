@@ -1,7 +1,43 @@
+# Contents
+* [General Paseto Overview](#general-paseto-overview)
+
+* [General Paseto Usage](#general-paseto-usage)
+
+* [The Paseto Message](#the-paseto-message)
+  * [Creating a Paseto Message](#creating-a-paseto-message)
+  * [⚠️ Accessing the Footer Prior to Decryption or Verification](#accessing-the-footer-prior-to-decryption-or-verification)
+  * [Transferable Formats](#transferable-formats)
+
+* [Paseto Keys](#paseto-keys)
+  * [General Keys](#general-keys)
+    * [General Key Methods](#general-key-methods)
+        * [Constructing a General Key from Key Material](#constructing-a-general-key-from-key-material)
+        * [Exporting a General Key from Key Material](#exporting-a-general-key-from-key-material)
+
+    * [Additional General Key Methods](#additional-general-key-methods)
+
+  * [Symmetric Keys](#symmetric-keys)
+    * [Generating a new Symmetric Key](#generating-a-new-symmetric-key)
+    * [Exporting a Symmetric Key for Storage](#exporting-a-symmetric-key-for-storage)
+  
+  * [Asymmetric Secret Keys](#asymmetric-secret-keys)
+    * [Generating a new Asymmetric Secret Key / Keypair](#generating-a-new-asymmetric-secret-key-keypair)
+    * [Exporting an Asymmetric Secret Key for Storage](#exporting-an-asymmetric-secret-key-for-storage)
+
+  * [Asymmetric Public Keys](#asymmetric-public-keys)
+    * [Obtaining a Public Key from a Secret Key](#obtaining-a-public-key-from-a-secret-key)
+    * [Obtaining a Public Key from Key Material](#obtaining-a-public-key-from-key-material)
+    * [Generating a new Public Key](#generating-a-new-public-key)
+    * [Exporting an Asymmetric Public Key for Storage](#exporting-an-asymmetric-public-key-for-storage)
+
+* [Wrapping up](#wrapping-up)
+  * [Example](#example)
+
+
 # General Paseto Overview
 Each version of Paseto provides a ciphersuite with a selection of
-implementaions for: authenticated encryption and decryption, signatures and
-verification.
+implementaions for: authenticated encryption, authenticated decryption,
+signatures, and verification.
 
 If you need to keep data secret, you are looking for the `local` part of API,
 which performs encryption and decryption.
@@ -13,8 +49,8 @@ All modes verify the message integrity (i.e. there does not exist an
 unauthenticated mode of encryption).
 
 In all modes, you may optionally provide an authentication tag
-("footer" henceforth). **The footer is never encrypted**, but it is **always**
-authenticated. You wish to use this to provide additional information
+("footer", henceforth). **The footer is never encrypted**, but it is **always**
+authenticated. You may wish to use this to provide additional information
 that does not itself need to be kept secret. Because this footer is always
 authenticated it cannot be modified in transit without detection.
 
@@ -26,7 +62,7 @@ Forewarning that the following goes into vigorous detail. You should treat
 this all as required reading, however actual usage is very simple, see
 [wrapping up](#example) for a full usage example.
 
-In the Swift library, each version of Paseto will have the following methods.
+In the Swift library, each version of Paseto will have the following methods:
 ```swift
 encrypt(_:with:footer:)
 decrypt(_:with:)
@@ -39,9 +75,10 @@ that needs encrypting or signing, or a recieved Paseto message that needs
 decrypting or verifying.
 The second argument `with:` will be a key which is *appropriate* for the given
 task.
-For the encrypt and sign functions, additionally you may provide a footer
-(as defined above). There are overloads available that will set the footer
-to empty (no footer), so this argument may be omitted you do not require it.
+
+> The *appropriate* key for any given encrypt, decrypt, sign, or verify
+> operation for any version is a type safety checked requirement. Providing a
+> key which is not *appropriate* is therefore a compile error by design.
 
 In particular, each version will implement the following protocol:
 
@@ -69,20 +106,24 @@ All methods are (at worst) throwing, but individual implementations may
 provide non-throwing versions of some of these functions as appropriate.
 
 In addition to these methods, there are various convenience overloads
-implemented in protocol extensions in terms of these four base methods (
-thus any specific implementation will have these available).
+implemented in protocol extensions in terms of these four base methods
+(thus any specific implementation will have these available).
 
-In particular, as mentioned overloads exist that allow omitting the footer,
-as well as overloads that will take a `String` in place of `Data`. If a `String`
-is provided, `UTF-8` encoding will be used to represent the `String` as bytes
-when transforming to `Data`.
+In particular, and for example: overloads exist that allow omission of the
+footer, as well as overloads that will take a `String` in place of `Data`. If a
+`String` is provided, `UTF-8` encoding will be used to represent the `String`
+as bytes when transforming to `Data`.
 
 # The Paseto Message
-The Paseto message is what will be produced by encrypting and signing methods,
-and is what should be given to decrypting and verifying methods.
+The Paseto message is what will be produced by the encrypting and signing
+methods, and is what should be given to the decrypting and verification methods.
 
 In the Swift library, a Paseto message is implemented as `Blob<P: Payload>`,
 where the generic argument is a type of `Payload`.
+> Before explaining the detail, it helps to see an example of this written out
+> explicitly. For example, `Blob<Signed<Version2>>` is a Paseto message which
+> has been signed using version 2 of Paseto's ciphersuite selection.
+
 The only valid `Payload` types are: `Encrypted<V: Implementation>`, and
 `Signed<V: Implementation>`, where `V` is an `Implementation` (the protocol
 is defined above).
@@ -97,11 +138,21 @@ struct Blob<P: Payload> {
 }
 ```
 
-`init?(_:)` is a failible initializer, which is where you should provide
+*there are computed properties which are accessible too, these will be
+covered later*.
+
+## Creating a Paseto Message
+
+Paseto messages can be constructed by either encrypting or signing data,
+in which case a Paseto message (as a `Blob`) will be the output format.
+
+A Paseto messages can also be constructed from a recieved message:
+
+`init?(_:)` is a failible initializer, and is where you should provide
 a received Paseto message in its `String` representation.
 
 For example, if you expect `message` to store a version 2 signed Paseto message
-as a `String`, then you should use the following:
+as a `String`, use the following:
 
 ```swift
 guard let blob = Blob<Signed<Version2>>(message) else { ... }
@@ -152,6 +203,29 @@ simultaneously):
   guard statements are used within the switch-case construct. Force unwrapping
   here instead would allow the possibility of unhandled errors at runtime.
 
+
+## Accessing the Footer Prior to Decryption or Verification
+
+> ⚠️  **WARNING: Do not trust a footer value until you have successfully
+> decrypted or verified the blob.**
+> 
+> This value is made available pre-verification/decryption because it may
+> be useful for, for example placing a key id in the footer. This could be used
+> so that the blob itself can indicate which of your trusted keys it requires
+> for decryption/verification.
+> 
+> **Be aware that early extraction of the footer is a completely
+> unauthenticated claim until the authenticity of the blob has been proved**
+> (by either success of decryption or verification with a trusted key).
+
+To access the footer of an already constructed Blob `blob`, use
+
+```swift
+let blobFooter = blob.footer
+```
+
+## Transferable Formats
+
 If you have produced a `Blob` you will need to convert it to a `String` or
 `Data` in order to send or store it anywhere. To do this given a Blob `blob`,
 use either one of (as required):
@@ -180,26 +254,39 @@ For example: `SymmetricKey<Version2>` refers to a version 2 symmetric key.
 Any of the above keys will implement the `Key` protocol, which means you can
 expect all keys to have the following public API:
 
-```swift
-    protocol Key {
-        associatedtype VersionType: Implementation
+### General Key Methods
 
-        var material: Data { get }
-        init (material: Data) throws
-    }
+```swift
+protocol Key {
+    associatedtype VersionType: Implementation
+
+    var material: Data { get }
+    init (material: Data) throws
+}
 ```
 
 For any of the above keys, `VersionType` will hold the type parameter `V`.
+
+#### Constructing a General Key from Key Material
 
 `init (material:)` should be provided with the raw key material in bytes as
 `Data`. This method will throw if the key is not valid for the particular
 implementation.
 
+#### Exporting a General Key from Key Material
+
 `var material: Data` will return the material provided to the key upon
 initialization.
 
+You should ensure that this key is stored safely if it is not intended to
+be shared with third parties!
+
+
+### Additional General Key Methods
+
 Additionally, every key will inherit the following convenience API via
 a protocol extension:
+
 
 ```swift
 extension Key {
@@ -229,8 +316,11 @@ If you are using the `local` part of the API, you will need to use the same
 symmetric key (`SymmetricKey<V: Implementation>`) for both encryption and
 decryption.
 
-In addition to the above methods common to all keys, `SymmetricKey<V: Implementation>` will have a default initializer `init ()`. Calling
-this will generate a new key from random data according to the specific
+### Generating a new Symmetric Key
+
+In addition to the above methods common to all keys,
+`SymmetricKey<V: Implementation>` will have a default initializer `init ()`.
+Calling this will generate a new key from random data according to the specific
 requirements of the particular implementation.
 
 For example,
@@ -244,7 +334,10 @@ ciphersuite.
 
 Because this is a new key, it is important that you save the underlying key
 material so that you can later decrypt any messages you encrypt this key with.
-You should also ensure that this key is stored safely! If the exported material
+
+### Exporting a Symmetric Key for Storage
+
+You should ensure that this key is stored safely! If the exported material
 of this key becomes known to a third party you must discontinue use of the key
 and cease to trust the authenticity of messages encrypted with this key.
 
@@ -267,6 +360,8 @@ We will cover asymmetric secret keys first because their implementations contain
 data required to reconstruct the keypair. A public key can always be exported
 from a secret key, however a secret key can never be exported from a public key.
 
+### Generating a new Asymmetric Secret Key / Keypair
+
 In addition to the methods common to all keys,
 `AsymmetricSecretKey<V: Implementation>` will have a default initializer
 `init ()`.
@@ -288,6 +383,9 @@ ciphersuite.
 Because this is a new key, it is important that you save the underlying key
 material so that you can continue to sign messages that can be verified by the
 corresponding public key.
+
+### Exporting an Asymmetric Secret Key for Storage
+
 You should also ensure that this key is stored safely! If the exported material
 of this key becomes known to a third party you must discontinue use of the key
 and cease to trust the authenticity of messages signed with this key.
@@ -304,27 +402,37 @@ If you are using the `public` part of the API, you will need to use
 a public key (`AsymmetricPublicKey<V: Implementation>`) to verify messages.
 
 There are two ways to obtain a public key:
-1. If you have a secret key, you can export the corresponding public key,
-  which will produce a key of the same version.
-  Given a secret key `secretKey`, use the following to do this:
-  ```swift
-  let publicKey = secretKey.publicKey
-  ```
-2. If you have public key material, use one of the initializers specified
-  in the `Key` protocol to construct a `AsymmetricPublicKey<V: Implementation>`
-  from this material.
 
-  For example to construct a public key from raw material `material` intended
-  for Version 2 of Paseto, use the following:
-  ```swift
-  guard let publicKey = try? AsymmetricPublicKey<Version2>(material) else {
-      /* bad material given */
-  }
-  ```
+### Obtaining a Public Key from a Secret Key
+
+If you have a secret key, you can export the corresponding public key,
+which will produce a key of the same version.
+Given a secret key `secretKey`, use the following to do this:
+```swift
+let publicKey = secretKey.publicKey
+```
+
+### Obtaining a Public Key from Key Material
+
+If you have public key material, use one of the initializers specified
+in the `Key` protocol to construct a `AsymmetricPublicKey<V: Implementation>`
+from this material.
+
+For example to construct a public key from raw material `material` intended
+for Version 2 of Paseto, use the following:
+```swift
+guard let publicKey = try? AsymmetricPublicKey<Version2>(material) else {
+    /* bad material given */
+}
+```
+
+### Generating a new Public Key
 
 Public keys cannot be generated without a corresponding secret key. If you have
 neither you should generate a new secret key and then export its corresponding
 public key.
+
+### Exporting an Asymmetric Public Key for Storage
 
 If you wish to export your public key to share, so that a recipient of one
 of your signed messages may verify its integrity, use the following:
