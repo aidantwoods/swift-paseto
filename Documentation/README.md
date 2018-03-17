@@ -1,35 +1,27 @@
 # Contents
 * [General Paseto Overview](#general-paseto-overview)
-
 * [General Paseto Usage](#general-paseto-usage)
-
 * [The Paseto Message](#the-paseto-message)
   * [Creating a Paseto Message](#creating-a-paseto-message)
   * [⚠️ Accessing the Footer Prior to Decryption or Verification](#accessing-the-footer-prior-to-decryption-or-verification)
   * [Transferable Formats](#transferable-formats)
-
 * [Paseto Keys](#paseto-keys)
   * [General Keys](#general-keys)
     * [General Key Methods](#general-key-methods)
         * [Constructing a General Key from Key Material](#constructing-a-general-key-from-key-material)
         * [Exporting a General Key from Key Material](#exporting-a-general-key-from-key-material)
-
     * [Additional General Key Methods](#additional-general-key-methods)
-
   * [Symmetric Keys](#symmetric-keys)
     * [Generating a new Symmetric Key](#generating-a-new-symmetric-key)
     * [Exporting a Symmetric Key for Storage](#exporting-a-symmetric-key-for-storage)
-  
   * [Asymmetric Secret Keys](#asymmetric-secret-keys)
     * [Generating a new Asymmetric Secret Key / Keypair](#generating-a-new-asymmetric-secret-key-keypair)
     * [Exporting an Asymmetric Secret Key for Storage](#exporting-an-asymmetric-secret-key-for-storage)
-
   * [Asymmetric Public Keys](#asymmetric-public-keys)
     * [Obtaining a Public Key from a Secret Key](#obtaining-a-public-key-from-a-secret-key)
     * [Obtaining a Public Key from Key Material](#obtaining-a-public-key-from-key-material)
     * [Generating a new Public Key](#generating-a-new-public-key)
     * [Exporting an Asymmetric Public Key for Storage](#exporting-an-asymmetric-public-key-for-storage)
-
 * [Wrapping up](#wrapping-up)
   * [Example](#example)
 
