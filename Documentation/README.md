@@ -15,7 +15,7 @@
     * [Generating a new Symmetric Key](#generating-a-new-symmetric-key)
     * [Exporting a Symmetric Key for Storage](#exporting-a-symmetric-key-for-storage)
   * [Asymmetric Secret Keys](#asymmetric-secret-keys)
-    * [Generating a new Asymmetric Secret Key / Keypair](#generating-a-new-asymmetric-secret-key-keypair)
+    * [Generating a new Asymmetric Secret Key / Keypair](#generating-a-new-asymmetric-secret-key--keypair)
     * [Exporting an Asymmetric Secret Key for Storage](#exporting-an-asymmetric-secret-key-for-storage)
   * [Asymmetric Public Keys](#asymmetric-public-keys)
     * [Obtaining a Public Key from a Secret Key](#obtaining-a-public-key-from-a-secret-key)
