@@ -39,7 +39,7 @@ public struct Blob<P: Payload>: MetaBlob {
     internal static func deconstruct(
         _ string: String
     ) -> (header: Header, encodedPayload: String, encodedFooter: String)? {
-        let parts = Header.split(string)
+        let parts = string.split(with: ".")
 
         guard [3, 4].contains(parts.count) else { return nil }
 

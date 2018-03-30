@@ -24,22 +24,12 @@ public struct Header {
         self.init(version: version, purpose: purpose)
     }
 
-    init? (serialised string: String) {
-        let parts = Header.split(string)
+    init? (serialised: String) {
+        let parts = serialised.split(with: ".")
 
-        guard parts.count == 3 else { return nil }
+        guard parts.count == 3, parts[2] == "" else { return nil }
 
-        guard let header = Header(version: parts[0], purpose: parts[1]),
-              parts[2] == ""
-        else { return nil }
-
-        self = header
-    }
-
-    static func split(_ string: String) -> [String] {
-        return string.split(
-            separator: ".", omittingEmptySubsequences: false
-        ).map(String.init)
+        self.init(version: parts[0], purpose: parts[1])
     }
 }
 
