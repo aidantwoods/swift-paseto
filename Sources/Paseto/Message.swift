@@ -1,5 +1,5 @@
 //
-//  Blob.swift
+//  Message.swift
 //  Paseto
 //
 //  Created by Aidan Woods on 05/03/2018.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct Blob<P: Payload>: MetaBlob {
+public struct Message<P: Payload>: MetaMessage {
     public typealias VersionType = P.VersionType
     public typealias PayloadType = P
 
-    public let header: Header = Blob.header
+    public let header: Header = Message.header
     let payload: PayloadType
     public let footer: Data
 
@@ -25,10 +25,10 @@ public struct Blob<P: Payload>: MetaBlob {
             header: header,
             encodedPayload: encodedPayload,
             encodedFooter: encodedFooter
-        ) = Blob.deconstruct(string)
+        ) = Message.deconstruct(string)
         else { return nil }
 
-        guard header == Blob.header,
+        guard header == Message.header,
               let payload = PayloadType(encoded: encodedPayload),
               let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
@@ -61,7 +61,7 @@ public struct Blob<P: Payload>: MetaBlob {
     }
 }
 
-public extension Blob {
+public extension Message {
     public var asString: String {
         let main = header.asString + payload.encode
         guard !footer.isEmpty else { return main }
@@ -71,7 +71,7 @@ public extension Blob {
     public var asData: Data { return Data(self.asString.utf8) }
 }
 
-extension Blob {
+extension Message {
     enum Exception: Error {
         case badEncoding(String)
     }

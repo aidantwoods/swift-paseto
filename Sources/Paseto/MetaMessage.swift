@@ -1,5 +1,5 @@
 //
-//  MetaBlob.swift
+//  MetaMessage.swift
 //  Paseto
 //
 //  Created by Aidan Woods on 10/03/2018.
@@ -9,7 +9,7 @@ import Foundation
 
 /**
  * WARNING: This protocol assumes that the implementor is of type
- * Blob<PayloadType> and WILL forcibly downcast to this type.
+ * Message<PayloadType> and WILL forcibly downcast to this type.
  * There is no sane reason to implement the protocol as a user.
  *
  * This protocol is contrived purely to side-step pointless restrictions on
@@ -21,37 +21,37 @@ import Foundation
  *
  * Now for the: "why?!"
  *
- * Consider that Blob was declared as:
+ * Consider that Message was declared as:
  *
- *     struct Blob<P: Payload> { ... }
+ *     struct Message<P: Payload> { ... }
  *
  * One cannot do something like:
  *
- *     extension Blob where P == Signed<P.VersionType> { ... }
+ *     extension Message where P == Signed<P.VersionType> { ... }
  *
  * because "Same-type constraint 'P' == 'Signed<P.VersionType>' is recursive".
  *
  * The only alternative is pointlessly raising the subtype to become a type
- * argument of Blob directly, e.g.:
+ * argument of Message directly, e.g.:
  *
- *     struct Blob<P: Payload, V> where V == P.VersionType { ... }
+ *     struct Message<P: Payload, V> where V == P.VersionType { ... }
  *
  * In this case, it is permitted to do:
  *
- *     extension Blob where P == Signed<V> { ... }
+ *     extension Message where P == Signed<V> { ... }
  *
  * however we have to always explicitly duplicate generic parameters, e.g.:
  *
- *     let blob = Blob<Signed<Version2>, Version2>
+ *     let blob = Message<Signed<Version2>, Version2>
  *
- * This protocol forms so-called "Meta" version of a Blob, which basically uses
+ * This protocol forms so-called "Meta" version of a Message, which basically uses
  * the type raising described above, but allows us to compute this raised
  * type in a type-alias instead of having to carry it around in type arguments.
  * Note that this is not possible in a "real" type because type-aliases
  * (which are not also associated types) cannot be used in where extension
  * clauses.
  */
-public protocol MetaBlob {
+public protocol MetaMessage {
     associatedtype VersionType
     associatedtype PayloadType: Payload
         where PayloadType.VersionType == VersionType
@@ -60,10 +60,10 @@ public protocol MetaBlob {
     var footer: Data { get }
 }
 
-extension MetaBlob {
+extension MetaMessage {
     func token(jsonData: Data) throws -> Token {
         guard let footer = self.footer.utf8String else {
-            throw Blob<PayloadType>.Exception.badEncoding(
+            throw Message<PayloadType>.Exception.badEncoding(
                 "Could not convert the footer to a UTF-8 string."
             )
         }
@@ -76,10 +76,10 @@ extension MetaBlob {
     }
 }
 
-extension MetaBlob where PayloadType == Signed<VersionType> {
+extension MetaMessage where PayloadType == Signed<VersionType> {
     public func verify(with key: AsymmetricPublicKey<VersionType>) throws -> Token {
         let message = try VersionType.verify(
-            self as! Blob<PayloadType>,
+            self as! Message<PayloadType>,
             with: key
         )
         return try token(jsonData: message)
@@ -90,10 +90,10 @@ extension MetaBlob where PayloadType == Signed<VersionType> {
     }
 }
 
-extension MetaBlob where PayloadType == Encrypted<VersionType> {
+extension MetaMessage where PayloadType == Encrypted<VersionType> {
     public func decrypt(with key: SymmetricKey<VersionType>) throws -> Token {
         let message = try VersionType.decrypt(
-            self as! Blob<PayloadType>,
+            self as! Message<PayloadType>,
             with: key
         )
         return try token(jsonData: message)

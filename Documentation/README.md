@@ -78,18 +78,18 @@ In particular, each version will implement the following protocol:
 protocol Implementation {
     static func encrypt(
         _ message: Data, with key: SymmetricKey<Self>, footer: Data
-    ) throws -> Blob<Encrypted<Self>>
+    ) throws -> Message<Encrypted<Self>>
 
     static func decrypt(
-        _ encrypted: Blob<Encrypted<Self>>, with key: SymmetricKey<Self>
+        _ encrypted: Message<Encrypted<Self>>, with key: SymmetricKey<Self>
     ) throws -> Data
 
     static func sign(
         _ data: Data, with key: AsymmetricSecretKey<Self>, footer: Data
-    ) throws -> Blob<Signed<Self>>
+    ) throws -> Message<Signed<Self>>
 
     static func verify(
-        _ signedMessage: Blob<Signed<Self>>, with key: AsymmetricPublicKey<Self>
+        _ signedMessage: Message<Signed<Self>>, with key: AsymmetricPublicKey<Self>
     ) throws -> Data
 }
 ```
@@ -110,10 +110,10 @@ as bytes when transforming to `Data`.
 The Paseto message is what will be produced by the encrypting and signing
 methods, and is what should be given to the decrypting and verification methods.
 
-In the Swift library, a Paseto message is implemented as `Blob<P: Payload>`,
+In the Swift library, a Paseto message is implemented as `Message<P: Payload>`,
 where the generic argument is a type of `Payload`.
 > Before explaining the detail, it helps to see an example of this written out
-> explicitly. For example, `Blob<Signed<Version2>>` is a Paseto message which
+> explicitly. For example, `Message<Signed<Version2>>` is a Paseto message which
 > has been signed using version 2 of Paseto's ciphersuite selection.
 
 The only valid `Payload` types are: `Encrypted<V: Implementation>`, and
@@ -122,10 +122,10 @@ is defined above).
 For example, the following are valid `Payload` types: `Encrypted<Version1>`,
 `Signed<Version2>`.
 
-The only public method of `Blob<P: Payload>` is as follows:
+The only public method of `Message<P: Payload>` is as follows:
 
 ```swift
-struct Blob<P: Payload> {
+struct Message<P: Payload> {
     public init? (_ string: String)
 }
 ```
@@ -136,7 +136,7 @@ covered later*.
 ## Creating a Paseto Message
 
 Paseto messages can be constructed by either encrypting or signing data,
-in which case a Paseto message (as a `Blob`) will be the output format.
+in which case a Paseto message (as a `Message`) will be the output format.
 
 A Paseto messages can also be constructed from a recieved message:
 
@@ -147,7 +147,7 @@ For example, if you expect `message` to store a version 2 signed Paseto message
 as a `String`, use the following:
 
 ```swift
-guard let blob = Blob<Signed<Version2>>(message) else { ... }
+guard let message = Message<Signed<Version2>>(message) else { ... }
 ```
 
 If this initializer fails, there are two possible causes (both may occur
@@ -171,17 +171,17 @@ simultaneously):
   switch (header.version, header.purpose) {
   case (.v1, .Public): /* this is not currently supported */
   case (.v1, .Local):
-      guard let blob = Blob<Encryped<Version1>>(message) else {
+      guard let message = Message<Encryped<Version1>>(message) else {
           /* message isn't valid, see 1. */
       }
       ...
   case (.v2, .Public):
-      guard let blob = Blob<Signed<Version2>>(message) else {
+      guard let message = Message<Signed<Version2>>(message) else {
           /* message isn't valid, see 1. */
       }
       ...
   case (.v2, .Local):
-      guard let blob = Blob<Encryped<Version2>>(message)else {
+      guard let message = Message<Encryped<Version2>>(message)else {
           /* message isn't valid, see 1. */
       }
       ...
@@ -199,32 +199,32 @@ simultaneously):
 ## Accessing the Footer Prior to Decryption or Verification
 
 > ⚠️  **WARNING: Do not trust a footer value until you have successfully
-> decrypted or verified the blob.**
+> decrypted or verified the message.**
 > 
 > This value is made available pre-verification/decryption because it may
 > be useful for, for example placing a key id in the footer. This could be used
-> so that the blob itself can indicate which of your trusted keys it requires
+> so that the message itself can indicate which of your trusted keys it requires
 > for decryption/verification.
 > 
 > **Be aware that early extraction of the footer is a completely
-> unauthenticated claim until the authenticity of the blob has been proved**
+> unauthenticated claim until the authenticity of the message has been proved**
 > (by either success of decryption or verification with a trusted key).
 
-To access the footer of an already constructed Blob `blob`, use
+To access the footer of an already constructed Message `message`, use
 
 ```swift
-let blobFooter = blob.footer
+let messageFooter = message.footer
 ```
 
 ## Transferable Formats
 
-If you have produced a `Blob` you will need to convert it to a `String` or
-`Data` in order to send or store it anywhere. To do this given a Blob `blob`,
+If you have produced a `Message` you will need to convert it to a `String` or
+`Data` in order to send or store it anywhere. To do this given a Message `message`,
 use either one of (as required):
 
 ```swift
-let pasetoString = blob.asString
-let pasetoData = blob.asData
+let pasetoString = message.asString
+let pasetoData = message.asData
 ```
 
 
@@ -448,7 +448,7 @@ static func encrypt(
     _ message: Data,
     with key: SymmetricKey<Version2>,
     footer: Data
-) throws -> Blob<Encrypted<Version2>>
+) throws -> Message<Encrypted<Version2>>
 ```
 
 Version 2 in-fact implements a non-throwing version of this method, and as

@@ -23,6 +23,6 @@ public enum Util {
 
     public static func header(of string: String) -> Header? {
         // type arguements don't really matter here
-        return Blob<Encrypted<Version2>>.deconstruct(string)?.header
+        return Message<Encrypted<Version2>>.deconstruct(string)?.header
     }
 }

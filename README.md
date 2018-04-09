@@ -118,25 +118,25 @@ let token = Token(claims: [
 
 Now encrypt it:
 ```swift
-guard let blob = try? token.encrypt(with: symmetricKey) else { /* respond to failure */ }
+guard let message = try? token.encrypt(with: symmetricKey) else { /* respond to failure */ }
 ```
 
 Then to get the encrypted token as a string, simply:
 ```swift
-let pasetoToken = blob.asString
+let pasetoToken = message.asString
 ```
 
 Or even as data:
 ```swift
-let pasetoTokenData = blob.asData
+let pasetoTokenData = message.asData
 ```
 
-`blob` is of type `Blob<Encrypted<Version2>>`. This means that it has a
+`message` is of type `Message<Encrypted<Version2>>`. This means that it has a
 specialised `decrypt(with: SymmetricKey<Version2>)` method, which can be used
 to retrieve the original token (when given a key). i.e. we can do:
 
 ```swift
-guard let try? decryptedToken = blob.decrypt(with: symmetricKey) else { /* respond to failure */ }
+guard let try? decryptedToken = message.decrypt(with: symmetricKey) else { /* respond to failure */ }
 ```
 
 
@@ -150,10 +150,10 @@ Now, if we wish produce a token which can be verified by others, we can
 do the following:
 
 ```swift
-guard let signedBlob = try? token.sign(with: secretKey) else { /* respond to failure */ }
+guard let signedMessage = try? token.sign(with: secretKey) else { /* respond to failure */ }
 ```
 
-`signedBlob` is of type `Blob<Signed<Version2>>`. This means that it has a
+`signedMessage` is of type `Message<Signed<Version2>>`. This means that it has a
 specialised `verify(with: AsymmetricPublicKey<Version2>)` method, which can be
 used to verify the contents and produce a verified token.
 
@@ -166,14 +166,14 @@ let publicKey = secretKey.publicKey
 `publicKey` is of type `AsymmetricPublicKey<Version2>`, so we may use:
 
 ```swift
-guard let try? verifiedToken = signedBlob.verify(with: publicKey) else { /* respond to failure */ }
+guard let try? verifiedToken = signedMessage.verify(with: publicKey) else { /* respond to failure */ }
 ```
 
-to reproduce the original token from the `signedBlob`.
+to reproduce the original token from the `signedMessage`.
 
 
 Lastly, let's suppose that we do not start
-with any objects. How do we create blobs
+with any objects. How do we create messages
 and keys from strings or data?
 
 Let's use the example from Paseto's readme:
@@ -199,11 +199,11 @@ guard let key = try? SymmetricKey<Version2>(
     /* respond to failure */
 }
 
-guard let blob = try? Blob<Encrypted<Version2>>(rawToken) else {
+guard let message = try? Message<Encrypted<Version2>>(rawToken) else {
     /* respond to failure */
 }
 
-guard let token = try? blob.decrypt(with: key) else {
+guard let token = try? message.decrypt(with: key) else {
     /* respond to failure */
 }
 
@@ -235,7 +235,7 @@ struct Header {
 ```
 
 where `version` is either `.v1` or `.v2`, and `purpose` is either `.Public` (a
-signed blob) or `.Local` (an encrypted blob).
+signed message) or `.Local` (an encrypted message).
 
 As `Version` and `Purpose` are enums, it is recommended that you use an
 explicitly exhaustive (i.e. no default) switch-case construct to select
@@ -243,8 +243,8 @@ different code paths. Making this explicitly exhaustive ensures that if, say
 additional versions are added then the Swift compiler will inform you when you
 have not considered all possibilities.
 
-If you attempt to create a blob using a raw token which produces a header that
-does not correspond to the blob's type arguments then the initialiser will fail.
+If you attempt to create a message using a raw token which produces a header that
+does not correspond to the message's type arguments then the initialiser will fail.
 
 # Supported Paseto Versions
 ## Version 2
@@ -257,6 +257,6 @@ due to compatibility issues (Swift is a new language 🤷‍♂️).
 Version 1 in the local mode (i.e. encrypted payloads using symmetric keys) is
 fully supported.
 Version 1 in the public mode (i.e. signed payloads using asymmetric keys) is
-**not** currently supported. You should not attempt to create signed blobs or
+**not** currently supported. You should not attempt to create signed messages or
 asymmetric keys with `Version1` as a type argument, this will result in a fatal
 error or exceptions being thrown.
