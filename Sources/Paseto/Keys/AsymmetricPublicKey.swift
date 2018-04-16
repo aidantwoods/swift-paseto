@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol AsymmetricPublicKey: Key where
-    Implementation: Public,
+    Implementation: BasePublic,
     Implementation.AsymmetricPublicKey == Self
 {}

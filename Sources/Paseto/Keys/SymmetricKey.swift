@@ -9,7 +9,7 @@ import Sodium
 import Foundation
 
 public protocol SymmetricKey: Key where
-    Implementation: Local,
+    Implementation: BaseLocal,
     Implementation.SymmetricKey == Self
 {
     init ()

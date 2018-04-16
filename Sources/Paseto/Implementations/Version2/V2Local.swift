@@ -48,7 +48,7 @@ extension Version2.Local {
     }
 }
 
-extension Version2.Local: Paseto.Local {
+extension Version2.Local: BaseLocal {
     public typealias Local = Version2.Local
 
     public static func encrypt(

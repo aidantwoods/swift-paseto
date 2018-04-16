@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol AsymmetricSecretKey: Key where
-    Implementation: Public,
+    Implementation: BasePublic,
     Implementation.AsymmetricSecretKey == Self
 {
     init ()

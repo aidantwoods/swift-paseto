@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Version2.Public: Paseto.Public {
+extension Version2.Public: BasePublic {
     public typealias Public = Version2.Public
 
     public static func sign(

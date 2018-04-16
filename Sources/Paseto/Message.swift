@@ -93,7 +93,7 @@ extension Message {
     }
 }   
 
-extension Message where I: Public, I.Public == I {
+extension Message where I: BasePublic {
     public func verify(with key: I.AsymmetricPublicKey) throws -> Token {
         let message = try I.verify(self, with: key)
         return try token(jsonData: message)
@@ -104,7 +104,7 @@ extension Message where I: Public, I.Public == I {
     }
 }
 
-extension Message where I: Local, I.Local == I {
+extension Message where I: BaseLocal {
     public func decrypt(with key: I.SymmetricKey) throws -> Token {
         let message = try I.decrypt(self, with: key)
         return try token(jsonData: message)

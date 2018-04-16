@@ -87,9 +87,7 @@ extension Token {
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) throws
-        -> Message<K.Implementation> where
-        K.Implementation.Public == K.Implementation
+    func sign<K: AsymmetricSecretKey>(with key: K) throws -> Message<K.Implementation>
     {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
@@ -103,10 +101,14 @@ public extension Token {
             )
         }
 
-        return try K.Implementation.sign(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.Implementation.sign(
+            claimsData,
+            with: key,
+            footer: Data(footer.utf8)
+        )
     }
 
-    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Implementation> where K.Implementation.Local == K.Implementation {
+    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Implementation> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
@@ -119,15 +121,19 @@ public extension Token {
             )
         }
 
-        return try K.Implementation.encrypt(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.Implementation.encrypt(
+            claimsData,
+            with: key,
+            footer: Data(footer.utf8)
+        )
     }
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Implementation>? where K.Implementation.Public == K.Implementation {
+    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Implementation>? {
         return try? sign(with: key)
     }
-    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Implementation>? where K.Implementation.Local == K.Implementation {
+    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Implementation>? {
         return try? encrypt(with: key)
     }
 }
