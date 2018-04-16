@@ -7,9 +7,8 @@
 
 import Foundation
 
-protocol Key {
-    associatedtype VersionType: Implementation
-
+public protocol Key {
+    associatedtype ImplementationType: Implementation
     var material: Data { get }
     init (material: Data) throws
 }
@@ -30,8 +29,6 @@ extension Key {
         }
         try self.init(material: decoded)
     }
-
-    public static var version: Version { return VersionType.version }
 }
 
 public enum KeyException: Error {

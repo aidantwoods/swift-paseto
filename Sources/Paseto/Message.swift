@@ -7,9 +7,9 @@
 
 import Foundation
 
-public struct Message<P: Payload>: MetaMessage {
-    public typealias VersionType = P.VersionType
-    public typealias PayloadType = P
+public struct Message<I: Implementation> {
+    public typealias ImplementationType = I
+    public typealias PayloadType = I.Payload
 
     public let header: Header = Message.header
     let payload: PayloadType
@@ -55,7 +55,7 @@ public struct Message<P: Payload>: MetaMessage {
 
     public static var header: Header {
         return Header(
-            version: Version(implementation: VersionType.self),
+            version: Version(implementation: I.self),
             purpose: Purpose(payload: PayloadType.self)
         )
     }
@@ -74,5 +74,43 @@ public extension Message {
 extension Message {
     enum Exception: Error {
         case badEncoding(String)
+    }
+}
+
+extension Message {
+    func token(jsonData: Data) throws -> Token {
+        guard let footer = self.footer.utf8String else {
+            throw Message<I>.Exception.badEncoding(
+                "Could not convert the footer to a UTF-8 string."
+            )
+        }
+
+        return try Token(
+            jsonData: jsonData,
+            footer: footer,
+            allowedVersions: [header.version]
+        )
+    }
+}   
+
+extension Message where I: Public, I.Public == I {
+    public func verify(with key: I.AsymmetricPublicKey) throws -> Token {
+        let message = try I.verify(self, with: key)
+        return try token(jsonData: message)
+    }
+
+    public func verify(with key: I.AsymmetricPublicKey) -> Token? {
+        return try? verify(with: key)
+    }
+}
+
+extension Message where I: Local, I.Local == I {
+    public func decrypt(with key: I.SymmetricKey) throws -> Token {
+        let message = try I.decrypt(self, with: key)
+        return try token(jsonData: message)
+    }
+
+    public func decrypt(with key: I.SymmetricKey) -> Token? {
+        return try? decrypt(with: key)
     }
 }

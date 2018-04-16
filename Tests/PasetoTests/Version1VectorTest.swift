@@ -10,15 +10,15 @@ import XCTest
 import Sodium
 
 class Version1VectorTest: XCTestCase {
-    let symmetricKey = try! SymmetricKey<Version1>(
+    let symmetricKey = try! Version1.SymmetricKey(
         hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
     )
 
-    let nullKey = try! SymmetricKey<Version1>(
+    let nullKey = try! Version1.SymmetricKey(
         hex: String(repeating: "00", count: 32)
     )
 
-    let fullKey = try! SymmetricKey<Version1>(
+    let fullKey = try! Version1.SymmetricKey(
         hex: String(repeating: "ff", count: 32)
     )
 

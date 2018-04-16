@@ -11,11 +11,11 @@ import Sodium
 
 class Version2Test: XCTestCase {
     func testVerify() {
-        let pk = try! AsymmetricPublicKey<Version2>(
+        let pk = try! Version2.AsymmetricPublicKey(
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
-        let signedBlob = Message<Signed<Version2>>(
+        let signedBlob = Message<Version2.Public>(
             "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
                 + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
@@ -26,7 +26,7 @@ class Version2Test: XCTestCase {
     }
 
     func testSign() {
-        let sk = AsymmetricSecretKey<Version2>()
+        let sk = Version2.AsymmetricSecretKey()
 
         let message = "Hello world!"
 
@@ -38,11 +38,11 @@ class Version2Test: XCTestCase {
     }
 
     func testDecrypt() {
-        let sk = try! SymmetricKey<Version2>(
+        let sk = try! Version2.SymmetricKey(
             encoded: "EOIf5G5PXsHrm45-QV-NxEHRvyg-uw38BOIajl7slZ4"
         )
 
-        let encryptedBlob = Message<Encrypted<Version2>>(
+        let encryptedBlob = Message<Version2.Local>(
             "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
                 + "vk0T-IXh5SlJPkPrjJ7cU"
         )!
@@ -53,7 +53,7 @@ class Version2Test: XCTestCase {
     }
 
     func testEncrypt() {
-        let sk = SymmetricKey<Version2>()
+        let sk = Version2.SymmetricKey()
 
         let message = """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
@@ -76,14 +76,14 @@ class Version2Test: XCTestCase {
     }
 
     func testExample1() {
-        let blob = Message<Encrypted<Version2>>(
+        let blob = Message<Version2.Local>(
             "v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqI"
                 + "IhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhf"
                 + "wHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aX"
                 + "ZlIEVudGVycHJpc2Vz"
         )!
 
-        let sk = SymmetricKey<Version2>(material: Sodium().utils.hex2bin(
+        let sk = Version2.SymmetricKey(material: Sodium().utils.hex2bin(
             "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )!)
 
@@ -104,7 +104,7 @@ class Version2Test: XCTestCase {
     }
 
     func testLargeData() {
-        let sk = SymmetricKey<Version2>()
+        let sk = Version2.SymmetricKey()
 
         let message = Sodium().randomBytes.buf(length: Int(1 << 25))!
 
@@ -118,11 +118,11 @@ class Version2Test: XCTestCase {
     func testReadmeExample() {
         let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz"
 
-        let key = try! SymmetricKey<Version2>(
+        let key = try! Version2.SymmetricKey(
             hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )
 
-        let blob = Message<Encrypted<Version2>>(rawToken)!
+        let blob = Message<Version2.Local>(rawToken)!
 
         let token = blob.decrypt(with: key)!
 
@@ -135,7 +135,7 @@ class Version2Test: XCTestCase {
     }
 
     func testDocExample() {
-        let key = SymmetricKey<Version2>()
+        let key = Version2.SymmetricKey()
         let message = Version2.encrypt("Hello world!", with: key)
         let pasetoString = message.asString
         let verySensitiveKeyMaterial = key.encode
@@ -144,15 +144,15 @@ class Version2Test: XCTestCase {
         XCTAssertEqual(
             "Hello world!",
             Version2.decrypt(
-                Message<Encrypted<Version2>>(pasetoString)!,
+                Message<Version2.Local>(pasetoString)!,
                 with: key
             )!
         )
         XCTAssertEqual(
             "Hello world!",
             Version2.decrypt(
-                Message<Encrypted<Version2>>(pasetoString)!,
-                with: try! SymmetricKey<Version2>(
+                Message<Version2.Local>(pasetoString)!,
+                with: try! Version2.SymmetricKey(
                     encoded: verySensitiveKeyMaterial
                 )
             )!

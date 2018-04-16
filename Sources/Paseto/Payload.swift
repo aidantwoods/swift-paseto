@@ -8,8 +8,6 @@
 import Foundation
 
 public protocol Payload {
-    associatedtype VersionType: Implementation
-
     init? (data: Data)
     var asData: Data { get }
 }
@@ -21,6 +19,4 @@ extension Payload {
     }
 
     var encode: String { return self.asData.base64UrlNoPad }
-
-    public static var version: Version { return VersionType.version }
 }

@@ -10,24 +10,24 @@ import XCTest
 import Sodium
 
 class Version2VectorTest: XCTestCase {
-    let symmetricKey = try! SymmetricKey<Version2>(
+    let symmetricKey = try! Version2.SymmetricKey(
         hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
     )
 
-    let nullKey = try! SymmetricKey<Version2>(
+    let nullKey = try! Version2.SymmetricKey(
         hex: String(repeating: "00", count: 32)
     )
 
-    let fullKey = try! SymmetricKey<Version2>(
+    let fullKey = try! Version2.SymmetricKey(
         hex: String(repeating: "ff", count: 32)
     )
 
-    let privateKey = try! AsymmetricSecretKey<Version2>(
+    let privateKey = try! Version2.AsymmetricSecretKey(
         hex: "b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774"
             + "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
     )
 
-    let publicKey = try! AsymmetricPublicKey<Version2>(
+    let publicKey = try! Version2.AsymmetricPublicKey(
         hex: "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
     )
 

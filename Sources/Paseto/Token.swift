@@ -87,44 +87,47 @@ extension Token {
 }
 
 public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) throws -> Message<Signed<V>> {
+    func sign<K: AsymmetricSecretKey>(with key: K) throws
+        -> Message<K.ImplementationType> where
+        K.ImplementationType.Public == K.ImplementationType
+    {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: V.self)) else {
+        guard allowedVersions.contains(Version(implementation: K.ImplementationType.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try V.sign(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.ImplementationType.sign(claimsData, with: key, footer: Data(footer.utf8))
     }
 
-    func encrypt<V>(with key: SymmetricKey<V>) throws -> Message<Encrypted<V>> {
+    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.ImplementationType> where K.ImplementationType.Local == K.ImplementationType {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: V.self)) else {
+        guard allowedVersions.contains(Version(implementation: K.ImplementationType.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try V.encrypt(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.ImplementationType.encrypt(claimsData, with: key, footer: Data(footer.utf8))
     }
 }
 
 public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) -> Message<Signed<V>>? {
+    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.ImplementationType>? where K.ImplementationType.Public == K.ImplementationType {
         return try? sign(with: key)
     }
-    func encrypt<V>(with key: SymmetricKey<V>) -> Message<Encrypted<V>>? {
+    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.ImplementationType>? where K.ImplementationType.Local == K.ImplementationType {
         return try? encrypt(with: key)
     }
 }
