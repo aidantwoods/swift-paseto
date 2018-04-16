@@ -8,7 +8,7 @@
 import Foundation
 
 extension Version2.Public.AsymmetricPublicKey: Paseto.AsymmetricPublicKey {
-    public typealias ImplementationType = Version2.Public
+    public typealias Implementation = Version2.Public
 
     public init (material: Data) throws {
         guard material.count == Sign.PublicKeyBytes else {

@@ -9,7 +9,7 @@ import Foundation
 import CryptoSwift
 
 extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
-    public typealias ImplementationType = Version1.Local
+    public typealias Implementation = Version1.Local
 
     public init (material: Data) {
         self.material = material

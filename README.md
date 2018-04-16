@@ -50,7 +50,7 @@ dependencies: [
 ```
 
 ## Requirements
-* Swift 4.0 and above.
+* Swift 4.1 and above.
 
 ## Dependencies
 The following are automatically resolved when using Swift Package Manager.

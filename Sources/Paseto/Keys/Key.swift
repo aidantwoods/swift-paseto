@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol Key {
-    associatedtype ImplementationType: Implementation
+    associatedtype Implementation: Paseto.Implementation
     var material: Data { get }
     init (material: Data) throws
 }

@@ -88,8 +88,8 @@ extension Token {
 
 public extension Token {
     func sign<K: AsymmetricSecretKey>(with key: K) throws
-        -> Message<K.ImplementationType> where
-        K.ImplementationType.Public == K.ImplementationType
+        -> Message<K.Implementation> where
+        K.Implementation.Public == K.Implementation
     {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
@@ -97,37 +97,37 @@ public extension Token {
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: K.ImplementationType.self)) else {
+        guard allowedVersions.contains(Version(implementation: K.Implementation.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try K.ImplementationType.sign(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.Implementation.sign(claimsData, with: key, footer: Data(footer.utf8))
     }
 
-    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.ImplementationType> where K.ImplementationType.Local == K.ImplementationType {
+    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Implementation> where K.Implementation.Local == K.Implementation {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: K.ImplementationType.self)) else {
+        guard allowedVersions.contains(Version(implementation: K.Implementation.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try K.ImplementationType.encrypt(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.Implementation.encrypt(claimsData, with: key, footer: Data(footer.utf8))
     }
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.ImplementationType>? where K.ImplementationType.Public == K.ImplementationType {
+    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Implementation>? where K.Implementation.Public == K.Implementation {
         return try? sign(with: key)
     }
-    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.ImplementationType>? where K.ImplementationType.Local == K.ImplementationType {
+    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Implementation>? where K.Implementation.Local == K.Implementation {
         return try? encrypt(with: key)
     }
 }

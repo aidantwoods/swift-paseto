@@ -10,7 +10,7 @@ import Foundation
 public protocol Public {
     associatedtype AsymmetricSecretKey: Paseto.AsymmetricSecretKey
     associatedtype AsymmetricPublicKey: Paseto.AsymmetricPublicKey where
-        AsymmetricPublicKey == AsymmetricSecretKey.ImplementationType.AsymmetricPublicKey
+        AsymmetricPublicKey == AsymmetricSecretKey.Implementation.AsymmetricPublicKey
 
     associatedtype Public: Paseto.Public & Implementation where Public.Public == Public
 
