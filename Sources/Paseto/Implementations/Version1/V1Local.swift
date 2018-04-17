@@ -32,7 +32,7 @@ extension Version1.Local {
                 key: encKey.bytes,
                 blockMode: .CTR(iv: nonce[16...].bytes),
                 padding: .noPadding
-                ).encrypt(message.bytes)
+            ).encrypt(message.bytes)
         )
 
         let header = Header(version: version, purpose: .Local)
@@ -42,7 +42,7 @@ extension Version1.Local {
             try HMAC(
                 key: authKey.bytes,
                 variant: .sha384
-                ).authenticate(pae.bytes)
+            ).authenticate(pae.bytes)
         )
 
         let payload = Payload(
