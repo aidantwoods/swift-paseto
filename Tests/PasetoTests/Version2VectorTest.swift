@@ -39,21 +39,21 @@ class Version2VectorTest: XCTestCase {
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNUtKpdy5KXjKfpSKrOlqQvQ",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: nullKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNSOvpveyCsjPYfe9mtiJDVg",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: fullKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNkIWACdHuLiJiW16f2GuGYA",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: symmetricKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
@@ -62,21 +62,21 @@ class Version2VectorTest: XCTestCase {
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNfzz6yGkE4ZxojJAJwKLfvg.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: nullKey, footer: footer1, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNJbTJxAGtEg4ZMXY9g2LSoQ.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: fullKey, footer: footer1, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNreCcZAS0iGVlzdHjTf2ilg.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 emptyMessage, with: symmetricKey, footer: footer1, unitTestNonce: nonce1
             ).asString
         )
@@ -85,21 +85,21 @@ class Version2VectorTest: XCTestCase {
 
         XCTAssertEqual(
             "v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSvu6cB-KuR4wR9uDMjd45cPiOF0zxb7rrtOB5tRcS7dWsFwY4ONEuL5sWeunqHC9jxU0",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: nullKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSjvSia2-chHyMi4LtHA8yFr1V7iZmKBWqzg5geEyNAAaD6xSEfxoET1xXqahe1jqmmPw",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: fullKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSXlvv8MsrNZs3vTSnGQG4qRM9ezDl880jFwknSA6JARj2qKhDHnlSHx1GSCizfcF019U",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: symmetricKey, footer: emptyFooter, unitTestNonce: nonce1
             ).asString
         )
@@ -110,21 +110,21 @@ class Version2VectorTest: XCTestCase {
 
         XCTAssertEqual(
             "v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvbcqXgWxM3vJGrJ9kWqquP61Xl7bz4ZEqN5XwH7xyzV0QqPIo0k52q5sWxUQ4LMBFFso.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: nullKey, footer: footer1, unitTestNonce: nonce2
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvZMW3MgUMFplQXsxcNlg2RX8LzFxAqj4qa2FwgrUdH4vYAXtCFrlGiLnk-cHHOWSUSaw.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: fullKey, footer: footer1, unitTestNonce: nonce2
             ).asString
         )
 
         XCTAssertEqual(
             "v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvl05z9GIX0cnol6UK94cfV77AXnShlUcNgpDR12FrQiurS8jxBRmvoIKmeMWC5wY9Y6w.Q3VvbiBBbHBpbnVz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message1, with: symmetricKey, footer: footer1, unitTestNonce: nonce2
             ).asString
         )
@@ -135,7 +135,7 @@ class Version2VectorTest: XCTestCase {
 
         XCTAssertEqual(
             "v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz",
-            Version2.encrypt(
+            Version2.Local.encrypt(
                 message2, with: symmetricKey, footer: footer2, unitTestNonce: nonce2
             ).asString
         )
