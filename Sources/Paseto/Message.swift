@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct Message<I: Implementation> {
-    public typealias ImplementationType = I
-    public typealias PayloadType = I.Payload
+public struct Message<M: Module> {
+    public typealias Module = M
+    public typealias Payload = M.Payload
 
     public let header: Header = Message.header
-    let payload: PayloadType
+    let payload: Payload
     public let footer: Data
 
-    init (payload: PayloadType, footer: Data = Data()) {
+    init (payload: Payload, footer: Data = Data()) {
         self.payload = payload
         self.footer  = footer
     }
@@ -29,7 +29,7 @@ public struct Message<I: Implementation> {
         else { return nil }
 
         guard header == Message.header,
-              let payload = PayloadType(encoded: encodedPayload),
+              let payload = Payload(encoded: encodedPayload),
               let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
 
@@ -55,8 +55,8 @@ public struct Message<I: Implementation> {
 
     public static var header: Header {
         return Header(
-            version: Version(implementation: I.self),
-            purpose: Purpose(payload: PayloadType.self)
+            version: Version(module: M.self),
+            purpose: Purpose(payload: Payload.self)
         )
     }
 }
@@ -78,39 +78,39 @@ extension Message {
 }
 
 extension Message {
-    func token(jsonData: Data) throws -> Token {
-        guard let footer = self.footer.utf8String else {
-            throw Message<I>.Exception.badEncoding(
+    func token(package: Package) throws -> Token {
+        guard let footer = package.footer.utf8String else {
+            throw Exception.badEncoding(
                 "Could not convert the footer to a UTF-8 string."
             )
         }
 
         return try Token(
-            jsonData: jsonData,
+            jsonData: package.content,
             footer: footer,
             allowedVersions: [header.version]
         )
     }
 }   
 
-extension Message where I: BasePublic {
-    public func verify(with key: I.AsymmetricPublicKey) throws -> Token {
-        let message = try I.verify(self, with: key)
-        return try token(jsonData: message)
+extension Message where M: BasePublic {
+    public func verify(with key: M.PublicKey) throws -> Token {
+        let package = try M.verify(self, with: key)
+        return try token(package: package)
     }
 
-    public func verify(with key: I.AsymmetricPublicKey) -> Token? {
+    public func verify(with key: M.PublicKey) -> Token? {
         return try? verify(with: key)
     }
 }
 
-extension Message where I: BaseLocal {
-    public func decrypt(with key: I.SymmetricKey) throws -> Token {
-        let message = try I.decrypt(self, with: key)
-        return try token(jsonData: message)
+extension Message where M: BaseLocal {
+    public func decrypt(with key: M.SymmetricKey) throws -> Token {
+        let package = try M.decrypt(self, with: key)
+        return try token(package: package)
     }
 
-    public func decrypt(with key: I.SymmetricKey) -> Token? {
+    public func decrypt(with key: M.SymmetricKey) -> Token? {
         return try? decrypt(with: key)
     }
 }

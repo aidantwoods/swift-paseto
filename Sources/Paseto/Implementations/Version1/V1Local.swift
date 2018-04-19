@@ -10,11 +10,12 @@ import CryptoSwift
 
 extension Version1.Local {
     internal static func encrypt(
-        _ message: Data,
+        _ package: Package,
         with key: SymmetricKey,
-        footer: Data,
         unitTestNonce: Data?
     ) throws -> Message<Local> {
+        let (data, footer) = (package.content, package.footer)
+
         let preNonce: Data
 
         if case let .some(given) = unitTestNonce, given.count == nonceBytes {
@@ -23,7 +24,7 @@ extension Version1.Local {
             preNonce = sodium.randomBytes.buf(length: nonceBytes)!
         }
 
-        let nonce = try getNonce(message: message, preNonce: preNonce)
+        let nonce = try getNonce(message: data, preNonce: preNonce)
 
         let (Ek: encKey, Ak: authKey) = try key.split(salt: nonce[..<16])
 
@@ -32,7 +33,7 @@ extension Version1.Local {
                 key: encKey.bytes,
                 blockMode: .CTR(iv: nonce[16...].bytes),
                 padding: .noPadding
-            ).encrypt(message.bytes)
+            ).encrypt(data.bytes)
         )
 
         let header = Header(version: version, purpose: .Local)
@@ -53,33 +54,40 @@ extension Version1.Local {
 
         return Message(payload: payload, footer: footer)
     }
+
+    internal static func encrypt(
+        _ data: Data,
+        with key: SymmetricKey,
+        footer: Data,
+        unitTestNonce: Data?
+    ) throws -> Message<Local> {
+        return try encrypt(
+            Package(data: data, footer: footer),
+            with: key,
+            unitTestNonce: unitTestNonce
+        )
+    }
 }
 
 extension Version1.Local: BaseLocal {
     public typealias Local = Version1.Local
 
     public static func encrypt(
-        _ data: Data,
-        with key: SymmetricKey,
-        footer: Data
+        _ package: Package,
+        with key: SymmetricKey
     ) throws -> Message<Local> {
-        return try encrypt(
-            data,
-            with: key,
-            footer: footer,
-            unitTestNonce: nil
-        )
+        return try encrypt(package, with: key, unitTestNonce: nil)
     }
 
     public static func decrypt(
-        _ encrypted: Message<Local>,
+        _ message: Message<Local>,
         with key: SymmetricKey
-    ) throws -> Data {
-        let (header, footer) = (encrypted.header, encrypted.footer)
+    ) throws -> Package {
+        let (header, footer) = (message.header, message.footer)
 
-        let nonce      = encrypted.payload.nonce
-        let cipherText = encrypted.payload.cipherText
-        let mac        = encrypted.payload.mac
+        let nonce      = message.payload.nonce
+        let cipherText = message.payload.cipherText
+        let mac        = message.payload.mac
 
         let (Ek: encKey, Ak: authKey) = try key.split(salt: nonce[..<16])
 
@@ -104,7 +112,7 @@ extension Version1.Local: BaseLocal {
             ).decrypt(cipherText.bytes)
         )
 
-        return plainText
+        return Package(data: plainText, footer: footer)
     }
 }
 
@@ -113,7 +121,7 @@ extension Version1.Local {
         let hmac = try HMAC(
             key: preNonce.bytes,
             variant: .sha384
-            ).authenticate(message.bytes)
+        ).authenticate(message.bytes)
 
         return Data(hmac)[..<32]
     }

@@ -7,21 +7,27 @@
 
 import Foundation
 
-extension Version2.Public.AsymmetricPublicKey: Paseto.AsymmetricPublicKey {
-    public typealias Implementation = Version2.Public
+extension Version2.Public {
+    public struct PublicKey  {
+        public let material: Data
 
-    public init (material: Data) throws {
-        guard material.count == Sign.PublicKeyBytes else {
-            throw Exception.badLength(
-                "Public key must be 32 bytes long; \(material.count) given."
-            )
+        public init (material: Data) throws {
+            guard material.count == Sign.PublicKeyBytes else {
+                throw Exception.badLength(
+                    "Public key must be 32 bytes long; \(material.count) given."
+                )
+            }
+
+            self.material = material
         }
-
-        self.material = material
     }
 }
 
-public extension Version2.Public.AsymmetricPublicKey {
+extension Version2.Public.PublicKey : Paseto.AsymmetricPublicKey {
+    public typealias Module = Version2.Public
+}
+
+public extension Version2.Public.PublicKey  {
     enum Exception: Error {
         case badLength(String)
     }

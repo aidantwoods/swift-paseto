@@ -11,8 +11,8 @@ public enum Version: String {
 }
 
 extension Version {
-    init <I: Implementation>(implementation: I.Type) {
-        switch implementation {
+    init <M: Module>(module: M.Type) {
+        switch module {
         case is Version1.Local.Type: self = .v1
         case is Version2.Local.Type: self = .v2
         case is Version2.Public.Type: self = .v2

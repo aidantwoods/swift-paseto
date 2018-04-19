@@ -7,7 +7,13 @@
 
 import Foundation
 
-extension Version1.Local: Implementation {}
+extension Version1.Local: Module {
+    public struct Payload {
+        let nonce: Data
+        let cipherText: Data
+        let mac: Data
+    }
+}
 
 extension Version1.Local.Payload: Paseto.Payload {
     public var asData: Data { return nonce + cipherText + mac }

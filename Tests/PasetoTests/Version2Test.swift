@@ -11,7 +11,7 @@ import Sodium
 
 class Version2Test: XCTestCase {
     func testVerify() {
-        let pk = try! Version2.AsymmetricPublicKey(
+        let pk = try! Version2.PublicKey(
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
@@ -26,7 +26,7 @@ class Version2Test: XCTestCase {
     }
 
     func testSign() {
-        let sk = Version2.AsymmetricSecretKey()
+        let sk = Version2.SecretKey()
 
         let message = "Hello world!"
 
@@ -94,7 +94,7 @@ class Version2Test: XCTestCase {
 
         let expectedFooter = Data("Paragon Initiative Enterprises".utf8)
 
-        let decrypted = try! Version2.decrypt(blob, with: sk)
+        let decrypted = try! Version2.decrypt(blob, with: sk).content
 
         let result = try! JSONSerialization.jsonObject(with: decrypted)
             as! [String: String]
@@ -110,7 +110,7 @@ class Version2Test: XCTestCase {
 
         let blob = Version2.encrypt(message, with: sk)
 
-        let result: Data = Version2.decrypt(blob, with: sk)!
+        let result = try! Version2.decrypt(blob, with: sk).content
 
         XCTAssertEqual(message, result)
     }

@@ -11,10 +11,11 @@ extension Version2.Public: BasePublic {
     public typealias Public = Version2.Public
 
     public static func sign(
-        _ data: Data,
-        with key: AsymmetricSecretKey,
-        footer: Data
+        _ package: Package,
+        with key: SecretKey
     ) -> Message<Public> {
+        let (data, footer) = (package.content, package.footer)
+
         let header = Header(version: version, purpose: .Public)
 
         let signature = Sign.signature(
@@ -31,12 +32,12 @@ extension Version2.Public: BasePublic {
     }
 
     public static func verify(
-        _ signedMessage: Message<Public>,
-        with key: AsymmetricPublicKey
-    ) throws -> Data {
-        let (header, footer) = (signedMessage.header, signedMessage.footer)
+        _ message: Message<Public>,
+        with key: PublicKey
+    ) throws -> Package {
+        let (header, footer) = (message.header, message.footer)
 
-        let payload = signedMessage.payload
+        let payload = message.payload
 
         let isValid = Sign.verify(
             message: Util.pae([header.asData, payload.message, footer]),
@@ -50,16 +51,8 @@ extension Version2.Public: BasePublic {
             )
         }
 
-        return payload.message
+        return Package(data: payload.message, footer: footer)
     }
 }
 
-public extension Version2.Public {
-    static func sign(
-        _ string: String,
-        with key: AsymmetricSecretKey,
-        footer: Data = Data()
-    ) -> Message<Public> {
-        return sign(Data(string.utf8), with: key, footer: footer)
-    }
-}
+extension Version2.Public: NonThrowingPublicSign {}

@@ -22,12 +22,12 @@ class Version2VectorTest: XCTestCase {
         hex: String(repeating: "ff", count: 32)
     )
 
-    let privateKey = try! Version2.AsymmetricSecretKey(
+    let privateKey = try! Version2.SecretKey(
         hex: "b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a3774"
             + "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
     )
 
-    let publicKey = try! Version2.AsymmetricPublicKey(
+    let publicKey = try! Version2.PublicKey(
         hex: "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
     )
 
@@ -144,33 +144,33 @@ class Version2VectorTest: XCTestCase {
     func testSignVectors() {
         XCTAssertEqual(
         "v2.public.xnHHprS7sEyjP5vWpOvHjAP2f0HER7SWfPuehZ8QIctJRPTrlZLtRCk9_iNdugsrqJoGaO4k9cDBq3TOXu24AA",
-            Version2.sign("", with: privateKey)!.asString
+            Version2.sign("", with: privateKey).asString
         )
 
         XCTAssertEqual(
             "v2.public.Qf-w0RdU2SDGW_awMwbfC0Alf_nd3ibUdY3HigzU7tn_4MPMYIKAJk_J_yKYltxrGlxEdrWIqyfjW81njtRyDw.Q3VvbiBBbHBpbnVz",
-            Version2.sign("", with: privateKey, footer: Data("Cuon Alpinus".utf8))!.asString
+            Version2.sign("", with: privateKey, footer: Data("Cuon Alpinus".utf8)).asString
         )
 
         XCTAssertEqual(
             "v2.public.RnJhbmsgRGVuaXMgcm9ja3NBeHgns4TLYAoyD1OPHww0qfxHdTdzkKcyaE4_fBF2WuY1JNRW_yI8qRhZmNTaO19zRhki6YWRaKKlCZNCNrQM",
-            Version2.sign("Frank Denis rocks", with: privateKey)!.asString
+            Version2.sign("Frank Denis rocks", with: privateKey).asString
         )
 
         XCTAssertEqual(
             "v2.public.RnJhbmsgRGVuaXMgcm9ja3NBeHgns4TLYAoyD1OPHww0qfxHdTdzkKcyaE4_fBF2WuY1JNRW_yI8qRhZmNTaO19zRhki6YWRaKKlCZNCNrQM",
-            Version2.sign("Frank Denis rocks", with: privateKey)!.asString
+            Version2.sign("Frank Denis rocks", with: privateKey).asString
         )
 
         XCTAssertEqual(
             "v2.public.RnJhbmsgRGVuaXMgcm9ja3qIOKf8zCok6-B5cmV3NmGJCD6y3J8fmbFY9KHau6-e9qUICrGlWX8zLo-EqzBFIT36WovQvbQZq4j6DcVfKCML",
-            Version2.sign("Frank Denis rockz", with: privateKey)!.asString
+            Version2.sign("Frank Denis rockz", with: privateKey).asString
         )
 
 
         XCTAssertEqual(
             "v2.public.RnJhbmsgRGVuaXMgcm9ja3O7MPuu90WKNyvBUUhAGFmi4PiPOr2bN2ytUSU-QWlj8eNefki2MubssfN1b8figynnY0WusRPwIQ-o0HSZOS0F.Q3VvbiBBbHBpbnVz",
-            Version2.sign("Frank Denis rocks", with: privateKey, footer: Data("Cuon Alpinus".utf8))!.asString
+            Version2.sign("Frank Denis rocks", with: privateKey, footer: Data("Cuon Alpinus".utf8)).asString
         )
 
         let message = Data("{\"data\":\"this is a signed message\",\"expires\":\"2019-01-01T00:00:00+00:00\"}".utf8)

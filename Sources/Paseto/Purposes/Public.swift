@@ -8,11 +8,11 @@
 import Foundation
 
 public protocol Public {
-    associatedtype AsymmetricSecretKey: Paseto.AsymmetricSecretKey
-    associatedtype AsymmetricPublicKey: Paseto.AsymmetricPublicKey where
-        AsymmetricPublicKey == AsymmetricSecretKey.Implementation.AsymmetricPublicKey
+    associatedtype SecretKey: AsymmetricSecretKey
+    associatedtype PublicKey: AsymmetricPublicKey where
+        PublicKey == SecretKey.Module.PublicKey
 
-    associatedtype Public: BasePublic
+    associatedtype Public: BasePublic where SecretKey == Public.SecretKey
 
     static func sign(_: Package, with: SecretKey) throws -> Message<Public>
 

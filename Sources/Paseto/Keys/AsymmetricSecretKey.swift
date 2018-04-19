@@ -8,10 +8,10 @@
 import Foundation
 
 public protocol AsymmetricSecretKey: Key where
-    Implementation: BasePublic,
-    Implementation.AsymmetricSecretKey == Self
+    Module: BasePublic,
+    Module.SecretKey == Self
 {
     init ()
 
-    var publicKey: Implementation.AsymmetricPublicKey { get }
+    var publicKey: Module.PublicKey { get }
 }

@@ -144,7 +144,7 @@ class TokenTest: XCTestCase {
                 "boo": "bop",
             ])
 
-        let key = Version2.AsymmetricSecretKey()
+        let key = Version2.SecretKey()
 
         let message = token.sign(with: key)!
         let unsealedToken = message.verify(with: key.publicKey)!
@@ -172,7 +172,7 @@ class TokenTest: XCTestCase {
             """.replacingOccurrences(of: "\n", with: "")
 
         // load a version2 symmetric key
-        let key = try! Version2.AsymmetricPublicKey(
+        let key = try! Version2.PublicKey(
             encoded: "ETJDl_U1ViF41T_1OOSdWhYiQpcFVrTt2VDIfH2GZIo"
         )
 

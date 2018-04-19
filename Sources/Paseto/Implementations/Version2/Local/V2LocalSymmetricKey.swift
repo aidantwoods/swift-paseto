@@ -10,7 +10,7 @@ import Foundation
 public extension Version2.Local {
     struct SymmetricKey: Paseto.SymmetricKey {
         public let material: Data
-        public typealias Implementation = Version2.Local
+        public typealias Module = Version2.Local
 
         public init (material: Data) {
             self.material = material

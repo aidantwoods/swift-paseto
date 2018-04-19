@@ -19,10 +19,10 @@ class Version1Test: XCTestCase {
             "v1.local.rElw-WywOuwAqKC9Yao3YokSp7vx0YiUB9hLTnsVOYYTojmVaYumJSQt8aggtCaFKWyaodw5k-CUWhYKATopiabAl4OAmTxHCfm2E4NSPvrmMcmi8n-JcZ93HpcxC6rx_ps22vutv7iP7wf8QcSD1Mwx.Q3VvbiBBbHBpbnVz"
         )!
 
-        let message: String = Version1.decrypt(encryptedBlob, with: sk)!
+        let package = try! Version1.decrypt(encryptedBlob, with: sk)
 
-        XCTAssertEqual(message, "Love is stronger than hate or fear")
-        XCTAssertEqual(encryptedBlob.footer, Data("Cuon Alpinus".utf8))
+        XCTAssertEqual(package.string!, "Love is stronger than hate or fear")
+        XCTAssertEqual(package.footerString!, "Cuon Alpinus")
     }
 
     func testEncrypt() {
@@ -41,9 +41,9 @@ class Version1Test: XCTestCase {
             risus tincidunt est, feugiat faucibus est magna at arcu. 👻
             """
 
-        let encryptedBlob = Version1.encrypt(message, with: sk)!
+        let encrypted = try! Version1.encrypt(message, with: sk)
 
-        let decrypted: String = Version1.decrypt(encryptedBlob, with: sk)!
+        let decrypted: String = Version1.decrypt(encrypted, with: sk)!
 
         XCTAssertEqual(message, decrypted)
     }
@@ -53,9 +53,9 @@ class Version1Test: XCTestCase {
 
         let message = Sodium().randomBytes.buf(length: Int(1 << 17))!
 
-        let blob = Version1.encrypt(message, with: sk)!
+        let blob = try! Version1.encrypt(message, with: sk)
 
-        let result: Data = Version1.decrypt(blob, with: sk)!
+        let result: Data = try! Version1.decrypt(blob, with: sk).content
 
         XCTAssertEqual(message, result)
     }

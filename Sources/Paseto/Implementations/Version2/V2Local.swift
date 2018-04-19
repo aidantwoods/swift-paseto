@@ -9,11 +9,12 @@ import Foundation
 
 extension Version2.Local {
     internal static func encrypt(
-        _ message: Data,
+        _ package: Package,
         with key: SymmetricKey,
-        footer: Data,
         unitTestNonce: Data?
     ) -> Message<Local> {
+        let (message, footer) = (package.content, package.footer)
+
         let nonceBytes = Int(Aead.nonceBytes)
 
         let preNonce: Data
@@ -46,29 +47,41 @@ extension Version2.Local {
 
         return Message(payload: payload, footer: footer)
     }
+
+    internal static func encrypt(
+        _ data: Data,
+        with key: SymmetricKey,
+        footer: Data,
+        unitTestNonce: Data?
+    ) -> Message<Local> {
+        return encrypt(
+            Package(data: data, footer: footer),
+            with: key,
+            unitTestNonce: unitTestNonce
+        )
+    }
 }
 
 extension Version2.Local: BaseLocal {
     public typealias Local = Version2.Local
 
     public static func encrypt(
-        _ data: Data,
-        with key: SymmetricKey,
-        footer: Data
+        _ package: Package,
+        with key: SymmetricKey
     ) -> Message<Local> {
-        return encrypt(data, with: key, footer: footer, unitTestNonce: nil)
+        return encrypt(package, with: key, unitTestNonce: nil)
     }
 
     public static func decrypt(
-        _ encrypted: Message<Local>,
+        _ message: Message<Local>,
         with key: SymmetricKey
-    ) throws -> Data {
-        let (header, footer) = (encrypted.header, encrypted.footer)
+    ) throws -> Package {
+        let (header, footer) = (message.header, message.footer)
 
-        let nonce      = encrypted.payload.nonce
-        let cipherText = encrypted.payload.cipherText
+        let nonce      = message.payload.nonce
+        let cipherText = message.payload.cipherText
 
-        guard let message = Aead.xchacha20poly1305_ietf_decrypt(
+        guard let plainText = Aead.xchacha20poly1305_ietf_decrypt(
             cipherText: cipherText,
             additionalData: Util.pae([header.asData, nonce, footer]),
             nonce: nonce,
@@ -79,17 +92,8 @@ extension Version2.Local: BaseLocal {
             )
         }
 
-        return message
+        return Package(data: plainText, footer: footer)
     }
 }
 
-// non throwing/optional implementations are available for Version 2
-public extension Version2.Local {
-    static func encrypt(
-        _ message: String,
-        with key: SymmetricKey,
-        footer: Data = Data()
-    ) -> Message<Local> {
-        return encrypt(Data(message.utf8), with: key, footer: footer)
-    }
-}
+extension Version2.Local: NonThrowingLocalEncrypt {}

@@ -7,7 +7,12 @@
 
 import Foundation
 
-extension Version2.Public: Implementation {}
+extension Version2.Public: Module {
+    public struct Payload {
+        let message: Data
+        let signature: Data
+    }
+}
 
 extension Version2.Public.Payload: Paseto.Payload {
     public var asData: Data { return message + signature }

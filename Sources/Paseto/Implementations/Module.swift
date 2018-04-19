@@ -7,10 +7,10 @@
 
 import Foundation
 
-public protocol Implementation {
+public protocol Module {
     associatedtype Payload: Paseto.Payload
 }
 
-public extension Implementation {
-    static var version: Version { return Version(implementation: self) }
+public extension Module {
+    static var version: Version { return Version(module: self) }
 }

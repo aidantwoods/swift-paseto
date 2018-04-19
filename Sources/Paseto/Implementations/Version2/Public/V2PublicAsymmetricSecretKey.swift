@@ -7,47 +7,57 @@
 
 import Foundation
 
-extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
-    public typealias Implementation = Version2.Public
+extension Version2.Public {
+    public struct SecretKey {
+        public let material: Data
 
-    public init (material: Data) throws {
-        switch material.count {
-        case secretBytes:
-            self.material = material
+        let secretBytes  = Sign.SecretKeyBytes
+        let seedBytes    = Sign.SeedBytes
+        let keypairBytes = 96
 
-        case keypairBytes:
-            self.material = material[..<secretBytes]
+        public init (material: Data) throws {
+            switch material.count {
+            case secretBytes:
+                self.material = material
 
-        case seedBytes:
-            guard let keyPair = Sign.keyPair(seed: material) else {
-                throw Exception.badMaterial(
-                    "The material given could not be used to construct a"
-                        + " key."
+            case keypairBytes:
+                self.material = material[..<secretBytes]
+
+            case seedBytes:
+                guard let keyPair = Sign.keyPair(seed: material) else {
+                    throw Exception.badMaterial(
+                        "The material given could not be used to construct a"
+                            + " key."
+                    )
+                }
+                self.material = keyPair.secretKey
+
+            default:
+                throw Exception.badLength(
+                    "Secret key must be 64 or 32 bytes long;"
+                        + "\(material.count) given."
                 )
             }
-            self.material = keyPair.secretKey
-
-        default:
-            throw Exception.badLength(
-                "Secret key must be 64 or 32 bytes long;"
-                    + "\(material.count) given."
-            )
         }
     }
+}
+
+extension Version2.Public.SecretKey: Paseto.AsymmetricSecretKey {
+    public typealias Module = Version2.Public
 
     public init () {
         let secretKey = Sign.keyPair()!.secretKey
         try! self.init(material: secretKey)
     }
 
-    public var publicKey: Version2.Public.AsymmetricPublicKey {
-        return try! Version2.Public.AsymmetricPublicKey(
+    public var publicKey: Version2.Public.PublicKey  {
+        return try! Version2.Public.PublicKey (
             material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
         )
     }
 }
 
-extension Version2.Public.AsymmetricSecretKey {
+extension Version2.Public.SecretKey {
     enum Exception: Error {
         case badLength(String)
         case badMaterial(String)

@@ -8,12 +8,18 @@
 import Foundation
 import CryptoSwift
 
-extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
-    public typealias Implementation = Version1.Local
+extension Version1.Local {
+    public struct SymmetricKey {
+        public let material: Data
 
-    public init (material: Data) {
-        self.material = material
+        public init (material: Data) {
+            self.material = material
+        }
     }
+}
+
+extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
+    public typealias Module = Version1.Local
 }
 
 extension Version1.Local.SymmetricKey {

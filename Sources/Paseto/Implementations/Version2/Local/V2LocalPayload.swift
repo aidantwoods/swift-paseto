@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Version2.Local: Implementation {
+extension Version2.Local: Module {
     public struct Payload {
         let nonce: Data
         let cipherText: Data

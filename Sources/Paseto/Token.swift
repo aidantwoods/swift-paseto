@@ -87,41 +87,40 @@ extension Token {
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) throws -> Message<K.Implementation>
-    {
+    func sign<K: AsymmetricSecretKey>(with key: K) throws -> Message<K.Module> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: K.Implementation.self)) else {
+        guard allowedVersions.contains(Version(module: K.Module.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try K.Implementation.sign(
+        return try K.Module.sign(
             claimsData,
             with: key,
             footer: Data(footer.utf8)
         )
     }
 
-    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Implementation> {
+    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Module> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: K.Implementation.self)) else {
+        guard allowedVersions.contains(Version(module: K.Module.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try K.Implementation.encrypt(
+        return try K.Module.encrypt(
             claimsData,
             with: key,
             footer: Data(footer.utf8)
@@ -130,10 +129,10 @@ public extension Token {
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Implementation>? {
+    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Module>? {
         return try? sign(with: key)
     }
-    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Implementation>? {
+    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Module>? {
         return try? encrypt(with: key)
     }
 }

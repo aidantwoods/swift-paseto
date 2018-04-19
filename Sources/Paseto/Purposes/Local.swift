@@ -9,7 +9,7 @@ import Foundation
 
 public protocol Local {
     associatedtype SymmetricKey: Paseto.SymmetricKey
-    associatedtype Local: BaseLocal
+    associatedtype Local: BaseLocal where SymmetricKey == Local.SymmetricKey
 
     static func encrypt(_: Package, with: SymmetricKey) throws -> Message<Local>
 
