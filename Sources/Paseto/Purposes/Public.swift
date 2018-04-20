@@ -37,12 +37,3 @@ public extension Public {
         return try sign(Data(string.utf8), with: key, footer: footer)
     }
 }
-
-public extension Public {
-    static func verify(
-        _ message: Message<Public>,
-        with key: AsymmetricPublicKey
-    ) -> String? {
-        return (try? verify(message, with: key))?.content.utf8String
-    }
-}

@@ -43,7 +43,7 @@ class Version1Test: XCTestCase {
 
         let encrypted = try! Version1.encrypt(message, with: sk)
 
-        let decrypted: String = Version1.decrypt(encrypted, with: sk)!
+        let decrypted = try! Version1.decrypt(encrypted, with: sk).string
 
         XCTAssertEqual(message, decrypted)
     }

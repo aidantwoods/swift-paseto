@@ -27,7 +27,7 @@ class TokenTest: XCTestCase {
         let blob = Message<Version1.Local>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
-        let token = blob.decrypt(with: key)!
+        let token = try! blob.decrypt(with: key)
 
         // test our token is what we expected
         let expectedClaims = [
@@ -62,7 +62,7 @@ class TokenTest: XCTestCase {
         let blob = Message<Version2.Local>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
-        let token = blob.decrypt(with: key)!
+        let token = try! blob.decrypt(with: key)
 
         // test our token is what we expected
         let expectedClaims = [
@@ -90,8 +90,8 @@ class TokenTest: XCTestCase {
 
         let key = Version1.SymmetricKey()
 
-        let message = token.encrypt(with: key)!
-        let unsealedToken = message.decrypt(with: key)!
+        let message = try! token.encrypt(with: key)
+        let unsealedToken = try! message.decrypt(with: key)
 
         let expectedClaims = [
             "foo": "bar",
@@ -118,8 +118,8 @@ class TokenTest: XCTestCase {
 
         let key = Version2.SymmetricKey()
 
-        let message = token.encrypt(with: key)!
-        let unsealedToken = message.decrypt(with: key)!
+        let message = try! token.encrypt(with: key)
+        let unsealedToken = try! message.decrypt(with: key)
 
         let expectedClaims = [
             "foo": "bar",
@@ -144,10 +144,10 @@ class TokenTest: XCTestCase {
                 "boo": "bop",
             ])
 
-        let key = Version2.SecretKey()
+        let key = Version2.AsymmetricSecretKey()
 
-        let message = token.sign(with: key)!
-        let unsealedToken = message.verify(with: key.publicKey)!
+        let message = try! token.sign(with: key)
+        let unsealedToken = try! message.verify(with: key.publicKey)
 
         let expectedClaims = [
             "foo": "bar",
@@ -180,7 +180,7 @@ class TokenTest: XCTestCase {
         let blob = Message<Version2.Public>(message)!
         // encrypted blobs are specialised to have a decrypt method
         // to obtain a token, given a symmetric key
-        let token = blob.verify(with: key)!
+        let token = try! blob.verify(with: key)
 
         // test our token is what we expected
         let expectedClaims = [

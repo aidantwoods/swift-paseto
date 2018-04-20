@@ -20,7 +20,7 @@ class Version2Test: XCTestCase {
                 + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
 
-        let message: String = Version2.verify(signedBlob, with: pk)!
+        let message = try! Version2.verify(signedBlob, with: pk).string
 
         XCTAssertEqual(message , "test")
     }
@@ -32,7 +32,7 @@ class Version2Test: XCTestCase {
 
         let signedBlob = Version2.sign(message, with: sk)
 
-        let verified: String = Version2.verify(signedBlob, with: sk.publicKey)!
+        let verified = try! Version2.verify(signedBlob, with: sk.publicKey).string
 
         XCTAssertEqual(message, verified)
     }
@@ -47,7 +47,7 @@ class Version2Test: XCTestCase {
                 + "vk0T-IXh5SlJPkPrjJ7cU"
         )!
 
-        let message: String = Version2.decrypt(encryptedBlob, with: sk)!
+        let message = try! Version2.decrypt(encryptedBlob, with: sk).string
 
         XCTAssertEqual(message, "Foobar!")
     }
@@ -70,7 +70,7 @@ class Version2Test: XCTestCase {
 
         let encryptedBlob = Version2.encrypt(message, with: sk)
 
-        let decrypted: String = Version2.decrypt(encryptedBlob, with: sk)!
+        let decrypted = try! Version2.decrypt(encryptedBlob, with: sk).string
 
         XCTAssertEqual(message, decrypted)
     }
@@ -124,7 +124,7 @@ class Version2Test: XCTestCase {
 
         let blob = Message<Version2.Local>(rawToken)!
 
-        let token = blob.decrypt(with: key)!
+        let token = try! blob.decrypt(with: key)
 
         XCTAssertEqual(
             ["data": "this is a signed message", "exp": "2039-01-01T00:00:00+00:00"],
@@ -140,22 +140,22 @@ class Version2Test: XCTestCase {
         let pasetoString = message.asString
         let verySensitiveKeyMaterial = key.encode
 
-        XCTAssertEqual("Hello world!", Version2.decrypt(message, with: key)!)
+        XCTAssertEqual("Hello world!", try! Version2.decrypt(message, with: key).string)
         XCTAssertEqual(
             "Hello world!",
-            Version2.decrypt(
+            try! Version2.decrypt(
                 Message<Version2.Local>(pasetoString)!,
                 with: key
-            )!
+            ).string
         )
         XCTAssertEqual(
             "Hello world!",
-            Version2.decrypt(
+            try! Version2.decrypt(
                 Message<Version2.Local>(pasetoString)!,
                 with: try! Version2.SymmetricKey(
                     encoded: verySensitiveKeyMaterial
                 )
-            )!
+            ).string
         )
     }
 }

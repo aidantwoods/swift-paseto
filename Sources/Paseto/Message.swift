@@ -98,19 +98,11 @@ extension Message where M: BasePublic {
         let package = try M.verify(self, with: key)
         return try token(package: package)
     }
-
-    public func verify(with key: M.AsymmetricPublicKey) -> Token? {
-        return try? verify(with: key)
-    }
 }
 
 extension Message where M: BaseLocal {
     public func decrypt(with key: M.SymmetricKey) throws -> Token {
         let package = try M.decrypt(self, with: key)
         return try token(package: package)
-    }
-
-    public func decrypt(with key: M.SymmetricKey) -> Token? {
-        return try? decrypt(with: key)
     }
 }

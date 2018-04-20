@@ -129,15 +129,6 @@ public extension Token {
 }
 
 public extension Token {
-    func sign<K: AsymmetricSecretKey>(with key: K) -> Message<K.Module>? {
-        return try? sign(with: key)
-    }
-    func encrypt<K: SymmetricKey>(with key: K) -> Message<K.Module>? {
-        return try? encrypt(with: key)
-    }
-}
-
-public extension Token {
     enum Exception: Error {
         case serialiseError(String)
         case decodeError(String)

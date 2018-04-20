@@ -33,12 +33,3 @@ public extension Local {
         return try encrypt(Data(string.utf8), with: key, footer: footer)
     }
 }
-
-public extension Local {
-    static func decrypt(
-        _ message: Message<Local>,
-        with key: SymmetricKey
-    ) -> String? {
-        return (try? decrypt(message, with: key))?.content.utf8String
-    }
-}
