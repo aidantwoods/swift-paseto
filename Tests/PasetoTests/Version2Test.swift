@@ -140,23 +140,11 @@ class Version2Test: XCTestCase {
         let pasetoString = message.asString
         let verySensitiveKeyMaterial = key.encode
 
-        XCTAssertEqual("Hello world!", try! Version2.decrypt(message, with: key).string)
-        XCTAssertEqual(
-            "Hello world!",
-            try! Version2.decrypt(
-                Message<Version2.Local>(pasetoString)!,
-                with: key
-            ).string
-        )
-        XCTAssertEqual(
-            "Hello world!",
-            try! Version2.decrypt(
-                Message<Version2.Local>(pasetoString)!,
-                with: try! Version2.SymmetricKey(
-                    encoded: verySensitiveKeyMaterial
-                )
-            ).string
-        )
+        let importedKey = try! Version2.SymmetricKey(encoded: verySensitiveKeyMaterial)
+        let importedMessage = Message<Version2.Local>(pasetoString)!
+        let decrypted = try! Version2.decrypt(importedMessage, with: importedKey)
+
+        XCTAssertEqual("Hello world!", decrypted.string!)
     }
 }
 
