@@ -257,6 +257,4 @@ due to compatibility issues (Swift is a new language 🤷‍♂️).
 Version 1 in the local mode (i.e. encrypted payloads using symmetric keys) is
 fully supported.
 Version 1 in the public mode (i.e. signed payloads using asymmetric keys) is
-**not** currently supported. You should not attempt to create signed messages or
-asymmetric keys with `Version1` as a type argument, this will result in a fatal
-error or exceptions being thrown.
+**not** currently supported.
