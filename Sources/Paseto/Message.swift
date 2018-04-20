@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct Message<P: Payload>: MetaMessage {
-    public typealias VersionType = P.VersionType
-    public typealias PayloadType = P
+public struct Message<M: Module> {
+    public typealias Module = M
+    public typealias Payload = M.Payload
 
     public let header: Header = Message.header
-    let payload: PayloadType
+    let payload: Payload
     public let footer: Data
 
-    init (payload: PayloadType, footer: Data = Data()) {
+    init (payload: Payload, footer: Data = Data()) {
         self.payload = payload
         self.footer  = footer
     }
@@ -29,7 +29,7 @@ public struct Message<P: Payload>: MetaMessage {
         else { return nil }
 
         guard header == Message.header,
-              let payload = PayloadType(encoded: encodedPayload),
+              let payload = Payload(encoded: encodedPayload),
               let footer = Data(base64UrlNoPad: encodedFooter)
         else { return nil }
 
@@ -55,8 +55,8 @@ public struct Message<P: Payload>: MetaMessage {
 
     public static var header: Header {
         return Header(
-            version: Version(implementation: VersionType.self),
-            purpose: Purpose(payload: PayloadType.self)
+            version: Version(module: M.self),
+            purpose: Purpose(payload: Payload.self)
         )
     }
 }
@@ -74,5 +74,35 @@ public extension Message {
 extension Message {
     enum Exception: Error {
         case badEncoding(String)
+    }
+}
+
+extension Message {
+    func token(package: Package) throws -> Token {
+        guard let footer = package.footer.utf8String else {
+            throw Exception.badEncoding(
+                "Could not convert the footer to a UTF-8 string."
+            )
+        }
+
+        return try Token(
+            jsonData: package.content,
+            footer: footer,
+            allowedVersions: [header.version]
+        )
+    }
+}   
+
+extension Message where M: BasePublic {
+    public func verify(with key: M.AsymmetricPublicKey) throws -> Token {
+        let package = try M.verify(self, with: key)
+        return try token(package: package)
+    }
+}
+
+extension Message where M: BaseLocal {
+    public func decrypt(with key: M.SymmetricKey) throws -> Token {
+        let package = try M.decrypt(self, with: key)
+        return try token(package: package)
     }
 }

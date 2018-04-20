@@ -11,10 +11,11 @@ public enum Version: String {
 }
 
 extension Version {
-    init <I: Implementation>(implementation: I.Type) {
-        switch implementation {
-        case is Version1.Type: self = .v1
-        case is Version2.Type: self = .v2
+    init <M: Module>(module: M.Type) {
+        switch module {
+        case is Version1.Local.Type: self = .v1
+        case is Version2.Local.Type: self = .v2
+        case is Version2.Public.Type: self = .v2
         default: fatalError("All implementations must be enumerated")
         }
     }

@@ -87,45 +87,44 @@ extension Token {
 }
 
 public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) throws -> Message<Signed<V>> {
+    func sign<K: AsymmetricSecretKey>(with key: K) throws -> Message<K.Module> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: V.self)) else {
+        guard allowedVersions.contains(Version(module: K.Module.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try V.sign(claimsData, with: key, footer: Data(footer.utf8))
+        return try K.Module.sign(
+            claimsData,
+            with: key,
+            footer: Data(footer.utf8)
+        )
     }
 
-    func encrypt<V>(with key: SymmetricKey<V>) throws -> Message<Encrypted<V>> {
+    func encrypt<K: SymmetricKey>(with key: K) throws -> Message<K.Module> {
         guard let claimsData = serialisedClaims else {
             throw Exception.serialiseError(
                 "The claims could not be serialised."
             )
         }
 
-        guard allowedVersions.contains(Version(implementation: V.self)) else {
+        guard allowedVersions.contains(Version(module: K.Module.self)) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
         }
 
-        return try V.encrypt(claimsData, with: key, footer: Data(footer.utf8))
-    }
-}
-
-public extension Token {
-    func sign<V>(with key: AsymmetricSecretKey<V>) -> Message<Signed<V>>? {
-        return try? sign(with: key)
-    }
-    func encrypt<V>(with key: SymmetricKey<V>) -> Message<Encrypted<V>>? {
-        return try? encrypt(with: key)
+        return try K.Module.encrypt(
+            claimsData,
+            with: key,
+            footer: Data(footer.utf8)
+        )
     }
 }
 

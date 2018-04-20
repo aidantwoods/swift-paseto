@@ -11,22 +11,22 @@ import Sodium
 
 class Version1Test: XCTestCase {
     func testDecrypt() {
-        let sk = try! SymmetricKey<Version1>(
+        let sk = try! Version1.SymmetricKey(
             hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )
 
-        let encryptedBlob = Message<Encrypted<Version1>>(
+        let encryptedBlob = Message<Version1.Local>(
             "v1.local.rElw-WywOuwAqKC9Yao3YokSp7vx0YiUB9hLTnsVOYYTojmVaYumJSQt8aggtCaFKWyaodw5k-CUWhYKATopiabAl4OAmTxHCfm2E4NSPvrmMcmi8n-JcZ93HpcxC6rx_ps22vutv7iP7wf8QcSD1Mwx.Q3VvbiBBbHBpbnVz"
         )!
 
-        let message: String = Version1.decrypt(encryptedBlob, with: sk)!
+        let package = try! Version1.decrypt(encryptedBlob, with: sk)
 
-        XCTAssertEqual(message, "Love is stronger than hate or fear")
-        XCTAssertEqual(encryptedBlob.footer, Data("Cuon Alpinus".utf8))
+        XCTAssertEqual(package.string!, "Love is stronger than hate or fear")
+        XCTAssertEqual(package.footerString!, "Cuon Alpinus")
     }
 
     func testEncrypt() {
-        let sk = SymmetricKey<Version1>()
+        let sk = Version1.SymmetricKey()
 
         let message = """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
@@ -41,21 +41,21 @@ class Version1Test: XCTestCase {
             risus tincidunt est, feugiat faucibus est magna at arcu. 👻
             """
 
-        let encryptedBlob = Version1.encrypt(message, with: sk)!
+        let encrypted = try! Version1.encrypt(message, with: sk)
 
-        let decrypted: String = Version1.decrypt(encryptedBlob, with: sk)!
+        let decrypted = try! Version1.decrypt(encrypted, with: sk).string
 
         XCTAssertEqual(message, decrypted)
     }
 
     func testLargeishData() {
-        let sk = SymmetricKey<Version1>()
+        let sk = Version1.SymmetricKey()
 
         let message = Sodium().randomBytes.buf(length: Int(1 << 17))!
 
-        let blob = Version1.encrypt(message, with: sk)!
+        let blob = try! Version1.encrypt(message, with: sk)
 
-        let result: Data = Version1.decrypt(blob, with: sk)!
+        let result: Data = try! Version1.decrypt(blob, with: sk).content
 
         XCTAssertEqual(message, result)
     }

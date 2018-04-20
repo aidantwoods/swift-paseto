@@ -11,49 +11,49 @@ import Sodium
 
 class Version2Test: XCTestCase {
     func testVerify() {
-        let pk = try! AsymmetricPublicKey<Version2>(
+        let pk = try! Version2.AsymmetricPublicKey(
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
-        let signedBlob = Message<Signed<Version2>>(
+        let signedBlob = Message<Version2.Public>(
             "v2.public.dGVzdDUInakrW3fJBz_DRfy_IrgUj2UORbb72EJ0Z-"
                 + "tufH0ZSUMCtij5-VsgbqoBzuNOpni5-J5CBHcVNTKVHzM79Ao"
         )!
 
-        let message: String = Version2.verify(signedBlob, with: pk)!
+        let message = try! Version2.verify(signedBlob, with: pk).string
 
         XCTAssertEqual(message , "test")
     }
 
     func testSign() {
-        let sk = AsymmetricSecretKey<Version2>()
+        let sk = Version2.AsymmetricSecretKey()
 
         let message = "Hello world!"
 
         let signedBlob = Version2.sign(message, with: sk)
 
-        let verified: String = Version2.verify(signedBlob, with: sk.publicKey)!
+        let verified = try! Version2.verify(signedBlob, with: sk.publicKey).string
 
         XCTAssertEqual(message, verified)
     }
 
     func testDecrypt() {
-        let sk = try! SymmetricKey<Version2>(
+        let sk = try! Version2.SymmetricKey(
             encoded: "EOIf5G5PXsHrm45-QV-NxEHRvyg-uw38BOIajl7slZ4"
         )
 
-        let encryptedBlob = Message<Encrypted<Version2>>(
+        let encryptedBlob = Message<Version2.Local>(
             "v2.local.iaODL67I7c1Fvg2BCsG6TWi58Y33d4fksk0Cut9hCp"
                 + "vk0T-IXh5SlJPkPrjJ7cU"
         )!
 
-        let message: String = Version2.decrypt(encryptedBlob, with: sk)!
+        let message = try! Version2.decrypt(encryptedBlob, with: sk).string
 
         XCTAssertEqual(message, "Foobar!")
     }
 
     func testEncrypt() {
-        let sk = SymmetricKey<Version2>()
+        let sk = Version2.SymmetricKey()
 
         let message = """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
@@ -70,20 +70,20 @@ class Version2Test: XCTestCase {
 
         let encryptedBlob = Version2.encrypt(message, with: sk)
 
-        let decrypted: String = Version2.decrypt(encryptedBlob, with: sk)!
+        let decrypted = try! Version2.decrypt(encryptedBlob, with: sk).string
 
         XCTAssertEqual(message, decrypted)
     }
 
     func testExample1() {
-        let blob = Message<Encrypted<Version2>>(
+        let blob = Message<Version2.Local>(
             "v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqI"
                 + "IhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhf"
                 + "wHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aX"
                 + "ZlIEVudGVycHJpc2Vz"
         )!
 
-        let sk = SymmetricKey<Version2>(material: Sodium().utils.hex2bin(
+        let sk = Version2.SymmetricKey(material: Sodium().utils.hex2bin(
             "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )!)
 
@@ -94,7 +94,7 @@ class Version2Test: XCTestCase {
 
         let expectedFooter = Data("Paragon Initiative Enterprises".utf8)
 
-        let decrypted = try! Version2.decrypt(blob, with: sk)
+        let decrypted = try! Version2.decrypt(blob, with: sk).content
 
         let result = try! JSONSerialization.jsonObject(with: decrypted)
             as! [String: String]
@@ -104,13 +104,13 @@ class Version2Test: XCTestCase {
     }
 
     func testLargeData() {
-        let sk = SymmetricKey<Version2>()
+        let sk = Version2.SymmetricKey()
 
         let message = Sodium().randomBytes.buf(length: Int(1 << 25))!
 
         let blob = Version2.encrypt(message, with: sk)
 
-        let result: Data = Version2.decrypt(blob, with: sk)!
+        let result = try! Version2.decrypt(blob, with: sk).content
 
         XCTAssertEqual(message, result)
     }
@@ -118,13 +118,13 @@ class Version2Test: XCTestCase {
     func testReadmeExample() {
         let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz"
 
-        let key = try! SymmetricKey<Version2>(
+        let key = try! Version2.SymmetricKey(
             hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
         )
 
-        let blob = Message<Encrypted<Version2>>(rawToken)!
+        let blob = Message<Version2.Local>(rawToken)!
 
-        let token = blob.decrypt(with: key)!
+        let token = try! blob.decrypt(with: key)
 
         XCTAssertEqual(
             ["data": "this is a signed message", "exp": "2039-01-01T00:00:00+00:00"],
@@ -135,28 +135,16 @@ class Version2Test: XCTestCase {
     }
 
     func testDocExample() {
-        let key = SymmetricKey<Version2>()
+        let key = Version2.SymmetricKey()
         let message = Version2.encrypt("Hello world!", with: key)
         let pasetoString = message.asString
         let verySensitiveKeyMaterial = key.encode
 
-        XCTAssertEqual("Hello world!", Version2.decrypt(message, with: key)!)
-        XCTAssertEqual(
-            "Hello world!",
-            Version2.decrypt(
-                Message<Encrypted<Version2>>(pasetoString)!,
-                with: key
-            )!
-        )
-        XCTAssertEqual(
-            "Hello world!",
-            Version2.decrypt(
-                Message<Encrypted<Version2>>(pasetoString)!,
-                with: try! SymmetricKey<Version2>(
-                    encoded: verySensitiveKeyMaterial
-                )
-            )!
-        )
+        let importedKey = try! Version2.SymmetricKey(encoded: verySensitiveKeyMaterial)
+        let importedMessage = Message<Version2.Local>(pasetoString)!
+        let decrypted = try! Version2.decrypt(importedMessage, with: importedKey)
+
+        XCTAssertEqual("Hello world!", decrypted.string!)
     }
 }
 
