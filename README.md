@@ -44,7 +44,7 @@ following to your `Package.swift`.
 dependencies: [
     .package(
         url: "https://github.com/aidantwoods/swift-paseto.git",
-        .upToNextMajor(from: "0.1.0")
+        .upToNextMajor(from: "0.2.0")
     )
 ]
 ```
