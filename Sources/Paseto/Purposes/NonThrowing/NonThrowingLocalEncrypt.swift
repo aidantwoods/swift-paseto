@@ -17,7 +17,7 @@ public extension NonThrowingLocalEncrypt {
         with key: SymmetricKey,
         footer: Data = Data()
     ) -> Message<Local> {
-        return encrypt(Package(data: data, footer: footer), with: key)
+        return encrypt(Package(data, footer: footer), with: key)
     }
 
     static func encrypt(

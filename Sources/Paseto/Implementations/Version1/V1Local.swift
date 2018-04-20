@@ -62,7 +62,7 @@ extension Version1.Local {
         unitTestNonce: Data?
     ) throws -> Message<Local> {
         return try encrypt(
-            Package(data: data, footer: footer),
+            Package(data, footer: footer),
             with: key,
             unitTestNonce: unitTestNonce
         )
@@ -112,7 +112,7 @@ extension Version1.Local: BaseLocal {
             ).decrypt(cipherText.bytes)
         )
 
-        return Package(data: plainText, footer: footer)
+        return Package(plainText, footer: footer)
     }
 }
 

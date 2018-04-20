@@ -17,7 +17,7 @@ public extension NonThrowingPublicSign {
         with key: AsymmetricSecretKey,
         footer: Data = Data()
     ) -> Message<Public> {
-        return sign(Package(data: data, footer: footer), with: key)
+        return sign(Package(data, footer: footer), with: key)
     }
 
     static func sign(

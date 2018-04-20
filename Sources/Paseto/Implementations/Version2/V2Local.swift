@@ -55,7 +55,7 @@ extension Version2.Local {
         unitTestNonce: Data?
     ) -> Message<Local> {
         return encrypt(
-            Package(data: data, footer: footer),
+            Package(data, footer: footer),
             with: key,
             unitTestNonce: unitTestNonce
         )
@@ -92,7 +92,7 @@ extension Version2.Local: BaseLocal {
             )
         }
 
-        return Package(data: plainText, footer: footer)
+        return Package(plainText, footer: footer)
     }
 }
 

@@ -26,7 +26,7 @@ public extension Public {
         with key: AsymmetricSecretKey,
         footer: Data = Data()
     ) throws -> Message<Public> {
-        return try sign(Package(data: data, footer: footer), with: key)
+        return try sign(Package(data, footer: footer), with: key)
     }
 
     static func sign(

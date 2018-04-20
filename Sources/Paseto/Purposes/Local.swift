@@ -22,7 +22,7 @@ public extension Local {
         with key: SymmetricKey,
         footer: Data = Data()
     ) throws -> Message<Local> {
-        return try encrypt(Package(data: data, footer: footer), with: key)
+        return try encrypt(Package(data, footer: footer), with: key)
     }
 
     static func encrypt(

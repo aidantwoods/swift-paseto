@@ -51,7 +51,7 @@ extension Version2.Public: BasePublic {
             )
         }
 
-        return Package(data: payload.message, footer: footer)
+        return Package(payload.message, footer: footer)
     }
 }
 
