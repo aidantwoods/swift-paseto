@@ -94,18 +94,18 @@ enable you to even attempt these examples just don't exist.
 
 Okay, so what does all that look like?
 
-When creating a key, simply additionally give its version as a type argument.
+When creating a key, simply append the key type name to the version.
 Let's say we want to generate a new version 1 symmetric key:
 
 ```swift
 import Paseto
-let key = SymmetricKey<Version1>()
+let key = Version1.SymmetricKey()
 ```
 
 But version 2 is recommended, so let's instead use that. Just change the `1` to
 a `2` (`import Paseto` is assumed hereafter):
 ```swift
-let symmetricKey = SymmetricKey<Version2>()
+let symmetricKey = Version2.SymmetricKey()
 ```
 
 Okay, now let's create a token:
@@ -131,8 +131,8 @@ Or even as data:
 let pasetoTokenData = message.asData
 ```
 
-`message` is of type `Message<Encrypted<Version2>>`. This means that it has a
-specialised `decrypt(with: SymmetricKey<Version2>)` method, which can be used
+`message` is of type `Message<Version2.Local>`. This means that it has a
+specialised `decrypt(with: Version2.SymmetricKey)` method, which can be used
 to retrieve the original token (when given a key). i.e. we can do:
 
 ```swift
@@ -143,7 +143,7 @@ guard let try? decryptedToken = message.decrypt(with: symmetricKey) else { /* re
 Let's say we want to generate a new version 2 secret (private) key:
 
 ```swift
-let secretKey = AsymmetricSecretKey<Version2>()
+let secretKey = Version2.AsymmetricSecretKey()
 ```
 
 Now, if we wish produce a token which can be verified by others, we can
@@ -153,8 +153,8 @@ do the following:
 guard let signedMessage = try? token.sign(with: secretKey) else { /* respond to failure */ }
 ```
 
-`signedMessage` is of type `Message<Signed<Version2>>`. This means that it has a
-specialised `verify(with: AsymmetricPublicKey<Version2>)` method, which can be
+`signedMessage` is of type `Message<Version2.Public>`. This means that it has a
+specialised `verify(with: Version2.AsymmetricPublicKey)` method, which can be
 used to verify the contents and produce a verified token.
 
 To do this we need to export the public key from our `secretKey`.
@@ -163,7 +163,7 @@ To do this we need to export the public key from our `secretKey`.
 let publicKey = secretKey.publicKey
 ```
 
-`publicKey` is of type `AsymmetricPublicKey<Version2>`, so we may use:
+`publicKey` is of type `Version2.AsymmetricPublicKey`, so we may use:
 
 ```swift
 guard let try? verifiedToken = signedMessage.verify(with: publicKey) else { /* respond to failure */ }
@@ -193,13 +193,13 @@ To produce a token, use the following:
 ```swift
 let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz"
 
-guard let key = try? SymmetricKey<Version2>(
+guard let key = try? Version2.SymmetricKey(
     hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
 ) else {
     /* respond to failure */
 }
 
-guard let message = try? Message<Encrypted<Version2>>(rawToken) else {
+guard let message = try? Message<Version2.Local>(rawToken) else {
     /* respond to failure */
 }
 

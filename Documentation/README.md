@@ -54,11 +54,15 @@ Forewarning that the following goes into vigorous detail. You should treat
 this all as required reading, however actual usage is very simple, see
 [wrapping up](#example) for a full usage example.
 
-In the Swift library, each version of Paseto will have the following methods:
+In the Swift library, each version of Paseto is split into two APIs, `Public` and `Local`.
+Each `Local` version will have the following methods:
 ```swift
-encrypt(_:with:footer:)
+encrypt(_:with:)
 decrypt(_:with:)
-sign(_:with:footer:)
+```
+And each `Public` version will have these methods:
+```swift
+sign(_:with:)
 verify(_:with:)
 ```
 
@@ -72,28 +76,6 @@ task.
 > operation for any version is a type safety checked requirement. Providing a
 > key which is not *appropriate* is therefore a compile error by design.
 
-In particular, each version will implement the following protocol:
-
-```swift
-protocol Implementation {
-    static func encrypt(
-        _ message: Data, with key: SymmetricKey<Self>, footer: Data
-    ) throws -> Message<Encrypted<Self>>
-
-    static func decrypt(
-        _ encrypted: Message<Encrypted<Self>>, with key: SymmetricKey<Self>
-    ) throws -> Data
-
-    static func sign(
-        _ data: Data, with key: AsymmetricSecretKey<Self>, footer: Data
-    ) throws -> Message<Signed<Self>>
-
-    static func verify(
-        _ signedMessage: Message<Signed<Self>>, with key: AsymmetricPublicKey<Self>
-    ) throws -> Data
-}
-```
-
 All methods are (at worst) throwing, but individual implementations may
 provide non-throwing versions of some of these functions as appropriate.
 
@@ -101,37 +83,24 @@ In addition to these methods, there are various convenience overloads
 implemented in protocol extensions in terms of these four base methods
 (thus any specific implementation will have these available).
 
-In particular, and for example: overloads exist that allow omission of the
-footer, as well as overloads that will take a `String` in place of `Data`. If a
-`String` is provided, `UTF-8` encoding will be used to represent the `String`
-as bytes when transforming to `Data`.
-
 # The Paseto Message
 The Paseto message is what will be produced by the encrypting and signing
 methods, and is what should be given to the decrypting and verification methods.
 
-In the Swift library, a Paseto message is implemented as `Message<P: Payload>`,
-where the generic argument is a type of `Payload`.
+In the Swift library, a Paseto message is implemented as `Message<M: Module>`,
+where the generic argument is a type of `Module`.
 > Before explaining the detail, it helps to see an example of this written out
-> explicitly. For example, `Message<Signed<Version2>>` is a Paseto message which
-> has been signed using version 2 of Paseto's ciphersuite selection.
+> explicitly. 
 
-The only valid `Payload` types are: `Encrypted<V: Implementation>`, and
-`Signed<V: Implementation>`, where `V` is an `Implementation` (the protocol
-is defined above).
-For example, the following are valid `Payload` types: `Encrypted<Version1>`,
-`Signed<Version2>`.
+A `Module` is simply a section of the Paseto API which specifies the version and purpose.
+For example, `Message<Version2.Public>` is a Paseto message which has been signed
+using version 2 of Paseto's ciphersuite selection.
+Whereas `Message<Version1.Local>` is a Paseto message which has been encrypted
+using version 1 of Paseto's ciphersuite selection.
 
-The only public method of `Message<P: Payload>` is as follows:
-
-```swift
-struct Message<P: Payload> {
-    public init? (_ string: String)
-}
-```
-
-*there are computed properties which are accessible too, these will be
-covered later*.
+If you have read the original Paseto specification, a `Module` here is analogous to a "Protocol"
+in the specification (though using this as a type name is problematic in Swift – since
+"Protocol" is of course a keyword).
 
 ## Creating a Paseto Message
 
@@ -147,7 +116,7 @@ For example, if you expect `message` to store a version 2 signed Paseto message
 as a `String`, use the following:
 
 ```swift
-guard let message = Message<Signed<Version2>>(message) else { ... }
+guard let message = Message<Version2.Public>(message) else { ... }
 ```
 
 If this initializer fails, there are two possible causes (both may occur
@@ -155,7 +124,7 @@ simultaneously):
 1. The Paseto message is invalid. There is no way to correct this
   in general. It is recommended that you discard the invalid message. You need
   to decide what is best to do here in response.
-2. The expected payload type (i.e. the `P: Payload` provided in type parameters
+2. The expected module type (i.e. the `M: Module` provided in type parameters
   does not match what the message claims to be in its header).
   If this occurs you should consider whether or not it is approprate to allow
   the message to choose what to do here.
@@ -171,17 +140,17 @@ simultaneously):
   switch (header.version, header.purpose) {
   case (.v1, .Public): /* this is not currently supported */
   case (.v1, .Local):
-      guard let message = Message<Encryped<Version1>>(message) else {
+      guard let message = Message<Version1.Local>(message) else {
           /* message isn't valid, see 1. */
       }
       ...
   case (.v2, .Public):
-      guard let message = Message<Signed<Version2>>(message) else {
+      guard let message = Message<Version2.Public>(message) else {
           /* message isn't valid, see 1. */
       }
       ...
   case (.v2, .Local):
-      guard let message = Message<Encryped<Version2>>(message)else {
+      guard let message = Message<Version2.Local>(message) else {
           /* message isn't valid, see 1. */
       }
       ...
@@ -232,16 +201,15 @@ let pasetoData = message.asData
 
 ## General Keys
 Paseto has three distinct types of keys (up to version implementations).
-All versions will have the following types of keys:
-`AsymmetricPublicKey<V: Implementation>`,
-`AsymmetricSecretKey<V: Implementation>`,
-`SymmetricKey<V: Implementation>`.
+Public versions will have the following types of keys as associated types:
+`AsymmetricPublicKey`, `AsymmetricSecretKey`
+Local versions will have the associated type: `SymmetricKey`.
 
 If you are using the local portion of the API, both encryption and decryption
-require the same key, which should be of type:
-`SymmetricKey<V: Implementation>`.
-Where `V` specifies the implementation you wish to use.
-For example: `SymmetricKey<Version2>` refers to a version 2 symmetric key.
+require the same key, which should be of type: `SymmetricKey`.
+For example: `Version2.SymmetricKey` refers to a version 2 symmetric key.
+The same key type can also be accessed using the module too: e.g.
+`Version2.Local.SymmetricKey` will give the same type as `Version2.SymmetricKey`.
 
 Any of the above keys will implement the `Key` protocol, which means you can
 expect all keys to have the following public API:
@@ -250,14 +218,13 @@ expect all keys to have the following public API:
 
 ```swift
 protocol Key {
-    associatedtype VersionType: Implementation
-
+    associatedtype Module: Paseto.Module
     var material: Data { get }
     init (material: Data) throws
 }
 ```
 
-For any of the above keys, `VersionType` will hold the type parameter `V`.
+For any of the above keys, `Module` will hold the type of module which it should be used with.
 
 #### Constructing a General Key from Key Material
 
@@ -285,7 +252,6 @@ extension Key {
     var encode: String
     init (encoded: String) throws
     init (hex: String) throws
-    static var version: Version
 }
 ```
 
@@ -298,27 +264,24 @@ the above stated encoded format.
 `init (hex:)` will create a key by obtaining the raw material by intepreting
 the given string as hexadecimal encoded bytes with no separators.
 
-`static var version: Version` will provide the enum state representation of
-`VersionType`.
-
 
 ## Symmetric Keys
 
 If you are using the `local` part of the API, you will need to use the same
-symmetric key (`SymmetricKey<V: Implementation>`) for both encryption and
+symmetric key (`SymmetricKey`) for both encryption and
 decryption.
 
 ### Generating a new Symmetric Key
 
 In addition to the above methods common to all keys,
-`SymmetricKey<V: Implementation>` will have a default initializer `init ()`.
+`SymmetricKey` will have a default initializer `init ()`.
 Calling this will generate a new key from random data according to the specific
 requirements of the particular implementation.
 
 For example,
 
 ```swift
-let key = SymmetricKey<Version2>()
+let key = Version2.SymmetricKey()
 ```
 
 will generate a new symmetric key for use with Version 2 of Paseto's
@@ -343,9 +306,9 @@ let verySensitiveKeyMaterial = key.encode
 
 If you are using the `public` part of the API, you will need to use a pair of
 keys (a keypair):
-An asymmetric secret key (`AsymmetricSecretKey<V: Implementation>`) for signing
+An asymmetric secret key (`AsymmetricSecretKey`) for signing
 (secret key, henceforth).
-And an asymmetric public key (`AsymmetricPublicKey<V: Implementation>`) for
+And an asymmetric public key (`AsymmetricPublicKey`) for
 verifying said signatures (public key, henceforth).
 
 We will cover asymmetric secret keys first because their implementations contain
@@ -355,7 +318,7 @@ from a secret key, however a secret key can never be exported from a public key.
 ### Generating a new Asymmetric Secret Key / Keypair
 
 In addition to the methods common to all keys,
-`AsymmetricSecretKey<V: Implementation>` will have a default initializer
+`AsymmetricSecretKey` will have a default initializer
 `init ()`.
 Calling this will generate a new secret key from random data according to the
 specific requirements of the particular implementation.
@@ -363,7 +326,7 @@ specific requirements of the particular implementation.
 For example,
 
 ```swift
-let secretKey = AsymmetricSecretKey<Version2>()
+let secretKey = Version2.AsymmetricSecretKey()
 ```
 
 will generate a new secret key for use with Version 2 of Paseto's
@@ -391,7 +354,7 @@ let verySensitiveSecretKeyMaterial = secretKey.encode
 
 ## Asymmetric Public Keys
 If you are using the `public` part of the API, you will need to use
-a public key (`AsymmetricPublicKey<V: Implementation>`) to verify messages.
+a public key (`AsymmetricPublicKey`) to verify messages.
 
 There are two ways to obtain a public key:
 
@@ -407,13 +370,13 @@ let publicKey = secretKey.publicKey
 ### Obtaining a Public Key from Key Material
 
 If you have public key material, use one of the initializers specified
-in the `Key` protocol to construct a `AsymmetricPublicKey<V: Implementation>`
+in the `Key` protocol to construct a `AsymmetricPublicKey`
 from this material.
 
 For example to construct a public key from raw material `material` intended
 for Version 2 of Paseto, use the following:
 ```swift
-guard let publicKey = try? AsymmetricPublicKey<Version2>(material) else {
+guard let publicKey = try? Version2.AsymmetricPublicKey(material) else {
     /* bad material given */
 }
 ```
@@ -440,20 +403,18 @@ is a perfectly safe operation to share the result of.
 You are now familiar with all the details you need to construct all the types
 that will be used to transition between data and Paseto messages. Hooray! 🎉
 
-As you now know, `Version2` implements `Implementation`.
+For example,  `Version2` implements `Local`.
 And so thus implements the following method:
 
 ```swift
 static func encrypt(
     _ message: Data,
-    with key: SymmetricKey<Version2>,
+    with key: Version2.SymmetricKey,
     footer: Data
-) throws -> Message<Encrypted<Version2>>
+) throws -> Message<Version2.Local>
 ```
 
-Version 2 in-fact implements a non-throwing version of this method, and as
-previously discussed, an overload is available via the `Implementation` protocol
-that will allow `footer` to be omitted because it is optional.
+Version 2 in-fact implements a non-throwing version of this method.
 
 ## Example
 The following will generate a new symmetric key, encrypt a message with it,
@@ -461,8 +422,33 @@ convert it to a `String` for sending, and store the key used in an exported
 format:
 
 ```swift
-let key = SymmetricKey<Version2>()
+let key = Version2.SymmetricKey()
 let message = Version2.encrypt("Hello world!", with: key)
 let pasetoString = message.asString
 let verySensitiveKeyMaterial = key.encode
 ```
+
+When decrypting this message, we will be given a `Package` containing the
+encrypted message, as well as the footer. This type will also allow you to easily convert
+the decrypted message and footer to data or a string as you see fit.
+
+For example:
+
+```swift
+guard let importedKey = try? Version2.SymmetricKey(encoded: verySensitiveKeyMaterial) else {
+    // verySensitiveKeyMaterial isn't a valid key
+}
+guard let importedMessage = Message<Version2.Local>(pasetoString) else {
+    // pasetoString isn't a valid version2.local message
+}
+guard let decrypted = try? Version2.decrypt(importedMessage, with: importedKey) else {
+    // decryption unsuccessful (likely because the key did not encrypt the message)
+}
+
+print(decrypted.string!) // "Hello world"
+print(decrypted.footerString!) // ""
+```
+
+In general `decrypted.string!` and `decrypted.footerString!` could fail to unwrap if
+the sender has not provided valid utf8 string data – it is recommended that error handling
+be added for this case.
