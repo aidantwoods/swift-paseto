@@ -172,7 +172,7 @@ class TokenTest: XCTestCase {
             """.replacingOccurrences(of: "\n", with: "")
 
         // load a version2 symmetric key
-        let key = try! Version2.PublicKey(
+        let key = try! Version2.AsymmetricPublicKey(
             encoded: "ETJDl_U1ViF41T_1OOSdWhYiQpcFVrTt2VDIfH2GZIo"
         )
 

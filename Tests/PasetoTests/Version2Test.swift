@@ -11,7 +11,7 @@ import Sodium
 
 class Version2Test: XCTestCase {
     func testVerify() {
-        let pk = try! Version2.PublicKey(
+        let pk = try! Version2.AsymmetricPublicKey(
             encoded: "Xq649QQaRMADs0XOWSuWj80ZHN4uqN7PfZuQ9NoqjBs"
         )
 
@@ -26,7 +26,7 @@ class Version2Test: XCTestCase {
     }
 
     func testSign() {
-        let sk = Version2.SecretKey()
+        let sk = Version2.AsymmetricSecretKey()
 
         let message = "Hello world!"
 

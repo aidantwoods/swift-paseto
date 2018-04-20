@@ -9,9 +9,9 @@ import Foundation
 
 public protocol AsymmetricSecretKey: Key where
     Module: BasePublic,
-    Module.SecretKey == Self
+    Module.AsymmetricSecretKey == Self
 {
     init ()
 
-    var publicKey: Module.PublicKey { get }
+    var publicKey: Module.AsymmetricPublicKey { get }
 }

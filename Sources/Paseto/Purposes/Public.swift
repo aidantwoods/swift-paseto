@@ -8,21 +8,22 @@
 import Foundation
 
 public protocol Public {
-    associatedtype SecretKey: AsymmetricSecretKey
-    associatedtype PublicKey: AsymmetricPublicKey where
-        PublicKey == SecretKey.Module.PublicKey
+    associatedtype AsymmetricSecretKey: Paseto.AsymmetricSecretKey
+    associatedtype AsymmetricPublicKey: Paseto.AsymmetricPublicKey where
+        AsymmetricPublicKey == AsymmetricSecretKey.Module.AsymmetricPublicKey
 
-    associatedtype Public: BasePublic where SecretKey == Public.SecretKey
+    associatedtype Public: BasePublic where
+        AsymmetricSecretKey == Public.AsymmetricSecretKey
 
-    static func sign(_: Package, with: SecretKey) throws -> Message<Public>
+    static func sign(_: Package, with: AsymmetricSecretKey) throws -> Message<Public>
 
-    static func verify(_: Message<Public>, with: PublicKey) throws -> Package
+    static func verify(_: Message<Public>, with: AsymmetricPublicKey) throws -> Package
 }
 
 public extension Public {
     static func sign(
         _ data: Data,
-        with key: SecretKey,
+        with key: AsymmetricSecretKey,
         footer: Data = Data()
     ) throws -> Message<Public> {
         return try sign(Package(data: data, footer: footer), with: key)
@@ -30,7 +31,7 @@ public extension Public {
 
     static func sign(
         _ string: String,
-        with key: SecretKey,
+        with key: AsymmetricSecretKey,
         footer: Data = Data()
     ) throws -> Message<Public> {
         return try sign(Data(string.utf8), with: key, footer: footer)
@@ -40,7 +41,7 @@ public extension Public {
 public extension Public {
     static func verify(
         _ message: Message<Public>,
-        with key: PublicKey
+        with key: AsymmetricPublicKey
     ) -> String? {
         return (try? verify(message, with: key))?.content.utf8String
     }

@@ -23,8 +23,8 @@ extension Version2: DeferredLocal {
 }
 
 extension Version2: DeferredPublic {
-    public typealias SecretKey = Public.SecretKey
-    public typealias PublicKey = Public.PublicKey
+    public typealias AsymmetricSecretKey = Public.AsymmetricSecretKey
+    public typealias AsymmetricPublicKey = Public.AsymmetricPublicKey
 }
 
 extension Version2: NonThrowingLocalEncrypt {}

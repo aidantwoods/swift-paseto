@@ -94,12 +94,12 @@ extension Message {
 }   
 
 extension Message where M: BasePublic {
-    public func verify(with key: M.PublicKey) throws -> Token {
+    public func verify(with key: M.AsymmetricPublicKey) throws -> Token {
         let package = try M.verify(self, with: key)
         return try token(package: package)
     }
 
-    public func verify(with key: M.PublicKey) -> Token? {
+    public func verify(with key: M.AsymmetricPublicKey) -> Token? {
         return try? verify(with: key)
     }
 }

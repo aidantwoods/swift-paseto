@@ -12,7 +12,7 @@ extension Version2.Public: BasePublic {
 
     public static func sign(
         _ package: Package,
-        with key: SecretKey
+        with key: AsymmetricSecretKey
     ) -> Message<Public> {
         let (data, footer) = (package.content, package.footer)
 
@@ -33,7 +33,7 @@ extension Version2.Public: BasePublic {
 
     public static func verify(
         _ message: Message<Public>,
-        with key: PublicKey
+        with key: AsymmetricPublicKey
     ) throws -> Package {
         let (header, footer) = (message.header, message.footer)
 

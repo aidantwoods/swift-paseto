@@ -8,7 +8,7 @@
 import Foundation
 
 extension Version2.Public {
-    public struct SecretKey {
+    public struct AsymmetricSecretKey {
         public let material: Data
 
         let secretBytes  = Sign.SecretKeyBytes
@@ -42,7 +42,7 @@ extension Version2.Public {
     }
 }
 
-extension Version2.Public.SecretKey: Paseto.AsymmetricSecretKey {
+extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     public typealias Module = Version2.Public
 
     public init () {
@@ -50,14 +50,14 @@ extension Version2.Public.SecretKey: Paseto.AsymmetricSecretKey {
         try! self.init(material: secretKey)
     }
 
-    public var publicKey: Version2.Public.PublicKey  {
-        return try! Version2.Public.PublicKey (
+    public var publicKey: Version2.Public.AsymmetricPublicKey  {
+        return try! Version2.Public.AsymmetricPublicKey (
             material: Sign.keyPair(seed: material[..<seedBytes])!.publicKey
         )
     }
 }
 
-extension Version2.Public.SecretKey {
+extension Version2.Public.AsymmetricSecretKey {
     enum Exception: Error {
         case badLength(String)
         case badMaterial(String)

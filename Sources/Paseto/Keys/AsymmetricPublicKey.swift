@@ -9,5 +9,5 @@ import Foundation
 
 public protocol AsymmetricPublicKey: Key where
     Module: BasePublic,
-    Module.PublicKey == Self
+    Module.AsymmetricPublicKey == Self
 {}
