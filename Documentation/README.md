@@ -89,8 +89,6 @@ methods, and is what should be given to the decrypting and verification methods.
 
 In the Swift library, a Paseto message is implemented as `Message<M: Module>`,
 where the generic argument is a type of `Module`.
-> Before explaining the detail, it helps to see an example of this written out
-> explicitly. 
 
 A `Module` is simply a section of the Paseto API which specifies the version and purpose.
 For example, `Message<Version2.Public>` is a Paseto message which has been signed
