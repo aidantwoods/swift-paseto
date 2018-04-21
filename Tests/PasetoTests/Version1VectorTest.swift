@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Paseto
+@testable import Paseto_V1
 import Sodium
 
 class Version1VectorTest: XCTestCase {
