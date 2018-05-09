@@ -6,8 +6,7 @@
 //
 
 import Foundation
-
-infix operator <+: AdditionPrecedence
+import Paseto_Core
 
 public struct Token {
     public var claims: [String: String]
@@ -94,7 +93,7 @@ public extension Token {
             )
         }
 
-        guard allowedVersions.contains(Version(module: K.Module.self)) else {
+        guard allowedVersions.contains(K.Module.version) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )
@@ -114,7 +113,7 @@ public extension Token {
             )
         }
 
-        guard allowedVersions.contains(Version(module: K.Module.self)) else {
+        guard allowedVersions.contains(K.Module.version) else {
             throw Exception.disallowedVersion(
                 "The version associated with the given key is not allowed."
             )

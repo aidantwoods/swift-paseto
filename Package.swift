@@ -14,6 +14,9 @@ let package = Package(
     name: "Paseto",
     products: [
         .library(name: "Paseto", targets: ["Paseto"]),
+        .library(name: "Paseto_Core", targets: ["Paseto_Core"]),
+        .library(name: "Paseto_V1", targets: ["Paseto_V1"]),
+        .library(name: "Paseto_V2", targets: ["Paseto_V2"]),
     ],
     dependencies: [
         .package(
@@ -30,7 +33,10 @@ let package = Package(
         )
     ],
     targets: [
-        .target(name: "Paseto", dependencies: ["Sodium", "CryptoSwift"]),
+        .target(name: "Paseto", dependencies: ["Paseto_V1", "Paseto_V2"]),
+        .target(name: "Paseto_V1", dependencies: ["Paseto_Core", "CryptoSwift", "Sodium"]),
+        .target(name: "Paseto_V2", dependencies: ["Paseto_Core", "Sodium"]),
+        .target(name: "Paseto_Core", dependencies: ["Sodium"]), 
         .testTarget(name: "PasetoTests", dependencies: ["Paseto"]),
     ]
 )
