@@ -10,11 +10,17 @@ import CryptoSwift
 
 extension Version1.Local {
     public struct SymmetricKey {
+        public static let length = 32
         public let material: Bytes
 
         public init (material: Bytes) {
             self.material = material
         }
+
+        public init () {
+            self.init(bytes: Util.random(len: Module.SymmetricKey.length))!
+        }
+
     }
 }
 
@@ -23,11 +29,6 @@ extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
 }
 
 extension Version1.Local.SymmetricKey {
-    public init() {
-        self.init(
-            bytes: sodium.randomBytes.buf(length: Version1.Local.keyBytes)!
-        )!
-    }
 
     func split(salt: BytesRepresentable) throws -> (Ek: Bytes, Ak: Bytes) {
         let saltBytes = salt.bytes

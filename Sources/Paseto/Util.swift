@@ -27,4 +27,8 @@ public enum Util {
         // type arguements don't really matter here
         return Message<Version2.Local>.deconstruct(string)?.header
     }
+
+    static func random(len: Int) -> Bytes {
+        return sodium.randomBytes.buf(length: len)!.bytes
+    }
 }

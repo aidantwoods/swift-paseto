@@ -9,6 +9,8 @@ import Foundation
 
 extension Version2.Public: Module {
     public struct Payload {
+        static let signatureLength = Sign.Bytes
+
         let message: Bytes
         let signature: Bytes
     }
@@ -18,7 +20,7 @@ extension Version2.Public.Payload: Paseto.Payload {
     public var bytes: Bytes { return message + signature }
 
     public init? (bytes: Bytes) {
-        let signatureOffset = bytes.count - Sign.Bytes
+        let signatureOffset = bytes.count - Version2.Public.Payload.signatureLength
 
         guard signatureOffset > 0 else { return nil }
 

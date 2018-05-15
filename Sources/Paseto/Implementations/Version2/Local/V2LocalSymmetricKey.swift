@@ -9,19 +9,17 @@ import Foundation
 
 public extension Version2.Local {
     struct SymmetricKey: Paseto.SymmetricKey {
+        public static let length = Aead.keyBytes
+
         public let material: Bytes
         public typealias Module = Version2.Local
 
         public init (material: Bytes) {
             self.material = material
         }
-    }
-}
 
-extension Version2.Local.SymmetricKey {
-    public init () {
-        self.init(
-            bytes: sodium.randomBytes.buf(length: Int(Aead.keyBytes))!
-        )!
+        public init () {
+            self.init(bytes: Util.random(len: Module.SymmetricKey.length))!
+        }
     }
 }

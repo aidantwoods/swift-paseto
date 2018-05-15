@@ -9,36 +9,59 @@ import Foundation
 
 extension Version2.Public {
     public struct AsymmetricSecretKey {
+        public static let length        = Sign.SecretKeyBytes
+        public static let seedLength    = Sign.SeedBytes
+        public static let keypairLength = 96
+
         public let material: Bytes
 
-        let secretBytes  = Sign.SecretKeyBytes
-        let seedBytes    = Sign.SeedBytes
-        let keypairBytes = 96
-
         public init (material: Bytes) throws {
-            switch material.count {
-            case secretBytes:
-                self.material = material
+            let length = Module.AsymmetricSecretKey.length
 
-            case keypairBytes:
-                self.material = material[..<secretBytes].bytes
-
-            case seedBytes:
-                guard let keyPair = Sign.keyPair(seed: Data(bytes: material)) else {
-                    throw Exception.badMaterial(
-                        "The material given could not be used to construct a"
-                            + " key."
-                    )
-                }
-                self.material = keyPair.secretKey.bytes
-
-            default:
+            guard material.count == length else {
                 throw Exception.badLength(
-                    "Secret key must be 64 or 32 bytes long;"
+                    "Secret key must be \(length) bytes long;"
                         + "\(material.count) given."
                 )
             }
+
+            self.material = material
         }
+    }
+}
+
+extension Version2.Public.AsymmetricSecretKey {
+    public init (keypair material: Bytes) throws {
+        let keypairLength = Module.AsymmetricSecretKey.keypairLength
+
+        guard material.count == keypairLength else {
+            throw Exception.badLength(
+                "Keypair must be \(keypairLength) bytes long;"
+                    + "\(material.count) given."
+            )
+        }
+
+        self.material = material[..<Module.AsymmetricSecretKey.length].bytes
+    }
+
+    public init (seed material: Bytes) throws {
+        let seedLength = Module.AsymmetricSecretKey.seedLength
+
+        guard material.count == seedLength else {
+            throw Exception.badLength(
+                "Seed must be \(seedLength) bytes long;"
+                    + "\(material.count) given."
+            )
+        }
+
+        guard let keyPair = Sign.keyPair(seed: Data(bytes: material)) else {
+            throw Exception.badMaterial(
+                "The seed material given could not be used to construct a"
+                    + " keypair."
+            )
+        }
+
+        self.material = keyPair.secretKey.bytes
     }
 }
 
@@ -50,9 +73,13 @@ extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
         try! self.init(material: secretKey)
     }
 
+    var seed: Bytes {
+        return material[..<Module.AsymmetricSecretKey.seedLength].bytes
+    }
+
     public var publicKey: Version2.Public.AsymmetricPublicKey  {
         return Version2.Public.AsymmetricPublicKey (
-            bytes: Sign.keyPair(seed: Data(bytes: material[..<seedBytes]))!.publicKey
+            bytes: Sign.keyPair(seed: Data(bytes: self.seed))!.publicKey
         )!
     }
 }

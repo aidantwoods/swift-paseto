@@ -8,11 +8,7 @@
 import Foundation
 
 public enum Version1 {
-    public struct Local {
-        static let keyBytes   = 32
-        static let nonceBytes = 32
-        static let macBytes   = 48
-    }
+    public struct Local {}
 }
 
 extension Version1: DeferredLocal {

@@ -9,10 +9,12 @@ import Foundation
 
 extension Version2.Public {
     public struct AsymmetricPublicKey  {
+        public static let length = Sign.PublicKeyBytes
+
         public let material: Bytes
 
         public init (material: Bytes) throws {
-            guard material.count == Sign.PublicKeyBytes else {
+            guard material.count == Module.AsymmetricPublicKey.length else {
                 throw Exception.badLength(
                     "Public key must be 32 bytes long; \(material.count) given."
                 )
