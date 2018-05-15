@@ -11,48 +11,45 @@ extension Version2.Local {
     internal static func encrypt(
         _ package: Package,
         with key: SymmetricKey,
-        unitTestNonce: Data?
+        unitTestNonce: BytesRepresentable?
     ) -> Message<Local> {
         let (message, footer) = (package.content, package.footer)
 
-        let nonceBytes = Int(Aead.nonceBytes)
+        let nonceBytes = Aead.nonceBytes
 
-        let preNonce: Data
+        let preNonce: Bytes
 
-        if case let .some(given) = unitTestNonce, given.count == nonceBytes {
+        if let given = unitTestNonce?.bytes, given.count == nonceBytes {
             preNonce = given
         } else {
-            preNonce = sodium.randomBytes.buf(length: nonceBytes)!
+            preNonce = sodium.randomBytes.buf(length: nonceBytes)!.bytes
         }
 
         let nonce = sodium.genericHash.hash(
-            message: message,
-            key: preNonce,
+            message: Data(message),
+            key: Data(preNonce),
             outputLength: nonceBytes
-        )!
+        )!.bytes
 
         let header = Header(version: version, purpose: .Local)
 
         let cipherText = Aead.xchacha20poly1305_ietf_encrypt(
             message: message,
-            additionalData: Util.pae([header.asData, nonce, footer]),
+            additionalData: Util.pae([header, nonce, footer]),
             nonce: nonce,
             secretKey: key.material
         )!
 
-        let payload = Payload(
-            nonce: nonce,
-            cipherText: cipherText
-        )
+        let payload = Payload(nonce: nonce, cipherText: cipherText)
 
         return Message(payload: payload, footer: footer)
     }
 
     internal static func encrypt(
-        _ data: Data,
+        _ data: BytesRepresentable,
         with key: SymmetricKey,
-        footer: Data,
-        unitTestNonce: Data?
+        footer: BytesRepresentable,
+        unitTestNonce: BytesRepresentable?
     ) -> Message<Local> {
         return encrypt(
             Package(data, footer: footer),
@@ -82,8 +79,8 @@ extension Version2.Local: BaseLocal {
         let cipherText = message.payload.cipherText
 
         guard let plainText = Aead.xchacha20poly1305_ietf_decrypt(
-            cipherText: cipherText,
-            additionalData: Util.pae([header.asData, nonce, footer]),
+            authenticatedCipherText: cipherText,
+            additionalData: Util.pae([header, nonce, footer]),
             nonce: nonce,
             secretKey: key.material
         ) else {

@@ -9,22 +9,22 @@ import Foundation
 
 extension Version2.Public: Module {
     public struct Payload {
-        let message: Data
-        let signature: Data
+        let message: Bytes
+        let signature: Bytes
     }
 }
 
 extension Version2.Public.Payload: Paseto.Payload {
-    public var asData: Data { return message + signature }
+    public var bytes: Bytes { return message + signature }
 
-    public init? (data: Data) {
-        let signatureOffset = data.count - Sign.Bytes
+    public init? (bytes: Bytes) {
+        let signatureOffset = bytes.count - Sign.Bytes
 
         guard signatureOffset > 0 else { return nil }
 
         self.init(
-            message:   data[..<signatureOffset],
-            signature: data[signatureOffset...]
+            message:   bytes[..<signatureOffset].bytes,
+            signature: bytes[signatureOffset...].bytes
         )
     }
 }

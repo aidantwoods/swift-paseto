@@ -7,26 +7,36 @@
 
 import Foundation
 
-public protocol Key {
+public protocol Key: BytesRepresentable {
     associatedtype Module: Paseto.Module
-    var material: Data { get }
-    init (material: Data) throws
+    var material: Bytes { get }
+    init (material: Bytes) throws
+}
+
+public extension Key {
+    var bytes: Bytes { return self.material }
+
+    init? (bytes: Bytes) {
+        try? self.init(material: bytes)
+    }
 }
 
 extension Key {
     public var encode: String { return material.base64UrlNoPad }
 
     public init (encoded: String) throws {
-        guard let decoded = Data(base64UrlNoPad: encoded) else {
+        guard let decoded = Bytes(base64UrlNoPad: encoded) else {
             throw KeyException.badEncoding("Could not base64 URL decode.")
         }
+
         try self.init(material: decoded)
     }
 
     public init (hex: String) throws {
-        guard let decoded = sodium.utils.hex2bin(hex) else {
+        guard let decoded = sodium.utils.hex2bin(hex)?.bytes else {
             throw KeyException.badEncoding("Could not hex decode.")
         }
+
         try self.init(material: decoded)
     }
 }

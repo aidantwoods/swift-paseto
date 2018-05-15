@@ -8,14 +8,17 @@
 import Foundation
 
 public struct Package {
-    public let content: Data
-    public let footer: Data
+    public let content: Bytes
+    public let footer: Bytes
 
-    public init (_ content: Data, footer: Data = Data()) {
-        self.content = content
-        self.footer = footer
+    public init (
+        _ content: BytesRepresentable,
+        footer: BytesRepresentable = Bytes()
+    ) {
+        self.content = content.bytes
+        self.footer = footer.bytes
     }
 
-    public var string: String? { return content.utf8String }
-    public var footerString: String? { return footer.utf8String }
+    public var string: String? { return String(bytes: self.content) }
+    public var footerString: String? { return String(bytes: self.footer) }
 }

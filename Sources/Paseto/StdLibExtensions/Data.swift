@@ -8,18 +8,22 @@
 import Sodium
 import Foundation
 
-extension Data {
+extension BytesRepresentable {
     var base64UrlNoPad: String {
-        return Sodium().utils.bin2base64(self, variant: .URLSAFE_NO_PADDING)!
+        return Sodium().utils.bin2base64(
+            Data(bytes: self),
+            variant: .URLSAFE_NO_PADDING
+        )!
     }
 
-    var utf8String: String? { return String(data: self, encoding: .utf8) }
+//    var utf8String: String? { return String(data: self, encoding: .utf8) }
 
     init? (base64UrlNoPad encoded: String) {
-        guard let data
-            = Sodium().utils.base642bin(encoded, variant: .URLSAFE_NO_PADDING)
-        else { return nil }
+        guard let decoded = Sodium().utils.base642bin(
+            encoded,
+            variant: .URLSAFE_NO_PADDING
+        ) else { return nil }
 
-        self = data
+        self.init(bytes: decoded)
     }
 }

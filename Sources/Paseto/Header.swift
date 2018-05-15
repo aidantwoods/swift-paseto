@@ -37,8 +37,17 @@ extension Header {
     var asString: String {
         return [version.rawValue, purpose.rawValue].joined(separator: ".") + "."
     }
+}
 
-    var asData: Data { return Data(self.asString.utf8) }
+extension Header: BytesRepresentable {
+    public var bytes: Bytes { return self.asString.bytes }
+
+    public init? (bytes: Bytes) {
+        guard let header = String(bytes: bytes).flatMap(Header.init(serialised:))
+        else { return nil }
+
+        self = header
+    }
 }
 
 extension Header: Equatable {

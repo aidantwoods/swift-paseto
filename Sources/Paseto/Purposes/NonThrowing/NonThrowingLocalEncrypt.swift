@@ -13,19 +13,11 @@ public protocol NonThrowingLocalEncrypt: Local {
 
 public extension NonThrowingLocalEncrypt {
     static func encrypt(
-        _ data: Data,
+        _ data: BytesRepresentable,
         with key: SymmetricKey,
-        footer: Data = Data()
+        footer: BytesRepresentable = Bytes()
     ) -> Message<Local> {
         return encrypt(Package(data, footer: footer), with: key)
-    }
-
-    static func encrypt(
-        _ string: String,
-        with key: SymmetricKey,
-        footer: Data = Data()
-    ) -> Message<Local> {
-        return encrypt(Data(string.utf8), with: key, footer: footer)
     }
 }
 

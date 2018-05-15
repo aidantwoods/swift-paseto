@@ -55,7 +55,7 @@ class Version1Test: XCTestCase {
 
         let blob = try! Version1.encrypt(message, with: sk)
 
-        let result: Data = try! Version1.decrypt(blob, with: sk).content
+        let result = Data(try! Version1.decrypt(blob, with: sk).content)
 
         XCTAssertEqual(message, result)
     }

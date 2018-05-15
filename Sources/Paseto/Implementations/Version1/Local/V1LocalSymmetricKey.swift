@@ -10,9 +10,9 @@ import CryptoSwift
 
 extension Version1.Local {
     public struct SymmetricKey {
-        public let material: Data
+        public let material: Bytes
 
-        public init (material: Data) {
+        public init (material: Bytes) {
             self.material = material
         }
     }
@@ -25,34 +25,33 @@ extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
 extension Version1.Local.SymmetricKey {
     public init() {
         self.init(
-            material: sodium.randomBytes.buf(length: Version1.Local.keyBytes)!
-        )
+            bytes: sodium.randomBytes.buf(length: Version1.Local.keyBytes)!
+        )!
     }
 
-    func split(salt: Data) throws -> (Ek: Data, Ak: Data) {
-        guard salt.count == 16 else {
+    func split(salt: BytesRepresentable) throws -> (Ek: Bytes, Ak: Bytes) {
+        let saltBytes = salt.bytes
+        guard saltBytes.count == 16 else {
             throw Exception.badSalt("Salt must be exactly 16 bytes")
         }
 
-        let salt16 = salt[..<16]
-
         let encKey = try HKDF(
-            password: material.bytes,
-            salt: salt16.bytes,
-            info: Array("paseto-encryption-key".utf8),
+            password: material,
+            salt: saltBytes,
+            info: "paseto-encryption-key".bytes,
             keyLength: 32,
             variant: .sha384
         ).calculate()
 
         let authKey = try HKDF(
-            password: material.bytes,
-            salt: salt16.bytes,
-            info: Array("paseto-auth-key-for-aead".utf8),
+            password: material,
+            salt: saltBytes,
+            info: "paseto-auth-key-for-aead".bytes,
             keyLength: 32,
             variant: .sha384
         ).calculate()
 
-        return (Ek: Data(encKey), Ak: Data(authKey))
+        return (Ek: encKey, Ak: authKey)
     }
 }
 

@@ -83,24 +83,24 @@ class Version2Test: XCTestCase {
                 + "ZlIEVudGVycHJpc2Vz"
         )!
 
-        let sk = Version2.SymmetricKey(material: Sodium().utils.hex2bin(
-            "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
-        )!)
+        let sk = try! Version2.SymmetricKey(
+            hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
+        )
 
         let expected = [
             "data": "this is a signed message",
             "expires": "2019-01-01T00:00:00+00:00"
         ]
 
-        let expectedFooter = Data("Paragon Initiative Enterprises".utf8)
+        let expectedFooter = "Paragon Initiative Enterprises"
 
-        let decrypted = try! Version2.decrypt(blob, with: sk).content
+        let decrypted = Data(try! Version2.decrypt(blob, with: sk).content)
 
         let result = try! JSONSerialization.jsonObject(with: decrypted)
             as! [String: String]
 
         XCTAssertEqual(expected, result)
-        XCTAssertEqual(expectedFooter, blob.footer)
+        XCTAssertEqual(expectedFooter, String(bytes: blob.footer))
     }
 
     func testLargeData() {
@@ -110,7 +110,7 @@ class Version2Test: XCTestCase {
 
         let blob = Version2.encrypt(message, with: sk)
 
-        let result = try! Version2.decrypt(blob, with: sk).content
+        let result = Data(try! Version2.decrypt(blob, with: sk).content)
 
         XCTAssertEqual(message, result)
     }

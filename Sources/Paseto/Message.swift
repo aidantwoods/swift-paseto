@@ -13,11 +13,11 @@ public struct Message<M: Module> {
 
     public let header: Header = Message.header
     let payload: Payload
-    public let footer: Data
+    public let footer: Bytes
 
-    init (payload: Payload, footer: Data = Data()) {
+    init (payload: Payload, footer: BytesRepresentable = Bytes()) {
         self.payload = payload
-        self.footer  = footer
+        self.footer  = footer.bytes
     }
 
     public init? (_ string: String) {
@@ -68,7 +68,7 @@ public extension Message {
         return main + "." + footer.base64UrlNoPad
     }
 
-    public var asData: Data { return Data(self.asString.utf8) }
+    public var asData: Data { return Data(bytes: self.asString) }
 }
 
 extension Message {
@@ -79,14 +79,14 @@ extension Message {
 
 extension Message {
     func token(package: Package) throws -> Token {
-        guard let footer = package.footer.utf8String else {
+        guard let footer = String(bytes: package.footer) else {
             throw Exception.badEncoding(
                 "Could not convert the footer to a UTF-8 string."
             )
         }
 
         return try Token(
-            jsonData: package.content,
+            jsonData: Data(bytes: package.content),
             footer: footer,
             allowedVersions: [header.version]
         )

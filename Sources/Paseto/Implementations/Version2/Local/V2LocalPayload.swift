@@ -9,22 +9,22 @@ import Foundation
 
 extension Version2.Local: Module {
     public struct Payload {
-        let nonce: Data
-        let cipherText: Data
+        let nonce: Bytes
+        let cipherText: Bytes
     }
 }
 
 extension Version2.Local.Payload: Paseto.Payload {
-    public var asData: Data { return nonce + cipherText }
+    public var bytes: Bytes { return nonce + cipherText }
 
-    public init? (data: Data) {
+    public init? (bytes: Bytes) {
         let nonceLen = Int(Aead.nonceBytes)
 
-        guard data.count > nonceLen else { return nil }
+        guard bytes.count > nonceLen else { return nil }
 
         self.init(
-            nonce:      data[..<nonceLen],
-            cipherText: data[nonceLen...]
+            nonce:      bytes[..<nonceLen].bytes,
+            cipherText: bytes[nonceLen...].bytes
         )
     }
 }

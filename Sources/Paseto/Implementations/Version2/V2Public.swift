@@ -19,14 +19,11 @@ extension Version2.Public: BasePublic {
         let header = Header(version: version, purpose: .Public)
 
         let signature = Sign.signature(
-            message: Util.pae([header.asData, data, footer]),
-            secretKey: key.material
-        )!
+            message: Data(Util.pae([header, data, footer])),
+            secretKey: Data(key.material)
+        )!.bytes
 
-        let payload = Payload(
-            message: data,
-            signature: signature
-        )
+        let payload = Payload(message: data, signature: signature)
 
         return Message(payload: payload, footer: footer)
     }
@@ -39,13 +36,11 @@ extension Version2.Public: BasePublic {
 
         let payload = message.payload
 
-        let isValid = Sign.verify(
-            message: Util.pae([header.asData, payload.message, footer]),
-            publicKey: key.material,
-            signature: payload.signature
-        )
-
-        guard isValid else {
+        guard Sign.verify(
+            message: Data(Util.pae([header, payload.message, footer])),
+            publicKey: Data(key.material),
+            signature: Data(payload.signature)
+        ) else {
             throw Version2.Exception.invalidSignature(
                 "Invalid signature for this message."
             )

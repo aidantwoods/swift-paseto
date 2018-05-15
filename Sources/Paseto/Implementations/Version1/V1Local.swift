@@ -12,54 +12,44 @@ extension Version1.Local {
     internal static func encrypt(
         _ package: Package,
         with key: SymmetricKey,
-        unitTestNonce: Data?
+        unitTestNonce: BytesRepresentable?
     ) throws -> Message<Local> {
         let (data, footer) = (package.content, package.footer)
+        let nonceLength = Payload.nonceLength
 
-        let preNonce: Data
+        let preNonce: Bytes
 
-        if case let .some(given) = unitTestNonce, given.count == nonceBytes {
+        if let given = unitTestNonce?.bytes, given.count == nonceLength {
             preNonce = given
         } else {
-            preNonce = sodium.randomBytes.buf(length: nonceBytes)!
+            preNonce = sodium.randomBytes.buf(length: nonceLength)!.bytes
         }
 
         let nonce = try getNonce(message: data, preNonce: preNonce)
 
         let (Ek: encKey, Ak: authKey) = try key.split(salt: nonce[..<16])
 
-        let cipherText = Data(
-            try AES(
-                key: encKey.bytes,
-                blockMode: .CTR(iv: nonce[16...].bytes),
-                padding: .noPadding
-            ).encrypt(data.bytes)
-        )
+        let cipherText = try AES(
+            key: encKey,
+            blockMode: .CTR(iv: nonce[16...].bytes),
+            padding: .noPadding
+        ).encrypt(data)
 
         let header = Header(version: version, purpose: .Local)
-        let pae = Util.pae([header.asData, nonce, cipherText, footer])
+        let pae = Util.pae([header, nonce, cipherText, footer])
 
-        let mac = Data(
-            try HMAC(
-                key: authKey.bytes,
-                variant: .sha384
-            ).authenticate(pae.bytes)
-        )
+        let mac = try HMAC(key: authKey, variant: .sha384).authenticate(pae)
 
-        let payload = Payload(
-            nonce: nonce,
-            cipherText: cipherText,
-            mac: mac
-        )
+        let payload = Payload(nonce: nonce, cipherText: cipherText, mac: mac)
 
         return Message(payload: payload, footer: footer)
     }
 
     internal static func encrypt(
-        _ data: Data,
+        _ data: BytesRepresentable,
         with key: SymmetricKey,
-        footer: Data,
-        unitTestNonce: Data?
+        footer: BytesRepresentable,
+        unitTestNonce: BytesRepresentable?
     ) throws -> Message<Local> {
         return try encrypt(
             Package(data, footer: footer),
@@ -91,39 +81,29 @@ extension Version1.Local: BaseLocal {
 
         let (Ek: encKey, Ak: authKey) = try key.split(salt: nonce[..<16])
 
-        let pae = Util.pae([header.asData, nonce, cipherText, footer])
+        let pae = Util.pae([header, nonce, cipherText, footer])
 
-        let expectedMac = Data(
-            try HMAC(
-                key: authKey.bytes,
-                variant: .sha384
-            ).authenticate(pae.bytes)
-        )
+        let expectedMac = try HMAC(key: authKey, variant: .sha384).authenticate(pae)
 
-        guard sodium.utils.equals(expectedMac, mac) else {
+        guard sodium.utils.equals(Data(expectedMac), Data(mac)) else {
             throw Exception.badMac("Invalid message authentication code.")
         }
 
-        let plainText = Data(
-            try AES(
-                key: encKey.bytes,
-                blockMode: .CTR(iv: nonce[16...].bytes),
-                padding: .noPadding
-            ).decrypt(cipherText.bytes)
-        )
+        let plainText = try AES(
+            key: encKey,
+            blockMode: .CTR(iv: nonce[16...].bytes),
+            padding: .noPadding
+        ).decrypt(cipherText)
 
         return Package(plainText, footer: footer)
     }
 }
 
 extension Version1.Local {
-    static func getNonce(message: Data, preNonce: Data) throws -> Data {
-        let hmac = try HMAC(
-            key: preNonce.bytes,
-            variant: .sha384
-        ).authenticate(message.bytes)
+    static func getNonce(message: Bytes, preNonce: Bytes) throws -> Bytes {
+        let hmac = try HMAC(key: preNonce, variant: .sha384).authenticate(message)
 
-        return Data(hmac)[..<32]
+        return hmac[..<32].bytes
     }
 }
 

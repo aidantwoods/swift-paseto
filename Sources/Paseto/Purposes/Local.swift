@@ -18,18 +18,10 @@ public protocol Local {
 
 public extension Local {
     static func encrypt(
-        _ data: Data,
+        _ data: BytesRepresentable,
         with key: SymmetricKey,
-        footer: Data = Data()
+        footer: BytesRepresentable = Bytes()
     ) throws -> Message<Local> {
         return try encrypt(Package(data, footer: footer), with: key)
-    }
-
-    static func encrypt(
-        _ string: String,
-        with key: SymmetricKey,
-        footer: Data = Data()
-    ) throws -> Message<Local> {
-        return try encrypt(Data(string.utf8), with: key, footer: footer)
     }
 }

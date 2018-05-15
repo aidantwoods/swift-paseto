@@ -9,27 +9,27 @@ import Foundation
 
 extension Version1.Local: Module {
     public struct Payload {
-        let nonce: Data
-        let cipherText: Data
-        let mac: Data
+        let nonce: Bytes
+        let cipherText: Bytes
+        let mac: Bytes
     }
 }
 
 extension Version1.Local.Payload: Paseto.Payload {
-    public var asData: Data { return nonce + cipherText + mac }
+    public var bytes: Bytes { return nonce + cipherText + mac }
 
-    public init? (data: Data) {
+    public init? (_ bytes: Bytes) {
         let nonceLen = Version1.Local.nonceBytes
         let macLen   = Version1.Local.macBytes
 
-        guard data.count > nonceLen + macLen else { return nil }
+        guard bytes.count > nonceLen + macLen else { return nil }
 
-        let macOffset = data.count - macLen
+        let macOffset = bytes.count - macLen
 
         self.init(
-            nonce:      data[..<nonceLen],
-            cipherText: data[nonceLen..<macOffset],
-            mac:        data[macOffset...]
+            nonce:      bytes[..<nonceLen].bytes,
+            cipherText: bytes[nonceLen..<macOffset].bytes,
+            mac:        bytes[macOffset...].bytes
         )
     }
 }
