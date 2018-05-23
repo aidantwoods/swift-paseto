@@ -19,7 +19,7 @@ public extension Version2.Local {
         }
 
         public init () {
-            self.init(bytes: Util.random(len: Module.SymmetricKey.length))!
+            self.init(bytes: Util.random(length: Module.SymmetricKey.length))!
         }
     }
 }

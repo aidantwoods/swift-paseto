@@ -18,7 +18,7 @@ extension Version1.Local {
         }
 
         public init () {
-            self.init(bytes: Util.random(len: Module.SymmetricKey.length))!
+            self.init(bytes: Util.random(length: Module.SymmetricKey.length))!
         }
 
     }
@@ -29,7 +29,6 @@ extension Version1.Local.SymmetricKey: Paseto.SymmetricKey {
 }
 
 extension Version1.Local.SymmetricKey {
-
     func split(salt: BytesRepresentable) throws -> (Ek: Bytes, Ak: Bytes) {
         let saltBytes = salt.bytes
         guard saltBytes.count == 16 else {

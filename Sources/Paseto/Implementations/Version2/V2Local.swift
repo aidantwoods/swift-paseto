@@ -22,7 +22,7 @@ extension Version2.Local {
         if let given = unitTestNonce?.bytes, given.count == nonceBytes {
             preNonce = given
         } else {
-            preNonce = sodium.randomBytes.buf(length: nonceBytes)!.bytes
+            preNonce = Util.random(length: nonceBytes)
         }
 
         let nonce = sodium.genericHash.hash(

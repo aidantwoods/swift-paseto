@@ -24,11 +24,15 @@ public enum Util {
     }
 
     public static func header(of string: String) -> Header? {
-        // type arguements don't really matter here
+        // type arguments don't really matter here
         return Message<Version2.Local>.deconstruct(string)?.header
     }
 
-    static func random(len: Int) -> Bytes {
-        return sodium.randomBytes.buf(length: len)!.bytes
+    static func random(length: Int) -> Bytes {
+        return sodium.randomBytes.buf(length: length)!.bytes
+    }
+
+    static func equals(_ lhs: Bytes, _ rhs: Bytes) -> Bool {
+        return sodium.utils.equals(Data(lhs), Data(rhs))
     }
 }

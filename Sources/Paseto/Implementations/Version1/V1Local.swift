@@ -22,7 +22,7 @@ extension Version1.Local {
         if let given = unitTestNonce?.bytes, given.count == nonceLength {
             preNonce = given
         } else {
-            preNonce = sodium.randomBytes.buf(length: nonceLength)!.bytes
+            preNonce = Util.random(length: nonceLength)
         }
 
         let nonce = try getNonce(message: data, preNonce: preNonce)
@@ -85,7 +85,7 @@ extension Version1.Local: BaseLocal {
 
         let expectedMac = try HMAC(key: authKey, variant: .sha384).authenticate(pae)
 
-        guard sodium.utils.equals(Data(expectedMac), Data(mac)) else {
+        guard Util.equals(expectedMac, mac) else {
             throw Exception.badMac("Invalid message authentication code.")
         }
 
