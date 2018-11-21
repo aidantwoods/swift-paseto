@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/jedisct1/swift-sodium.git",
-            .revision("dc62e765f5110a1bfb16a692e18180ba1ee9ae9f")
+            .upToNextMajor(from: "0.7.0")
         ),
         .package(
             url: "https://github.com/tiwoc/Clibsodium.git",

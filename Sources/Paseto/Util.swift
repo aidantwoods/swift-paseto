@@ -33,6 +33,6 @@ public enum Util {
     }
 
     static func equals(_ lhs: Bytes, _ rhs: Bytes) -> Bool {
-        return sodium.utils.equals(Data(lhs), Data(rhs))
+        return sodium.utils.equals(lhs, rhs)
     }
 }

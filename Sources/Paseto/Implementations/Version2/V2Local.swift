@@ -26,8 +26,8 @@ extension Version2.Local {
         }
 
         let nonce = sodium.genericHash.hash(
-            message: Data(message),
-            key: Data(preNonce),
+            message: message.bytes,
+            key: preNonce.bytes,
             outputLength: nonceBytes
         )!.bytes
 

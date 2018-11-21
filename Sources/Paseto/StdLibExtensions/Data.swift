@@ -11,7 +11,7 @@ import Foundation
 extension BytesRepresentable {
     var base64UrlNoPad: String {
         return Sodium().utils.bin2base64(
-            Data(bytes: self),
+            self.bytes,
             variant: .URLSAFE_NO_PADDING
         )!
     }
