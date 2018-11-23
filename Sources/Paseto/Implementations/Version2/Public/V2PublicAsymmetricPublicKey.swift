@@ -13,12 +13,12 @@ extension Version2.Public {
 
         public let material: Bytes
 
-        public init (material: Bytes) /* throws */ {
-            /*guard material.count == Module.AsymmetricPublicKey.length else {
+        public init (material: Bytes) throws {
+            guard material.count == Module.AsymmetricPublicKey.length else {
                 throw Exception.badLength(
                     "Public key must be 32 bytes long; \(material.count) given."
                 )
-            }*/
+            }
 
             self.material = material
         }

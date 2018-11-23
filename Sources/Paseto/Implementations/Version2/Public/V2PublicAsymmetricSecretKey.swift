@@ -79,8 +79,8 @@ extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
 
     public var publicKey: Version2.Public.AsymmetricPublicKey {
         return Version2.Public.AsymmetricPublicKey (
-            material: Sign.keyPair(seed: self.seed)!.publicKey
-        )
+            bytes: Sign.keyPair(seed: self.seed)!.publicKey
+        )!
     }
 }
 
