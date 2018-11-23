@@ -16,8 +16,6 @@ extension BytesRepresentable {
         )!
     }
 
-//    var utf8String: String? { return String(data: self, encoding: .utf8) }
-
     init? (base64UrlNoPad encoded: String) {
         guard let decoded = Sodium().utils.base642bin(
             encoded,
