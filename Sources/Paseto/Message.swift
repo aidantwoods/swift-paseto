@@ -30,7 +30,7 @@ public struct Message<M: Module> {
 
         guard header == Message.header,
               let payload = Payload(encoded: encodedPayload),
-              let footer = Data(base64UrlNoPad: encodedFooter)
+              let footer = Bytes(fromBase64: encodedFooter)
         else { return nil }
 
         self.init(payload: payload, footer: footer)
@@ -65,7 +65,7 @@ public extension Message {
     public var asString: String {
         let main = header.asString + payload.encode
         guard !footer.isEmpty else { return main }
-        return main + "." + footer.base64UrlNoPad
+        return main + "." + footer.toBase64
     }
 
     public var asData: Data { return Data(bytes: self.asString) }

@@ -22,10 +22,10 @@ public extension Key {
 }
 
 extension Key {
-    public var encode: String { return material.base64UrlNoPad }
+    public var encode: String { return material.toBase64 }
 
     public init (encoded: String) throws {
-        guard let decoded = Bytes(base64UrlNoPad: encoded) else {
+        guard let decoded = Bytes(fromBase64: encoded) else {
             throw KeyException.badEncoding("Could not base64 URL decode.")
         }
 
