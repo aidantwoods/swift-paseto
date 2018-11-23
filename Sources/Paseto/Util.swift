@@ -29,7 +29,7 @@ public enum Util {
     }
 
     static func random(length: Int) -> Bytes {
-        return sodium.randomBytes.buf(length: length)!.bytes
+        return sodium.randomBytes.buf(length: length)!
     }
 
     static func equals(_ lhs: Bytes, _ rhs: Bytes) -> Bool {

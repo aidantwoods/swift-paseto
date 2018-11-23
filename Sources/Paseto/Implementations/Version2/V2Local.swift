@@ -26,10 +26,10 @@ extension Version2.Local {
         }
 
         let nonce = sodium.genericHash.hash(
-            message: message.bytes,
-            key: preNonce.bytes,
+            message: message,
+            key: preNonce,
             outputLength: nonceBytes
-        )!.bytes
+        )!
 
         let header = Header(version: version, purpose: .Local)
 
