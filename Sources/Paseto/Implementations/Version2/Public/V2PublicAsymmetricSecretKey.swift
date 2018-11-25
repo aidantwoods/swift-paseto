@@ -54,14 +54,14 @@ extension Version2.Public.AsymmetricSecretKey {
             )
         }
 
-        guard let keyPair = Sign.keyPair(seed: Data(bytes: material)) else {
+        guard let keyPair = Sign.keyPair(seed: material) else {
             throw Exception.badMaterial(
                 "The seed material given could not be used to construct a"
                     + " keypair."
             )
         }
 
-        self.material = keyPair.secretKey.bytes
+        self.material = keyPair.secretKey
     }
 }
 
@@ -69,7 +69,7 @@ extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     public typealias Module = Version2.Public
 
     public init () {
-        let secretKey = Sign.keyPair()!.secretKey.bytes
+        let secretKey = Sign.keyPair()!.secretKey
         try! self.init(material: secretKey)
     }
 
@@ -77,9 +77,9 @@ extension Version2.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
         return material[..<Module.AsymmetricSecretKey.seedLength].bytes
     }
 
-    public var publicKey: Version2.Public.AsymmetricPublicKey  {
+    public var publicKey: Version2.Public.AsymmetricPublicKey {
         return Version2.Public.AsymmetricPublicKey (
-            bytes: Sign.keyPair(seed: Data(bytes: self.seed))!.publicKey
+            bytes: Sign.keyPair(seed: self.seed)!.publicKey
         )!
     }
 }

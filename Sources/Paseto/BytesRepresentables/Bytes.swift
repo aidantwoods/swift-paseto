@@ -22,3 +22,14 @@ extension Array: PureBytesRepresentable, BytesRepresentable
         self = bytes
     }
 }
+
+extension Array where Element == UInt8 {
+    init? (fromBase64 encoded: String) {
+        guard let decoded = sodium.utils.base642bin(
+            encoded,
+            variant: .URLSAFE_NO_PADDING
+        ) else { return nil }
+
+        self = decoded
+    }
+}
