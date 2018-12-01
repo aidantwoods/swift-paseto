@@ -72,9 +72,7 @@ The following are automatically resolved when using Swift Package Manager.
   *Clibsodium is required by Swift-Sodium.*
 
   Clibsodium is used directly to provide the secret key cryptography
-  implementations, which are used in Version 2 local Paseto tokens. When
-  Swift-Sodium bridges these from the C library, Swift-Sodium will be used
-  instead.
+  implementations, which are used in Version 2 local Paseto tokens.
 
 # Overview of the Swift library
 The Paseto Swift library is designed with the aim of using the Swift compiler to
