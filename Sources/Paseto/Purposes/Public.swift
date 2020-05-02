@@ -12,7 +12,7 @@ public protocol Public {
     associatedtype AsymmetricPublicKey: Paseto.AsymmetricPublicKey where
         AsymmetricPublicKey == AsymmetricSecretKey.Module.AsymmetricPublicKey
 
-    associatedtype Public: BasePublic where
+    associatedtype Public: Paseto.Public & Module where Public.Public == Public,
         AsymmetricSecretKey == Public.AsymmetricSecretKey
 
     static func sign(_: Package, with: AsymmetricSecretKey) throws -> Message<Public>
