@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:5.3
 //
 //  Package.swift
 //  Paseto
@@ -12,25 +12,27 @@ import PackageDescription
 
 let package = Package(
     name: "Paseto",
+    platforms: [
+        // Same baseline as CryptoSwift
+        .macOS(.v10_12), .iOS(.v9), .tvOS(.v9), .watchOS(.v2)
+    ],
     products: [
         .library(name: "Paseto", targets: ["Paseto"]),
     ],
     dependencies: [
         .package(
+            name: "Sodium",
             url: "https://github.com/jedisct1/swift-sodium.git",
-            .upToNextMinor(from: "0.8.0")
-        ),
-        .package(
-            url: "https://github.com/tiwoc/Clibsodium.git",
-            .upToNextMajor(from: "1.0.0")
+            .upToNextMinor(from: "0.9.1")
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
-            .upToNextMinor(from: "0.9.0")
+            .upToNextMajor(from: "1.4.1")
         )
     ],
     targets: [
         .target(name: "Paseto", dependencies: ["Sodium", "CryptoSwift"]),
         .testTarget(name: "PasetoTests", dependencies: ["Paseto"]),
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
