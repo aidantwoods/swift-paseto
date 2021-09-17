@@ -1,0 +1,17 @@
+name: Swift
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Homebrew
+        run: |
+          brew update
+          brew install libsodium
+      - name: Run Tests
+        run: swift test

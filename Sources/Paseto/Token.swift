@@ -45,11 +45,11 @@ public struct Token {
 }
 
 public extension Token {
-    public func add(claims: [String: String]) -> Token {
+    func add(claims: [String: String]) -> Token {
         return self <+ claims
     }
 
-    public func replace(claims: [String: String]) -> Token {
+    func replace(claims: [String: String]) -> Token {
         return Token(
             claims: claims,
             footer: footer,
@@ -57,7 +57,7 @@ public extension Token {
         )
     }
 
-    public func replace(footer: String) -> Token {
+    func replace(footer: String) -> Token {
         return Token(
             claims: claims,
             footer: footer,
@@ -65,7 +65,7 @@ public extension Token {
         )
     }
 
-    public func replace(allowedVersions: [Version]) -> Token {
+    func replace(allowedVersions: [Version]) -> Token {
         return Token(
             claims: claims,
             footer: footer,
@@ -75,7 +75,7 @@ public extension Token {
 }
 
 public extension Token {
-    public static func <+ (left: Token, right: [String: String]) -> Token {
+    static func <+ (left: Token, right: [String: String]) -> Token {
         return left.replace(claims: left.claims <+ right)
     }
 }

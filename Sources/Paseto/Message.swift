@@ -62,13 +62,13 @@ public struct Message<M: Module> {
 }
 
 public extension Message {
-    public var asString: String {
+    var asString: String {
         let main = header.asString + payload.encode
         guard !footer.isEmpty else { return main }
         return main + "." + footer.toBase64
     }
 
-    public var asData: Data { return Data(bytes: self.asString) }
+    var asData: Data { return Data(bytes: self.asString) }
 }
 
 extension Message {

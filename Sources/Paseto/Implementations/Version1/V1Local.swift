@@ -31,7 +31,7 @@ extension Version1.Local {
 
         let cipherText = try AES(
             key: encKey,
-            blockMode: .CTR(iv: nonce[16...].bytes),
+            blockMode: CTR(iv: nonce[16...].bytes),
             padding: .noPadding
         ).encrypt(data)
 
@@ -91,7 +91,7 @@ extension Version1.Local: BaseLocal {
 
         let plainText = try AES(
             key: encKey,
-            blockMode: .CTR(iv: nonce[16...].bytes),
+            blockMode: CTR(iv: nonce[16...].bytes),
             padding: .noPadding
         ).decrypt(cipherText)
 
