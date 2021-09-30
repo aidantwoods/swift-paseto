@@ -32,7 +32,13 @@ let package = Package(
     ],
     targets: [
         .target(name: "Paseto", dependencies: ["Sodium", "CryptoSwift"]),
-        .testTarget(name: "PasetoTests", dependencies: ["Paseto"]),
+        .testTarget(
+            name: "PasetoTests",
+            dependencies: ["Paseto"],
+            resources: [
+                .copy("TestVectors")
+            ]
+        ),
     ],
     swiftLanguageVersions: [.v5]
 )
