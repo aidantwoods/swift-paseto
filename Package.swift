@@ -31,7 +31,14 @@ let package = Package(
         )
     ],
     targets: [
-        .target(name: "Paseto", dependencies: ["Sodium", "CryptoSwift"]),
+        .target(
+            name: "Paseto",
+            dependencies: [
+                .product(name: "Clibsodium", package: "Sodium"),
+                .product(name: "Sodium", package: "Sodium"),
+                "CryptoSwift"
+            ]
+        ),
         .testTarget(
             name: "PasetoTests",
             dependencies: ["Paseto"],
