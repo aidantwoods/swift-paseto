@@ -22,8 +22,8 @@ let package = Package(
     dependencies: [
         .package(
             name: "Sodium",
-            url: "https://github.com/jedisct1/swift-sodium.git",
-            .upToNextMinor(from: "0.9.1")
+            url: "https://github.com/aidantwoods/swift-sodium.git",
+            .branch("full-clibsodium-build")
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
