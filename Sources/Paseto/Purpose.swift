@@ -16,6 +16,7 @@ extension Purpose {
         case is Version1.Local.Payload.Type: self = .Local
         case is Version2.Local.Payload.Type: self = .Local
         case is Version2.Public.Payload.Type: self = .Public
+        case is Version3.Local.Payload.Type: self = .Local
         default: fatalError("All implementations must be enumerated")
         }
     }

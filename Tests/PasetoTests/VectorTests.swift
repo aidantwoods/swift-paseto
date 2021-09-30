@@ -138,6 +138,44 @@ class VectorTest: XCTestCase {
             }
         }
     }
+
+    func testVersion3Local() throws {
+        let contents = try String(contentsOfFile: currentDir + "/TestVectors/v3.json")
+            .data(using: .utf8)!
+
+        let tests = try! JSONDecoder().decode(TestVectors.self, from: contents).tests
+
+        // filter excludes public mode tests
+        for test in tests.filter({$0.key != nil}) {
+            let sk = try Version3.SymmetricKey(hex: test.key!)
+
+            guard let message = Message<Version3.Local>(test.token),
+                  let decrypted = try? Version3.Local.decrypt(
+                    message,
+                    with: sk,
+                    implicit: test.implicitAssertion
+                  )
+            else {
+                XCTAssertTrue(test.expectFail, test.name)
+                return
+            }
+
+            XCTAssertFalse(test.expectFail, test.name)
+
+            let expected = test.payload!
+
+            XCTAssertEqual(String(bytes: decrypted.content), expected, test.name)
+
+            let encrypted = try Version3.Local.encrypt(
+                Package(expected, footer: test.footer),
+                with: sk,
+                implicit: test.implicitAssertion,
+                unitTestNonce: Data(hex: test.nonce!)
+            )
+
+            XCTAssertEqual(encrypted.asString, test.token, test.name)
+        }
+    }
 }
 
 
