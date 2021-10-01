@@ -49,9 +49,6 @@ dependencies: [
 ]
 ```
 
-## Requirements
-* Swift 4.1 and above.
-
 ## Dependencies
 The following are automatically resolved when using Swift Package Manager.
 
@@ -66,13 +63,6 @@ The following are automatically resolved when using Swift Package Manager.
   used in Version 2 public Paseto tokens, and is deferred to for various tasks
   such as: constant-time comparisons, constant-time encoding, and random number
   generation.
-
-* [Clibsodium](https://github.com/tiwoc/Clibsodium)
-
-  *Clibsodium is required by Swift-Sodium.*
-
-  Clibsodium is used directly to provide the secret key cryptography
-  implementations, which are used in Version 2 local Paseto tokens.
 
 # Overview of the Swift library
 The Paseto Swift library is designed with the aim of using the Swift compiler to
