@@ -28,6 +28,10 @@ let package = Package(
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
             .upToNextMajor(from: "1.4.1")
+        ),
+        .package(
+            url: "https://github.com/aidantwoods/TypedJSON.git",
+            .upToNextMinor(from: "0.1.2")
         )
     ],
     targets: [
@@ -36,7 +40,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Clibsodium", package: "Sodium"),
                 .product(name: "Sodium", package: "Sodium"),
-                "CryptoSwift"
+                "CryptoSwift",
+                "TypedJSON"
             ]
         ),
         .testTarget(
