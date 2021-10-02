@@ -75,7 +75,7 @@ class VectorTest: XCTestCase {
         }
     }
     
-    func testVersion2Local() throws {
+    func testVersion2() throws {
         let contents = try String(contentsOfFile: currentDir + "/TestVectors/v2.json")
             .data(using: .utf8)!
         
@@ -177,7 +177,7 @@ class VectorTest: XCTestCase {
         }
     }
 
-    func testVersion4Local() throws {
+    func testVersion4() throws {
         let contents = try String(contentsOfFile: currentDir + "/TestVectors/v4.json")
             .data(using: .utf8)!
 
