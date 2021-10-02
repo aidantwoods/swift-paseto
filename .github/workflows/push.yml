@@ -10,11 +10,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install Libsodium (MacOS)
-        if: startsWith('macos-', ${{ matrix.os }})
-        run: brew update && brew install libsodium
-
       - name: Run Tests
         run: swift test
 
