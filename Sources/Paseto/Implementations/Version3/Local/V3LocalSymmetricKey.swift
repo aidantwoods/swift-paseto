@@ -37,7 +37,7 @@ extension Version3.Local.SymmetricKey {
             salt: nil,
             info: "paseto-encryption-key".bytes + nonceBytes,
             keyLength: 48,
-            variant: .sha384
+            variant: .sha2(.sha384)
         ).calculate()
         
         let encKey = tmp[0..<32].bytes
@@ -48,7 +48,7 @@ extension Version3.Local.SymmetricKey {
             salt: nil,
             info: "paseto-auth-key-for-aead".bytes + nonceBytes,
             keyLength: 48,
-            variant: .sha384
+            variant: .sha2(.sha384)
         ).calculate()
 
         return (Ek: encKey, Ak: authKey, n2: nonce2)

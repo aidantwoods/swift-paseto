@@ -7,6 +7,7 @@
 
 import XCTest
 import Paseto
+import TypedJSON
 
 class TokenTest: XCTestCase {
     func testV1Decrypt() {
@@ -30,7 +31,7 @@ class TokenTest: XCTestCase {
         let token = try! blob.decrypt(with: key)
 
         // test our token is what we expected
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "data": "this is a signed message",
             "expires": "2019-01-01T00:00:00+00:00",
         ]
@@ -65,7 +66,7 @@ class TokenTest: XCTestCase {
         let token = try! blob.decrypt(with: key)
 
         // test our token is what we expected
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "data": "this is a signed message",
             "expires": "2019-01-01T00:00:00+00:00",
         ]
@@ -81,9 +82,9 @@ class TokenTest: XCTestCase {
 
     func testV1Encrypt() {
         let token = Token(claims: ["foo": "bar"])
-            .replace(allowedVersions: [.v1])
-            .replace(footer: "There be secrets within...")
-            .add(claims: [
+            .with(allowedVersions: [.v1])
+            .with(footer: "There be secrets within...")
+            .adding(claims: [
                 "bar": "baz",
                 "boo": "bop",
             ])
@@ -93,7 +94,7 @@ class TokenTest: XCTestCase {
         let message = try! token.encrypt(with: key)
         let unsealedToken = try! message.decrypt(with: key)
 
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "foo": "bar",
             "bar": "baz",
             "boo": "bop",
@@ -109,9 +110,9 @@ class TokenTest: XCTestCase {
 
     func testV2Encrypt() {
         let token = Token(claims: ["foo": "bar"])
-            .replace(allowedVersions: [.v2])
-            .replace(footer: "There be secrets within...")
-            .add(claims: [
+            .with(allowedVersions: [.v2])
+            .with(footer: "There be secrets within...")
+            .adding(claims: [
                 "bar": "baz",
                 "boo": "bop",
             ])
@@ -121,7 +122,7 @@ class TokenTest: XCTestCase {
         let message = try! token.encrypt(with: key)
         let unsealedToken = try! message.decrypt(with: key)
 
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "foo": "bar",
             "bar": "baz",
             "boo": "bop",
@@ -137,9 +138,9 @@ class TokenTest: XCTestCase {
 
     func testV2Sign() {
         let token = Token(claims: ["foo": "bar"])
-            .replace(allowedVersions: [.v2])
-            .replace(footer: "There be secrets within...")
-            .add(claims: [
+            .with(allowedVersions: [.v2])
+            .with(footer: "There be secrets within...")
+            .adding(claims: [
                 "bar": "baz",
                 "boo": "bop",
             ])
@@ -149,7 +150,7 @@ class TokenTest: XCTestCase {
         let message = try! token.sign(with: key)
         let unsealedToken = try! message.verify(with: key.publicKey)
 
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "foo": "bar",
             "bar": "baz",
             "boo": "bop",
@@ -183,7 +184,7 @@ class TokenTest: XCTestCase {
         let token = try! blob.verify(with: key)
 
         // test our token is what we expected
-        let expectedClaims = [
+        let expectedClaims: [String: JSON.Value] = [
             "data": "this is a signed message",
             "exp": "2039-01-01T00:00:00+00:00",
         ]
