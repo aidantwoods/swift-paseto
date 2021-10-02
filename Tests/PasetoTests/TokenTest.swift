@@ -1,10 +1,3 @@
-//
-//  TokenTest.swift
-//  PasetoTests
-//
-//  Created by Aidan Woods on 09/03/2018.
-//
-
 import XCTest
 import Paseto
 import TypedJSON

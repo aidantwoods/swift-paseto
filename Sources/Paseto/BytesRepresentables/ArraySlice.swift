@@ -1,10 +1,3 @@
-//
-//  ArraySlice.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 13/05/2018.
-//
-
 extension ArraySlice: PureBytesRepresentable, BytesRepresentable
     where Element == UInt8
 {

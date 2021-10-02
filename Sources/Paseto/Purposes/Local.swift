@@ -1,10 +1,3 @@
-//
-//  Local.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 11/04/2018.
-//
-
 import Foundation
 
 public protocol Local {

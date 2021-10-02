@@ -1,10 +1,3 @@
-//
-//  Version1VectorTest.swift
-//  PasetoTests
-//
-//  Created by Aidan Woods on 10/03/2018.
-//
-
 import XCTest
 @testable import Paseto
 import Sodium

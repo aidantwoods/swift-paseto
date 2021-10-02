@@ -1,10 +1,3 @@
-//
-//  NonThrowingLocalEncrypt.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 19/04/2018.
-//
-
 import Foundation
 
 public protocol NonThrowingLocalEncrypt: Local {

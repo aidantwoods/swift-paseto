@@ -1,10 +1,3 @@
-//
-//  Payload.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 07/03/2018.
-//
-
 import Foundation
 
 public protocol Payload: BytesRepresentable {}

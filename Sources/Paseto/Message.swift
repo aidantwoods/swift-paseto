@@ -1,10 +1,3 @@
-//
-//  Message.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 05/03/2018.
-//
-
 import Foundation
 
 public struct Message<M: Module> {

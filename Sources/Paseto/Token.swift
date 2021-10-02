@@ -1,10 +1,3 @@
-//
-//  Token.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 08/03/2018.
-//
-
 import Foundation
 import TypedJSON
 

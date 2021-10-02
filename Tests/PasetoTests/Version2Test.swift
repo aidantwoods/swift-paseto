@@ -1,10 +1,3 @@
-//
-//  Version2Test.swift
-//  PasetoTest
-//
-//  Created by Aidan Woods on 06/03/2018.
-//
-
 import XCTest
 import Paseto
 import Sodium

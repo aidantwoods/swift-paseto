@@ -1,10 +1,3 @@
-//
-//  V1LocalSymmetricKey.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 16/04/2018.
-//
-
 import Foundation
 import CryptoSwift
 

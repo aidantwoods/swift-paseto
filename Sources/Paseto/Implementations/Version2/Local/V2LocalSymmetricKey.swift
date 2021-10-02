@@ -1,10 +1,3 @@
-//
-//  V2LocalSymmetricKey.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 16/04/2018.
-//
-
 import Foundation
 
 public extension Version2.Local {

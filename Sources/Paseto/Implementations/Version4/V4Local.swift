@@ -1,10 +1,3 @@
-//
-//  V2Local.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 16/04/2018.
-//
-
 import Foundation
 
 extension Version4.Local {
