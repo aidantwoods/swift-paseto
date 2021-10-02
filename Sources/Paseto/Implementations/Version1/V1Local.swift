@@ -38,7 +38,7 @@ extension Version1.Local {
         let header = Header(version: version, purpose: .Local)
         let pae = Util.pae([header, nonce, cipherText, footer])
 
-        let mac = try HMAC(key: authKey, variant: .sha384).authenticate(pae)
+        let mac = try HMAC(key: authKey, variant: .sha2(.sha384)).authenticate(pae)
 
         let payload = Payload(nonce: nonce, cipherText: cipherText, mac: mac)
 
@@ -83,7 +83,7 @@ extension Version1.Local: BaseLocal {
 
         let pae = Util.pae([header, nonce, cipherText, footer])
 
-        let expectedMac = try HMAC(key: authKey, variant: .sha384).authenticate(pae)
+        let expectedMac = try HMAC(key: authKey, variant: .sha2(.sha384)).authenticate(pae)
 
         guard Util.equals(expectedMac, mac) else {
             throw Exception.badMac("Invalid message authentication code.")
@@ -101,7 +101,7 @@ extension Version1.Local: BaseLocal {
 
 extension Version1.Local {
     static func getNonce(message: Bytes, preNonce: Bytes) throws -> Bytes {
-        let hmac = try HMAC(key: preNonce, variant: .sha384).authenticate(message)
+        let hmac = try HMAC(key: preNonce, variant: .sha2(.sha384)).authenticate(message)
 
         return hmac[..<32].bytes
     }

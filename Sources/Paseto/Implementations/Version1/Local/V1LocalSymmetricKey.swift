@@ -40,7 +40,7 @@ extension Version1.Local.SymmetricKey {
             salt: saltBytes,
             info: "paseto-encryption-key".bytes,
             keyLength: 32,
-            variant: .sha384
+            variant: .sha2(.sha384)
         ).calculate()
 
         let authKey = try HKDF(
@@ -48,7 +48,7 @@ extension Version1.Local.SymmetricKey {
             salt: saltBytes,
             info: "paseto-auth-key-for-aead".bytes,
             keyLength: 32,
-            variant: .sha384
+            variant: .sha2(.sha384)
         ).calculate()
 
         return (Ek: encKey, Ak: authKey)

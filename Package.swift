@@ -27,7 +27,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
-            .upToNextMajor(from: "1.4.1")
+            .upToNextMajor(from: "1.4.2")
         ),
         .package(
             url: "https://github.com/aidantwoods/TypedJSON.git",

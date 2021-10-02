@@ -30,7 +30,7 @@ extension Version3.Local {
         let header = Header(version: version, purpose: .Local)
         let preAuth = Util.pae([header, nonce, cipherText, footer, implicit.bytes])
 
-        let tag = try HMAC(key: authKey, variant: .sha384).authenticate(preAuth)
+        let tag = try HMAC(key: authKey, variant: .sha2(.sha384)).authenticate(preAuth)
 
         let payload = Payload(nonce: nonce, cipherText: cipherText, mac: tag)
 
@@ -93,7 +93,7 @@ extension Version3.Local: BaseLocal {
 
         let preAuth = Util.pae([header, nonce, cipherText, footer, implicit.bytes])
 
-        let expectedMac = try HMAC(key: authKey, variant: .sha384).authenticate(preAuth)
+        let expectedMac = try HMAC(key: authKey, variant: .sha2(.sha384)).authenticate(preAuth)
 
         guard Util.equals(expectedMac, givenMac) else {
             throw Exception.badMac("Invalid message authentication code.")
