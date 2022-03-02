@@ -75,7 +75,6 @@ class TokenTest: XCTestCase {
 
     func testV1Encrypt() {
         let token = Token(claims: ["foo": "bar"])
-            .with(allowedVersions: [.v1])
             .with(footer: "There be secrets within...")
             .adding(claims: [
                 "bar": "baz",
@@ -84,7 +83,8 @@ class TokenTest: XCTestCase {
 
         let key = Version1.SymmetricKey()
 
-        let message = try! token.encrypt(with: key)
+        let encrypted = try! token.encrypt(with: key)
+        let message = Message<Version1.Local>(encrypted)!
         let unsealedToken = try! message.decrypt(with: key)
 
         let expectedClaims: [String: JSON.Value] = [
@@ -96,14 +96,10 @@ class TokenTest: XCTestCase {
 
         let expectedFooter = "There be secrets within..."
         XCTAssertEqual(unsealedToken.footer, expectedFooter)
-
-        let expectedVersions: [Version] = [.v1]
-        XCTAssertEqual(unsealedToken.allowedVersions, expectedVersions)
     }
 
     func testV2Encrypt() {
         let token = Token(claims: ["foo": "bar"])
-            .with(allowedVersions: [.v2])
             .with(footer: "There be secrets within...")
             .adding(claims: [
                 "bar": "baz",
@@ -112,7 +108,8 @@ class TokenTest: XCTestCase {
 
         let key = Version2.SymmetricKey()
 
-        let message = try! token.encrypt(with: key)
+        let encrypted = try! token.encrypt(with: key)
+        let message = Message<Version2.Local>(encrypted)!
         let unsealedToken = try! message.decrypt(with: key)
 
         let expectedClaims: [String: JSON.Value] = [
@@ -124,14 +121,10 @@ class TokenTest: XCTestCase {
 
         let expectedFooter = "There be secrets within..."
         XCTAssertEqual(unsealedToken.footer, expectedFooter)
-
-        let expectedVersions: [Version] = [.v2]
-        XCTAssertEqual(unsealedToken.allowedVersions, expectedVersions)
     }
 
     func testV2Sign() {
         let token = Token(claims: ["foo": "bar"])
-            .with(allowedVersions: [.v2])
             .with(footer: "There be secrets within...")
             .adding(claims: [
                 "bar": "baz",
@@ -140,7 +133,8 @@ class TokenTest: XCTestCase {
 
         let key = Version2.AsymmetricSecretKey()
 
-        let message = try! token.sign(with: key)
+        let signed = try! token.sign(with: key)
+        let message = Message<Version2.Public>(signed)!
         let unsealedToken = try! message.verify(with: key.publicKey)
 
         let expectedClaims: [String: JSON.Value] = [
@@ -152,9 +146,6 @@ class TokenTest: XCTestCase {
 
         let expectedFooter = "There be secrets within..."
         XCTAssertEqual(unsealedToken.footer, expectedFooter)
-
-        let expectedVersions: [Version] = [.v2]
-        XCTAssertEqual(unsealedToken.allowedVersions, expectedVersions)
     }
 
     func testV2Verify() {

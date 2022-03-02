@@ -80,9 +80,7 @@ extension Message {
 
         return try Token(
             jsonData: Data(bytes: package.content),
-            footer: footer,
-            allowedVersions: [header.version]
-        )
+            footer: footer        )
     }
 }   
 
