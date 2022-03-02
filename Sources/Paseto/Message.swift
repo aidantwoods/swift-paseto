@@ -1,10 +1,3 @@
-//
-//  Message.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 05/03/2018.
-//
-
 import Foundation
 
 public struct Message<M: Module> {
@@ -87,9 +80,7 @@ extension Message {
 
         return try Token(
             jsonData: Data(bytes: package.content),
-            footer: footer,
-            allowedVersions: [header.version]
-        )
+            footer: footer        )
     }
 }   
 

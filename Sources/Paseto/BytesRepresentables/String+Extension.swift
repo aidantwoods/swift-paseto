@@ -1,10 +1,3 @@
-//
-//  String.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 13/05/2018.
-//
-
 import Foundation
 
 extension String: BytesRepresentable {

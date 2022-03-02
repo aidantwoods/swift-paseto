@@ -1,10 +1,3 @@
-//
-//  BytesRepresentable.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 13/05/2018.
-//
-
 public protocol BytesRepresentable {
     var bytes: Bytes { get }
     init? (bytes: Bytes)

@@ -2,8 +2,6 @@
 
 A Swift implementation of [PASETO](https://github.com/paragonie/paseto).
 
-## ⚠️  WARNING: IMPLEMENTATION IS A PRE-RELEASE.
-
 Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
 [many design deficits that plague the JOSE standards](https://paragonie.com/blog/2017/03/jwt-json-web-tokens-is-bad-standard-that-everyone-should-avoid).
 
@@ -44,35 +42,10 @@ following to your `Package.swift`.
 dependencies: [
     .package(
         url: "https://github.com/aidantwoods/swift-paseto.git",
-        .upToNextMajor(from: "0.2.0")
+        .upToNextMajor(from: "1.0.0")
     )
 ]
 ```
-
-## Requirements
-* Swift 4.1 and above.
-
-## Dependencies
-The following are automatically resolved when using Swift Package Manager.
-
-* [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
-
-  CryptoSwift provides the secret key cryptography implementations, which are
-  used in Version 1 local Paseto tokens.
-
-* [Swift-Sodium](https://github.com/jedisct1/swift-sodium)
-
-  Swift-Sodium provides the public key cryptography implementations, which are
-  used in Version 2 public Paseto tokens, and is deferred to for various tasks
-  such as: constant-time comparisons, constant-time encoding, and random number
-  generation.
-
-* [Clibsodium](https://github.com/tiwoc/Clibsodium)
-
-  *Clibsodium is required by Swift-Sodium.*
-
-  Clibsodium is used directly to provide the secret key cryptography
-  implementations, which are used in Version 2 local Paseto tokens.
 
 # Overview of the Swift library
 The Paseto Swift library is designed with the aim of using the Swift compiler to
@@ -93,121 +66,97 @@ enable you to even attempt these examples just don't exist.
 Okay, so what does all that look like?
 
 When creating a key, simply append the key type name to the version.
-Let's say we want to generate a new version 1 symmetric key:
+Let's say we want to generate a new version 4 symmetric key:
 
 ```swift
-import Paseto
-let key = Version1.SymmetricKey()
-```
-
-But version 2 is recommended, so let's instead use that. Just change the `1` to
-a `2` (`import Paseto` is assumed hereafter):
-```swift
-let symmetricKey = Version2.SymmetricKey()
+let symmetricKey = Version4.SymmetricKey()
 ```
 
 Okay, now let's create a token:
 ```swift
-let token = Token(claims: [
-    "data":    "this is a signed message",
-    "expires": "2019-01-01T00:00:00+00:00",
+var token = Token(claims: [
+    "data":    "this is a signed message"
 ])
+
+// set the expiry to 5 minutes from now
+token.expiration = Date() + 5 * 60
 ```
 
 Now encrypt it:
 ```swift
-guard let message = try? token.encrypt(with: symmetricKey) else { /* respond to failure */ }
+guard let encrypted = try? token.encrypt(with: symmetricKey) else { /* respond to failure */ }
 ```
 
-Then to get the encrypted token as a string, simply:
+To decrypt a token we need to parse it, and setup any validation rules we care about
+
 ```swift
-let pasetoToken = message.asString
+var parser = Parser<Version4.Local>()
+guard let try? decryptedToken = parser.decrypt(encrypted, with: symmetricKey) else { /* respond to failure */ }
 ```
 
-Or even as data:
+By default, Parser will be initialised with a notExpired check. If you set your own rules
+in the constructor you can override this. If you just want to add new rules, you can use the
+`addRule` method without removing this default rule.
+
+Let's say we want to generate a new version 4 secret (private) key:
 ```swift
-let pasetoTokenData = message.asData
-```
-
-`message` is of type `Message<Version2.Local>`. This means that it has a
-specialised `decrypt(with: Version2.SymmetricKey)` method, which can be used
-to retrieve the original token (when given a key). i.e. we can do:
-
-```swift
-guard let try? decryptedToken = message.decrypt(with: symmetricKey) else { /* respond to failure */ }
-```
-
-
-Let's say we want to generate a new version 2 secret (private) key:
-
-```swift
-let secretKey = Version2.AsymmetricSecretKey()
+let secretKey = Version4.AsymmetricSecretKey()
 ```
 
 Now, if we wish produce a token which can be verified by others, we can
 do the following:
 
 ```swift
-guard let signedMessage = try? token.sign(with: secretKey) else { /* respond to failure */ }
+let publicKey = secretKey.publicKey // we need to save this so we can send it to others
+guard let signed = try? token.sign(with: secretKey) else { /* respond to failure */ }
 ```
 
-`signedMessage` is of type `Message<Version2.Public>`. This means that it has a
-specialised `verify(with: Version2.AsymmetricPublicKey)` method, which can be
-used to verify the contents and produce a verified token.
-
-To do this we need to export the public key from our `secretKey`.
+To verify a message `signed` with a public key, e.g. `1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2`
 
 ```swift
-let publicKey = secretKey.publicKey
+let pkHex = "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
+guard let publicKey = try? Version4.AsymmetricPublicKey(hex: pkHex) else { /* this will fail if key is invalid */ }
+
+var parser = Parser<Version4.Public>()
+guard let try? verifiedToken = parser.verify(signed, with: publicKey) else { /* respond to failure */ }
 ```
-
-`publicKey` is of type `Version2.AsymmetricPublicKey`, so we may use:
-
-```swift
-guard let try? verifiedToken = signedMessage.verify(with: publicKey) else { /* respond to failure */ }
-```
-
-to reproduce the original token from the `signedMessage`.
-
 
 Lastly, let's suppose that we do not start
 with any objects. How do we create messages
 and keys from strings or data?
 
-Let's use the example from Paseto's readme:
+Let's use the example from Paseto's test vectors:
 
 The Paseto token is as follows (as a string/data)
 ```
-v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9v3Jt8mx_TdM2ceTGoqwrh4yDFn0XsHvvV_D0DtwQxVrJEBMl0F2caAdgnpKlt4p7xBnx1HcO-SPo8FPp214HDw.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9
 ```
 
 And the symmetric key, given in hex is:
 ```
-707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f
+1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2
 ```
 
 To produce a token, use the following:
 
 ```swift
-let rawToken = "v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz"
+let rawToken = "v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9v3Jt8mx_TdM2ceTGoqwrh4yDFn0XsHvvV_D0DtwQxVrJEBMl0F2caAdgnpKlt4p7xBnx1HcO-SPo8FPp214HDw.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9"
 
-guard let key = try? Version2.SymmetricKey(
-    hex: "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f"
+guard let key = try? Version4.AsymmetricPublicKey(
+    hex: "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2"
 ) else {
     /* respond to failure */
 }
 
-guard let message = try? Message<Version2.Local>(rawToken) else {
-    /* respond to failure */
-}
-
-guard let token = try? message.decrypt(with: key) else {
+var parser = Parser<Version4.Public>(rules: []) // setting rules to empty to remove expiry check:
+                                                // this is only necessary for demonstration purposes because this token has expired
+guard let token = try? parser.verify(rawToken, with: key) else {
     /* respond to failure */
 }
 
 // the following will succeed
-assert(token.claims == ["data": "this is a signed message", "exp": "2039-01-01T00:00:00+00:00"])
-assert(token.footer == "Paragon Initiative Enterprises")
+assert(token.claims == ["data": "this is a signed message", "exp": "2022-01-01T00:00:00+00:00"])
+assert(token.footer == "{\"kid\":\"zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN\"}")
 ```
 
 Keys can also be created using url safe base64 (with no padding) using
@@ -232,7 +181,7 @@ struct Header {
 }
 ```
 
-where `version` is either `.v1` or `.v2`, and `purpose` is either `.Public` (a
+where `version` is either `.v1`, `.v2`, `.v3`, or `.v4`, and `purpose` is either `.Public` (a
 signed message) or `.Local` (an encrypted message).
 
 As `Version` and `Purpose` are enums, it is recommended that you use an
@@ -245,8 +194,15 @@ If you attempt to create a message using a raw token which produces a header tha
 does not correspond to the message's type arguments then the initialiser will fail.
 
 # Supported Paseto Versions
+## Version 4
+Version 4 is fully supported.
+
+## Version 3 (partial)
+Version 3 is partially supported (local mode only). Full support may be added in a later feature
+release.
+
 ## Version 2
-Version 2 (the recommended version by the specification) is fully supported.
+Version 2 is fully supported.
 
 ## Version 1 (partial)
 Version 1 (the compatibility version) is (ironically) only partially supported

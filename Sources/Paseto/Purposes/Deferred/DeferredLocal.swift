@@ -1,10 +1,3 @@
-//
-//  DeferredLocal.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 18/04/2018.
-//
-
 public protocol DeferredLocal: Local {}
 
 extension DeferredLocal {

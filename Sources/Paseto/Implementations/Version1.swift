@@ -1,10 +1,3 @@
-//
-//  Version1.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 09/03/2018.
-//
-
 import Foundation
 
 public enum Version1 {

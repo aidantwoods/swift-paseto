@@ -1,10 +1,3 @@
-//
-//  Util.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 05/03/2018.
-//
-
 import Foundation
 
 public enum Util {

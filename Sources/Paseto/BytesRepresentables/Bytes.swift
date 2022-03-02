@@ -1,10 +1,3 @@
-//
-//  Bytes.swift
-//  Paseto
-//
-//  Created by Aidan Woods on 13/05/2018.
-//
-
 public typealias Bytes = Array<UInt8>
 
 public extension Array where Element == UInt8 {
