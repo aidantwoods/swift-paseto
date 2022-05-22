@@ -8,7 +8,32 @@ extension Version3.Public {
         let key: P384.Signing.PublicKey
 
         var compressed: Bytes {
-            let (xBytes, yBytes) = coords
+            let x963Representation = key.x963Representation.bytes
+
+            guard x963Representation[0] == 04 else {
+                guard x963Representation[0] == 03 || x963Representation[0] == 02 else {
+                    fatalError("Unhandlable output form .x963Representation")
+                }
+
+                // 02 or 03 is a compressed point
+
+                guard x963Representation.count == 1 + 48 else {
+                    fatalError("Unhandlable output form .x963Representation")
+                }
+
+                return x963Representation
+            }
+
+            // 04 indicates uncompressed, we can parse this and compress
+
+            guard x963Representation.count == 1 + 48 + 48 else {
+                fatalError("Unhandlable output form .x963Representation")
+            }
+
+            let xyBytes = x963Representation[1...].bytes
+
+            let xBytes = xyBytes[0..<48].bytes
+            let yBytes = xyBytes[48...].bytes
 
             let yTildeP = yBytes[47] % 2
 
@@ -21,15 +46,6 @@ extension Version3.Public {
             }
 
             return [prefix] + xBytes
-        }
-
-        var coords: (x: Bytes, y: Bytes) {
-            let xyBytes = key.rawRepresentation.bytes
-
-            let xBytes = xyBytes[0..<48].bytes
-            let yBytes = xyBytes[48...].bytes
-
-            return (x: xBytes, y: yBytes)
         }
 
         public var material: Bytes {
