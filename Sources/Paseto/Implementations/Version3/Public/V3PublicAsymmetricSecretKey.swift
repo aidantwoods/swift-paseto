@@ -1,7 +1,6 @@
 import Foundation
 import CryptoKit
 
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, macCatalyst 13, *)
 extension Version3.Public {
     public struct AsymmetricSecretKey {
         public static let length = 48
@@ -36,7 +35,6 @@ extension Version3.Public {
     }
 }
 
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, macCatalyst 13, *)
 extension Version3.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     public typealias Module = Version3.Public
 
@@ -52,7 +50,6 @@ extension Version3.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     }
 }
 
-@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, macCatalyst 13, *)
 extension Version3.Public.AsymmetricSecretKey {
     enum Exception: Error {
         case badLength(String)
