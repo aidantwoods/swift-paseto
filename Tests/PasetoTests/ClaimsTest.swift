@@ -221,7 +221,7 @@ class ClaimsTest: XCTestCase {
 
         let encrypted = try! token.encrypt(with: key)
 
-        var parser = Parser<Version4.Local>()
+        let parser = Parser<Version4.Local>()
 
         let decrypted = try? parser.decrypt(encrypted, with: key)
         XCTAssertNil(decrypted)
