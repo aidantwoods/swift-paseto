@@ -8,7 +8,28 @@ extension Version3.Public {
         let key: P384.Signing.PublicKey
 
         var compressed: Bytes {
-            [02] + key.compactRepresentation!.bytes
+            let (xBytes, yBytes) = coords
+
+            let yTildeP = yBytes[47] % 2
+
+            let prefix: UInt8
+
+            if yTildeP == 0 {
+                prefix = 02
+            } else {
+                prefix = 03
+            }
+
+            return [prefix] + xBytes
+        }
+
+        var coords: (x: Bytes, y: Bytes) {
+            let xyBytes = key.rawRepresentation.bytes
+
+            let xBytes = xyBytes[0..<48].bytes
+            let yBytes = xyBytes[48...].bytes
+
+            return (x: xBytes, y: yBytes)
         }
 
         public var material: Bytes {
@@ -22,7 +43,9 @@ extension Version3.Public {
                 )
             }
 
-            guard let key = try? P384.Signing.PublicKey(x963Representation: material) else {
+            guard
+                material[0] == 02 || material[0] == 03,
+                let key = try? P384.Signing.PublicKey(x963Representation: material) else {
                 throw Exception.badKey("Public key is invalid")
             }
 
