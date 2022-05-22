@@ -213,6 +213,9 @@ class VectorTest: XCTestCase {
                     with: sk.publicKey,
                     implicit: test.implicitAssertion
                 )
+
+                XCTAssertEqual(verified.string!, test.payload!)
+                XCTAssertEqual(verified.footerString!, test.footer)
             }
         }
     }
