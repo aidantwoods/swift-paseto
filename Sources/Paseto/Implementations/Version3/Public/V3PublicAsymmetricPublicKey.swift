@@ -66,6 +66,10 @@ extension Version3.Public {
             }
 
             self.key = key
+
+            guard self.compressed == material else {
+                throw Exception.badKey("Public key is invalid")
+            }
         }
 
         init (key: P384.Signing.PublicKey) {
