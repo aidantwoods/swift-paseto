@@ -12,13 +12,13 @@ extension Version3.Public {
 
             guard x963Representation[0] == 04 else {
                 guard x963Representation[0] == 03 || x963Representation[0] == 02 else {
-                    fatalError("Unhandlable output form .x963Representation")
+                    fatalError("Unhandlable output from .x963Representation")
                 }
 
                 // 02 or 03 is a compressed point
 
                 guard x963Representation.count == 1 + 48 else {
-                    fatalError("Unhandlable output form .x963Representation")
+                    fatalError("Unhandlable output from .x963Representation")
                 }
 
                 return x963Representation
@@ -27,7 +27,7 @@ extension Version3.Public {
             // 04 indicates uncompressed, we can parse this and compress
 
             guard x963Representation.count == 1 + 48 + 48 else {
-                fatalError("Unhandlable output form .x963Representation")
+                fatalError("Unhandlable output from .x963Representation")
             }
 
             let xyBytes = x963Representation[1...].bytes
