@@ -37,10 +37,4 @@ class Version3Test: XCTestCase {
 
         XCTAssertEqual(message, result)
     }
-
-    func testPublicKeyParity() {
-        XCTAssertThrowsError(try Version3.AsymmetricPublicKey(hex: "02abb0916c4dcaf9fb7d42635e2ba95a592fc1d951b558b0463147fd62e44dddd6714aba4179374c5a0b4a0ff016fd6b0c"))
-
-        XCTAssertNoThrow(try Version3.AsymmetricPublicKey(hex: "03abb0916c4dcaf9fb7d42635e2ba95a592fc1d951b558b0463147fd62e44dddd6714aba4179374c5a0b4a0ff016fd6b0c"))
-    }
 }

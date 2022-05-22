@@ -60,16 +60,11 @@ extension Version3.Public {
             }
 
             guard
-                material[0] == 02 || material[0] == 03,
-                let key = try? P384.Signing.PublicKey(compactRepresentation: material[1...]) else {
+                let key = try? P384.Signing.PublicKey(x963Representation: material) else {
                 throw Exception.badKey("Public key is invalid")
             }
 
             self.key = key
-
-            guard self.compressed == material else {
-                throw Exception.badKey("Public key is invalid")
-            }
         }
 
         init (key: P384.Signing.PublicKey) {
