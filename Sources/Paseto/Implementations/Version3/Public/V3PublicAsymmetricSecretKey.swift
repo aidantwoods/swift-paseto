@@ -39,7 +39,7 @@ extension Version3.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     public typealias Module = Version3.Public
 
     public init () {
-        let secretKey = P384.Signing.PrivateKey(compactRepresentable: true)
+        let secretKey = P384.Signing.PrivateKey(compactRepresentable: false)
         self.init(key: secretKey)
     }
 
