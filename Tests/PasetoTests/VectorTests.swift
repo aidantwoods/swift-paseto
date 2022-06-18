@@ -165,20 +165,25 @@ class VectorTest: XCTestCase {
 
                 decoded = decrypted
             case .none:
-                let pk = try Version3.AsymmetricPublicKey(hex: test.publicKey!)
+                if #available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *) {
+                    let pk = try Version3.AsymmetricPublicKey(hex: test.publicKey!)
 
-                guard let message = Message<Version3.Public>(test.token),
-                      let verified = try? Version3.Public.verify(
-                        message,
-                        with: pk,
-                        implicit: test.implicitAssertion
-                      )
-                else {
-                    XCTAssertTrue(test.expectFail, test.name)
+                    guard let message = Message<Version3.Public>(test.token),
+                          let verified = try? Version3.Public.verify(
+                            message,
+                            with: pk,
+                            implicit: test.implicitAssertion
+                          )
+                    else {
+                        XCTAssertTrue(test.expectFail, test.name)
+                        return
+                    }
+
+                    decoded = verified
+                } else {
+                    print("Skipping because current platform not supported...")
                     return
                 }
-
-                decoded = verified
             }
 
             XCTAssertFalse(test.expectFail, test.name)

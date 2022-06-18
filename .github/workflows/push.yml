@@ -5,7 +5,7 @@ jobs:
     name: Unit Tests
     strategy:
       matrix:
-        os: [macos-latest, macos-11]
+        os: [macos-latest, macos-11, macos-10.15]
 
     runs-on: ${{ matrix.os }}
     steps:

@@ -1,6 +1,7 @@
 import Foundation
 import CryptoKit
 
+@available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *)
 extension Version3.Public: BasePublic {
     public typealias Public = Version3.Public
 

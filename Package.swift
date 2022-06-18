@@ -13,7 +13,8 @@ import PackageDescription
 let package = Package(
     name: "Paseto",
     platforms: [
-        .macOS(.v11), .iOS(.v14), .tvOS(.v14), .watchOS(.v7)
+        // Same baseline as CryptoSwift
+        .macOS(.v10_12), .iOS(.v9), .tvOS(.v9), .watchOS(.v2)
     ],
     products: [
         .library(name: "Paseto", targets: ["Paseto"]),
