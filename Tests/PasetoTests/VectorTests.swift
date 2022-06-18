@@ -205,22 +205,27 @@ class VectorTest: XCTestCase {
 
                 XCTAssertEqual(encrypted.asString, test.token, test.name)
             case .none:
-                let sk = try Version3.AsymmetricSecretKey(hex: test.secretKey!)
+                if #available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *) {
+                    let sk = try Version3.AsymmetricSecretKey(hex: test.secretKey!)
 
-                let signed = try Version3.Public.sign(
-                    Package(expected, footer: test.footer),
-                    with: sk,
-                    implicit: test.implicitAssertion
-                )
+                    let signed = try Version3.Public.sign(
+                        Package(expected, footer: test.footer),
+                        with: sk,
+                        implicit: test.implicitAssertion
+                    )
 
-                let verified = try Version3.Public.verify(
-                    signed,
-                    with: sk.publicKey,
-                    implicit: test.implicitAssertion
-                )
+                    let verified = try Version3.Public.verify(
+                        signed,
+                        with: sk.publicKey,
+                        implicit: test.implicitAssertion
+                    )
 
-                XCTAssertEqual(verified.string!, test.payload!)
-                XCTAssertEqual(verified.footerString!, test.footer)
+                    XCTAssertEqual(verified.string!, test.payload!)
+                    XCTAssertEqual(verified.footerString!, test.footer)
+                } else {
+                    print("Skipping because current platform not supported...")
+                    continue
+                }
             }
         }
     }
