@@ -36,7 +36,7 @@ extension Version4.Local.SymmetricKey {
 
         let encKey = tmp[0..<32].bytes
         let nonce2 = tmp[32..<56].bytes
-        
+
         let authKey = sodium.genericHash.hash(
             message: "paseto-auth-key-for-aead".bytes + nonceBytes,
             key: material,

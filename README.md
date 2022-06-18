@@ -197,9 +197,10 @@ does not correspond to the message's type arguments then the initialiser will fa
 ## Version 4
 Version 4 is fully supported.
 
-## Version 3 (partial)
-Version 3 is partially supported (local mode only). Full support may be added in a later feature
-release.
+## Version 3
+Version 3 is fully supported.
+
+> Note: Support for public mode requires `@available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *)`.
 
 ## Version 2
 Version 2 is fully supported.

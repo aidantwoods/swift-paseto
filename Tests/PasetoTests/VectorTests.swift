@@ -56,7 +56,7 @@ class VectorTest: XCTestCase {
                   let decrypted = try? Version1.Local.decrypt(message, with: sk)
             else {
                 XCTAssertTrue(test.expectFail, test.name)
-                return
+                continue
             }
             
             XCTAssertFalse(test.expectFail, test.name)
@@ -92,7 +92,7 @@ class VectorTest: XCTestCase {
                       let decrypted = try? Version2.Local.decrypt(message, with: sk)
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
                 
                 decoded = decrypted
@@ -103,7 +103,7 @@ class VectorTest: XCTestCase {
                       let verified = try? Version2.Public.verify(message, with: pk)
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
                 
                 decoded = verified
@@ -139,41 +139,94 @@ class VectorTest: XCTestCase {
         }
     }
 
-    func testVersion3Local() throws {
+    func testVersion3() throws {
         let contents = try String(contentsOfFile: currentDir + "/TestVectors/v3.json")
             .data(using: .utf8)!
 
         let tests = try! JSONDecoder().decode(TestVectors.self, from: contents).tests
 
-        // filter excludes public mode tests
-        for test in tests.filter({$0.key != nil}) {
-            let sk = try Version3.SymmetricKey(hex: test.key!)
+        for test in tests {
+            let decoded: Package
 
-            guard let message = Message<Version3.Local>(test.token),
-                  let decrypted = try? Version3.Local.decrypt(
-                    message,
-                    with: sk,
-                    implicit: test.implicitAssertion
-                  )
-            else {
-                XCTAssertTrue(test.expectFail, test.name)
-                return
+            switch test.key {
+            case .some:
+                let sk = try Version3.SymmetricKey(hex: test.key!)
+
+                guard let message = Message<Version3.Local>(test.token),
+                      let decrypted = try? Version3.Local.decrypt(
+                        message,
+                        with: sk,
+                        implicit: test.implicitAssertion
+                      )
+                else {
+                    XCTAssertTrue(test.expectFail, test.name)
+                    continue
+                }
+
+                decoded = decrypted
+            case .none:
+                if #available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *) {
+                    let pk = try Version3.AsymmetricPublicKey(hex: test.publicKey!)
+
+                    guard let message = Message<Version3.Public>(test.token),
+                          let verified = try? Version3.Public.verify(
+                            message,
+                            with: pk,
+                            implicit: test.implicitAssertion
+                          )
+                    else {
+                        XCTAssertTrue(test.expectFail, test.name)
+                        continue
+                    }
+
+                    decoded = verified
+                } else {
+                    print("Skipping because current platform not supported...")
+                    continue
+                }
             }
 
             XCTAssertFalse(test.expectFail, test.name)
 
             let expected = test.payload!
 
-            XCTAssertEqual(String(bytes: decrypted.content), expected, test.name)
+            XCTAssertEqual(String(bytes: decoded.content), expected, test.name)
 
-            let encrypted = try Version3.Local.encrypt(
-                Package(expected, footer: test.footer),
-                with: sk,
-                implicit: test.implicitAssertion,
-                unitTestNonce: Data(hex: test.nonce!)
-            )
+            switch test.key {
+            case .some:
+                let sk = try Version3.SymmetricKey(hex: test.key!)
 
-            XCTAssertEqual(encrypted.asString, test.token, test.name)
+                let encrypted = try Version3.Local.encrypt(
+                    Package(expected, footer: test.footer),
+                    with: sk,
+                    implicit: test.implicitAssertion,
+                    unitTestNonce: Data(hex: test.nonce!)
+                )
+
+                XCTAssertEqual(encrypted.asString, test.token, test.name)
+            case .none:
+                if #available(macOS 11, iOS 14, watchOS 7, tvOS 14, macCatalyst 14, *) {
+                    let sk = try Version3.AsymmetricSecretKey(hex: test.secretKey!)
+
+                    let signed = try Version3.Public.sign(
+                        Package(expected, footer: test.footer),
+                        with: sk,
+                        implicit: test.implicitAssertion
+                    )
+
+                    let verified = try Version3.Public.verify(
+                        signed,
+                        with: sk.publicKey,
+                        implicit: test.implicitAssertion
+                    )
+
+                    XCTAssertEqual(verified.string!, test.payload!)
+                    XCTAssertEqual(verified.footerString!, test.footer)
+                } else {
+                    print("Skipping because current platform not supported...")
+                    continue
+                }
+            }
         }
     }
 
@@ -198,7 +251,7 @@ class VectorTest: XCTestCase {
                       )
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
 
                 decoded = decrypted
@@ -213,7 +266,7 @@ class VectorTest: XCTestCase {
                       )
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
 
                 decoded = verified
