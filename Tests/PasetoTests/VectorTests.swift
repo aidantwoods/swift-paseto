@@ -56,7 +56,7 @@ class VectorTest: XCTestCase {
                   let decrypted = try? Version1.Local.decrypt(message, with: sk)
             else {
                 XCTAssertTrue(test.expectFail, test.name)
-                return
+                continue
             }
             
             XCTAssertFalse(test.expectFail, test.name)
@@ -92,7 +92,7 @@ class VectorTest: XCTestCase {
                       let decrypted = try? Version2.Local.decrypt(message, with: sk)
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
                 
                 decoded = decrypted
@@ -103,7 +103,7 @@ class VectorTest: XCTestCase {
                       let verified = try? Version2.Public.verify(message, with: pk)
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
                 
                 decoded = verified
@@ -160,7 +160,7 @@ class VectorTest: XCTestCase {
                       )
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
 
                 decoded = decrypted
@@ -176,13 +176,13 @@ class VectorTest: XCTestCase {
                           )
                     else {
                         XCTAssertTrue(test.expectFail, test.name)
-                        return
+                        continue
                     }
 
                     decoded = verified
                 } else {
                     print("Skipping because current platform not supported...")
-                    return
+                    continue
                 }
             }
 
@@ -246,7 +246,7 @@ class VectorTest: XCTestCase {
                       )
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
 
                 decoded = decrypted
@@ -261,7 +261,7 @@ class VectorTest: XCTestCase {
                       )
                 else {
                     XCTAssertTrue(test.expectFail, test.name)
-                    return
+                    continue
                 }
 
                 decoded = verified
