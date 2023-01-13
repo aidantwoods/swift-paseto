@@ -14,7 +14,7 @@ let package = Package(
     name: "Paseto",
     platforms: [
         // Same baseline as CryptoSwift
-        .macOS(.v10_12), .iOS(.v9), .tvOS(.v9), .watchOS(.v2)
+        .macOS(.v10_12), .iOS(.v11), .tvOS(.v9), .watchOS(.v2)
     ],
     products: [
         .library(name: "Paseto", targets: ["Paseto"]),
