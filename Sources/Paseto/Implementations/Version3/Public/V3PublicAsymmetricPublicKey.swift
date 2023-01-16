@@ -68,7 +68,7 @@ extension Version3.Public {
             self.key = key
         }
 
-        init (key: P384.Signing.PublicKey) {
+        public init (key: P384.Signing.PublicKey) {
             self.key = key
         }
     }
