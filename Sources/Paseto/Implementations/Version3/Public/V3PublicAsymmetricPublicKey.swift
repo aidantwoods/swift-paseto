@@ -82,11 +82,30 @@ extension Version3.Public {
             }
         }
 
+        init (_ key: P384.Signing.PublicKey) {
             self.key = key
         }
 
-        public init (key: P384.Signing.PublicKey) {
-            self.key = key
+        // Imports a P384.Signing.PublicKey. This method will throw if the public key
+        // contains an invalid curve point.
+        public init (key: P384.Signing.PublicKey) throws {
+            // Rather than explicitly checking the co-ordinates here, the stratergy is
+            // to export the public key raw and compressed, then use the safe compressed
+            // constructor. If we detect a change between the imported key and the
+            // original key then we error.
+
+            // store starting bytes
+            let givenRawBytes = key.rawRepresentation.bytes
+
+            // compress and parse as compressed
+            try self.init(material: Self.compress(key: key))
+
+            let parsedRawBytes = self.key.rawRepresentation.bytes
+
+            // assert that parsed compressed bytes match input bytes
+            guard Util.equals(givenRawBytes, parsedRawBytes) else {
+                throw Exception.badKey("Public key is invalid")
+            }
         }
     }
 }
