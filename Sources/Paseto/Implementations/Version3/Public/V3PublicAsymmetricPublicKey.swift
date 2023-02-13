@@ -60,10 +60,23 @@ extension Version3.Public {
                 )
             }
 
-            guard
-                let key = try? P384.Signing.PublicKey(x963Representation: material) else {
-                throw Exception.badKey("Public key is invalid")
+            if #available(macOS 13, iOS 16, watchOS 9, tvOS 16, macCatalyst 16, *) {
+                guard
+                    let key = try? P384.Signing.PublicKey(compressedRepresentation: material) else {
+                    throw Exception.badKey("Public key is invalid")
+                }
+                self.key = key
+            } else {
+                // Note that this would actually fail on newer versions, so it seems there was a BC break
+                // here which means this constructor will no longer accept compressed points like it once
+                // did.
+                guard
+                    let key = try? P384.Signing.PublicKey(x963Representation: material) else {
+                    throw Exception.badKey("Public key is invalid")
+                }
+                self.key = key
             }
+        }
 
             self.key = key
         }
