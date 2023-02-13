@@ -8,7 +8,7 @@ extension Version3.Public {
 
         let key: P384.Signing.PublicKey
 
-        var compressed: Bytes {
+        fileprivate static func compress(key: P384.Signing.PublicKey) -> Bytes {
             let x963Representation = key.x963Representation.bytes
 
             guard x963Representation[0] == 04 else {
@@ -47,6 +47,10 @@ extension Version3.Public {
             }
 
             return [prefix] + xBytes
+        }
+
+        var compressed: Bytes {
+            Self.compress(key: key)
         }
 
         public var material: Bytes {
