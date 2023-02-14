@@ -5,11 +5,11 @@ jobs:
     name: Unit Tests
     strategy:
       matrix:
-        os: [macos-latest, macos-11, macos-10.15]
+        os: [macos-latest, macos-12, macos-11, macos-10.15]
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run Tests
         run: swift test
 
@@ -17,7 +17,7 @@ jobs:
     name: Check Test Vectors Up To Date
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Check for updates
         run: |
           cd Tests/PasetoTests/TestVectors
