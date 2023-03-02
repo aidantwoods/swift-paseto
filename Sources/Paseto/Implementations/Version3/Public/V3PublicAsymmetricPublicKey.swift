@@ -29,19 +29,24 @@ extension Version3.Public {
 
         let key: P384.Signing.PublicKey
 
-        // https://www.secg.org/sec1-v2.pdf
+        // https://www.secg.org/sec1-v2.pdf section 2.3.4, supporting only action 2. for compressed points
         fileprivate static func decompressToCoords(compressedKey: Bytes) throws -> (x: Bytes, y: Bytes) {
+            // precondition for 2.
             guard compressedKey.count == 1 + 48 else {
                 throw Exception.badKey("Bad public key length")
             }
 
-            if compressedKey == Bytes(repeating: 0, count: 49) {
-                return (x: Bytes(repeating: 0, count: 48), y: Bytes(repeating: 0, count: 48))
-            }
-
+            // 2.1
             let prefix = compressedKey[0]
             let x = compressedKey[1...].bytes
 
+            // 2.2
+            let xBn = BigUInteger(Data(x))
+            guard xBn >= 0 && xBn <= pBn - 1 else {
+                throw Exception.badKey("Invalid x supplied")
+            }
+
+            // 2.3
             let yTildeP: BigUInteger
             switch prefix {
             case 02:
@@ -52,8 +57,7 @@ extension Version3.Public {
                 throw Exception.badKey("Bad public key prefix")
             }
 
-            let xBn = BigUInteger(Data(x))
-
+            // 2.4, 2.4.1 path
             let alpha = (xBn.power(3) + (aBn * xBn) + bBn) % pBn
 
             // Take square root mod p
@@ -75,10 +79,12 @@ extension Version3.Public {
 
             let y = Bytes(yBn.serialize())
 
+            // must fit in 48 bytes to be valid
             guard y.count <= 48 else {
                 throw Exception.badKey("Invalid y byte length")
             }
 
+            // prefix pad y bytes to fill 48 bytes
             let yPadded = Bytes(repeating: 0, count: 48 - y.count) + y
 
             return (x, yPadded)
