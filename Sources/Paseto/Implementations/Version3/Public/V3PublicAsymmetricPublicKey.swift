@@ -29,6 +29,7 @@ extension Version3.Public {
 
         let key: P384.Signing.PublicKey
 
+        // https://www.secg.org/sec1-v2.pdf
         fileprivate static func decompressToCoords(compressedKey: Bytes) throws -> (x: Bytes, y: Bytes) {
             guard compressedKey.count == 1 + 48 else {
                 throw Exception.badKey("Bad public key length")
