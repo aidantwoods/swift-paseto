@@ -58,8 +58,13 @@ extension Version3.Public {
 
             // Take square root mod p
             // https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm
-            // For prime p = 3 (mod 4), r = n ^ ((p+1)/n) (mod p) is a root of r^2 = n (mod p)
+            // For prime p = 3 (mod 4), r = n ^ ((p+1)/n) (mod p) is a root of r^2 = n (mod p), if a square root exists
             let beta = alpha.power((pBn + 1)/4, modulus: pBn)
+
+            // check square root exists
+            guard beta.power(2, modulus: pBn) == alpha else {
+                throw Exception.badKey("Square root not found")
+            }
 
             let yBn: BigUInteger
             if beta % 2 == yTildeP {
