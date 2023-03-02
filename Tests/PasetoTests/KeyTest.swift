@@ -17,5 +17,36 @@ class KeyTest: XCTestCase {
             _ = XCTSkip("Skipping key test where key is not supported")
         }
     }
+
+    func testGeneratedKeyImport() {
+        if #available(macOS 13, *) {
+            for _ in 1...100 {
+                let privKey = P384.Signing.PrivateKey(compactRepresentable: false)
+
+                let pubKey = privKey.publicKey
+
+                let pasetoPubKey = Paseto.Version3.AsymmetricPublicKey(bytes: pubKey.compressedRepresentation)!
+
+                XCTAssertEqual(pubKey.rawRepresentation.bytes, pasetoPubKey.key.rawRepresentation.bytes)
+            }
+        } else {
+            _ = XCTSkip("Skipping key test where key is not supported")
+        }
+    }
+
+    func testRandomKeyImport() {
+        if #available(macOS 13, *) {
+            for _ in 1...100 {
+                let bytes = [Util.random(length: 1)[0] % 2 == 0 ? 02 : 03] + Util.random(length: 48)
+
+                let pasetoPubKey = Paseto.Version3.AsymmetricPublicKey(bytes: bytes)
+                let pubKey = try? P384.Signing.PublicKey(compressedRepresentation: bytes)
+
+                XCTAssertEqual(pubKey?.rawRepresentation.bytes, pasetoPubKey?.key.rawRepresentation.bytes)
+            }
+        } else {
+            _ = XCTSkip("Skipping key test where key is not supported")
+        }
+    }
 }
 
