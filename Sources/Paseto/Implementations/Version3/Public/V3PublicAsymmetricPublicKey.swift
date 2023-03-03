@@ -87,6 +87,7 @@ extension Version3.Public {
             // prefix pad y bytes to fill 48 bytes
             let yPadded = Bytes(repeating: 0, count: 48 - y.count) + y
 
+            // 2.5
             return (x, yPadded)
         }
 
