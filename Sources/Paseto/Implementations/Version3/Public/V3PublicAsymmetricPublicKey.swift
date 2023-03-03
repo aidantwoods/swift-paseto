@@ -38,7 +38,7 @@ extension Version3.Public {
 
             // 2.1
             let prefix = compressedKey[0]
-            let x = compressedKey[1...].bytes
+            let x = compressedKey[1..<49].bytes
 
             // 2.2
             let xBn = BigUInteger(Data(x))
