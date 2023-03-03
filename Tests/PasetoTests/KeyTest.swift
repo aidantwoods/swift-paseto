@@ -15,6 +15,7 @@ class KeyTest: XCTestCase {
         XCTAssertThrowsError(try Paseto.Version3.AsymmetricPublicKey(key: pubKey))
     }
 
+#if compiler(>=5.7)
     @available(macOS 13, *)
     func testGeneratedKeyImport() {
         for _ in 1...100 {
@@ -39,5 +40,6 @@ class KeyTest: XCTestCase {
             XCTAssertEqual(pubKey?.rawRepresentation.bytes, pasetoPubKey?.key.rawRepresentation.bytes)
         }
     }
+#endif
 }
 
