@@ -46,9 +46,7 @@ extension Version3.Public.AsymmetricSecretKey: Paseto.AsymmetricSecretKey {
     }
 
     public var publicKey: Version3.Public.AsymmetricPublicKey {
-        return Version3.Public.AsymmetricPublicKey (
-            key: key.publicKey
-        )
+        return Version3.Public.AsymmetricPublicKey(key.publicKey)
     }
 }
 
