@@ -61,7 +61,7 @@ public extension Token {
 
 public extension Token {
     var claimsJSON: Data {
-        if #available(macOS 10.13, *) {
+        if #available(macOS 10.13, iOS 11, *) {
             return JSON.Container.Dictionary(claims).encoded(options: [.sortedKeys])
         } else {
             return JSON.Container.Dictionary(claims).encoded()
